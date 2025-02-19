@@ -1,91 +1,85 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    const accountNumber = user.accNumber;
+    let accountNumber;
+    
+    fetch('/get-user-info', {
+        method: 'GET',
+        credentials: 'same-origin', // Ensure the cookie is sent with the request
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const user = data.user;  
+            accountNumber = user.accountNumber;
 
-    if (user) 
-    {
-        //  window.location.href = '/home';  
-        // loginPanel.style.display = 'flex'; 
-    } 
-    else
-    {
+        } else {
+            window.location.href = '/';  
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching user info:", error);
         window.location.href = '/';  
-    }
+    });
 
-    document.getElementById("logoutButton").addEventListener("click",function (event)
-    {
+    document.getElementById("logoutButton").addEventListener("click", function(event) {
         event.preventDefault();
-        sessionStorage.removeItem("user");
-        window.location.href = '/';
-    })
 
+        fetch('/logout', { method: 'POST' })  // Call your backend route to clear the cookie
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/'; // Redirect to homepage or login page
+                }
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+            });
+    });
 
-    document.getElementById("profileButton").addEventListener("click",function (event)
-    {
+    document.getElementById("profileButton").addEventListener("click", function(event) {
         event.preventDefault();
-        window.location.href = `/profile/${user.accNumber}`;
-    })
+        window.location.href = `/profile/${accountNumber}`;  // Redirect to user's profile page
+    });
 
-
-    document.getElementById('checkPost').addEventListener("click",function()
-    {
-        // const postId = document.getElementById("titleText").value;
-        fetch('/viewAllPosts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            // body: JSON.stringify({ postId })  
-        })
-    })
-
-
-    document.getElementById('createPost').addEventListener("click", function() 
-    {
+    document.getElementById('createPost').addEventListener("click", function() {
         const title = document.getElementById("titleText").value;
         const content = document.getElementById("bodyText").value;
         
-        console.log(accountNumber)
 
-        if (title && content) 
-        {
+        if (title && content) {
+            // Send the post request with accountNumber, title, and content
             fetch('/createPost', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({accountNumber, title, content })  
+                body: JSON.stringify({ accountNumber, title, content })
             })
-            .then(response => response.json()).then(data => 
-            {
-                console.log("Response from server:", data);
-                if (data.success) 
-                {
-                    // window.location.href = '/home'; 
-
-                } 
-                else 
-                {
-
-                    // document.getElementById("status").textContent = data.message || "Invalid account number or password.";
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/home';  // Redirect to home after creating a post
                 }
             })
-            .catch(error => 
-            {
-                console.error('Error:', error);
-                // document.getElementById("status").textContent = "Something went wrong. Please try again later.";
+            .catch(error => {
+                console.error('Error creating post:', error);
             });
         }
-    })
-    document.getElementById('checkPost').addEventListener("click", function (event) 
-    {
-        fetch('/viewAllPosts', 
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+    });
 
-            })
+    // Handle checking posts
+    document.getElementById('checkPost').addEventListener("click", function(event) {
+        fetch('/viewAllPosts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Process the posts data or update the UI accordingly
+        })
+        .catch(error => {
+            console.error('Error checking posts:', error);
+        });
     });
 });
