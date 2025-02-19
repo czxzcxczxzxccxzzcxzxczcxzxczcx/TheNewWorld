@@ -82,6 +82,7 @@ app.get('/profile/:accountNumber', async (req, res) => {
 
         const templatePath = path.join(__dirname, 'public/html/profile.html');
         let template = fs.readFileSync(templatePath, 'utf8');
+        console.log("attempt");
 
         res.send(template); // Send the template with the injected data
 
@@ -315,7 +316,46 @@ app.post('/logout', (req, res) => {
 
     res.json({ success: true, message: 'Logged out successfully' });
 });
+app.post('/changePostData', async (req, res) => {
+    const { postId, title, content } = req.body;
 
+    const sessionId = req.cookies.sessionId;  // Get sessionId from cookie
+  
+    if (sessionId && sessionStore[sessionId]) {
+        console.log()
+      const user = sessionStore[sessionId];  // Retrieve user data from session store
+      console.log(user);  // You can remove this line in production
+      
+      try {
+        // Find the post by postId
+        const post = await Post.findOne({ postId });
+  
+        if (!post) {
+          return res.status(404).json({ success: false, message: 'Post not found' });
+        }
+  
+        // Ensure the user account number matches the one on the post
+        if (post.accountNumber !== user.accountNumber) {
+          return res.status(403).json({ success: false, message: 'You are not authorized to update this post' });
+        }
+  
+        // Update the post fields
+        post.title = title || post.title;
+        post.content = content || post.content;
+  
+        // Save the updated post
+        await post.save();
+  
+        // Respond with success
+        res.json({ success: true, message: 'Post updated successfully', post });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Error updating post' });
+      }
+    } else {
+      res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+  });
 
 app.get('/get-user-info', (req, res) => {
     const sessionId = req.cookies.sessionId;  // Get the session ID from the cookie
