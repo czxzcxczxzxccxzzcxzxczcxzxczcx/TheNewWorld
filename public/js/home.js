@@ -1,19 +1,55 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    const homePanel = document.getElementById('homePanel');
-    const accNumber = user.accNumber;
-   
-    if (!user) 
-    {
+    let accountNumber;
+
+    fetch('/get-user-info', {
+        method: 'GET',
+        credentials: 'same-origin', 
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const user = data.user;  
+            accountNumber = user.accountNumber;
+
+        } else {
+            window.location.href = '/';  
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching user info:", error);
         window.location.href = '/';  
-        // loginPanel.style.display = 'flex';
-    }
+    });
+
+
+    document.getElementById("profileButton").addEventListener("click", function(event) {
+        event.preventDefault();
+        if (accountNumber) {
+            window.location.href = `/profile/${accountNumber}`;  // Redirect to user's profile page
+
+        }
+    });
 
     document.getElementById("logoutButton").addEventListener("click",function (event)
     {
         event.preventDefault();
-        sessionStorage.removeItem("user");
-        window.location.href = '/';
+        fetch('/logout', {
+            method: 'POST',
+            credentials: 'same-origin',  // Ensure cookies are sent with the request
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Redirect the user to the login page
+                window.location.href = '/';
+            } else {
+                // Handle error (e.g., show a message to the user)
+                alert('Logout failed. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error during logout:', error);
+            alert('Something went wrong. Please try again later.');
+        });
     })
 
     document.getElementById("createPostButton").addEventListener("click",function (event)
@@ -22,11 +58,7 @@ document.addEventListener("DOMContentLoaded", function() {
         window.location.href = '/createPost';
     })
 
-    document.getElementById("profileButton").addEventListener("click",function (event)
-    {
-        event.preventDefault();
-        window.location.href = `/profile/${accNumber}`;
-    })
+
 
     document.getElementById('viewtest').addEventListener("click", function (event) 
     {
@@ -80,6 +112,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function renderPost(post,username,pfp) {
+        const homePanel = document.getElementById('homePanel');
+        
         const postDiv = document.createElement('div');
         postDiv.classList.add('post');
 
@@ -139,15 +173,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
         homePanel.appendChild(postDiv);
 
-        const images = document.getElementsByClassName(username);
-        images.forEach((element) => 
-        {
-            element.addEventListener("click", function (event) 
-            {
-                window.location.href = '/test';
+        // const images = document.getElementsByClassName(username);
+        // images.forEach((element) => 
+        // {
+        //     element.addEventListener("click", function (event) 
+        //     {
+        //         window.location.href = '/test';
 
-            })
-        });
+        //     })
+        // });
     }
 
     renderPosts();
