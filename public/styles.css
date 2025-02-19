@@ -156,6 +156,8 @@ body {
 {
     width: 30vw;
     height: 3vw;
+    min-width: 500px;
+    max-width: 50vw; 
     font-size: 20px;
     margin: 10px;
 
@@ -164,19 +166,25 @@ body {
 {
     width: 30vw;
     height: 4vw;
+    min-width: 500px;
+    max-width: 50vw; 
     font-size:30px
 
 }
 .postPanel h1
 {
     color:white;
+    
 }
+
 .postPanel form .bodyInput
 {
     width: 30vw;
     height: 10vw;
     font-size: 20px;
     margin: 10px;
+    min-width: 500px;
+    max-width: 50vw; 
 
 }
 
@@ -193,6 +201,8 @@ body {
     height: 200px;
     width: 500px;
     border-radius: 5px;
+    max-width: 100%;  /* Ensure it doesn't exceed container size */
+
     display: flex;
     flex-direction: column;    
     height: min-content; 
@@ -232,6 +242,20 @@ body {
     margin-left: 10px;
     margin-top: 10px;
     margin-right: 10px;
+    word-wrap: break-word;  /* Ensures long words wrap to the next line */
+    white-space: normal;    /* Allows text to break into new lines */
+    overflow-wrap: break-word;  /* Additional CSS for wrapping long words */
+    line-height: 1.5;  /* Optional: improves readability */
+    word-wrap:break-word;
+
+}
+
+.postBody 
+{
+    word-wrap:break-word;
+    font-size: 20px;
+    white-space: normal;    /* Ensures the text wraps naturally */
+
 }
 
 .post .divider
@@ -253,7 +277,8 @@ body {
 }
 .post .divider .postButton
 {
-    width: 55px;
+    width: 80px;
+    height: 25px;
     border-radius: 5px;
 }
 
@@ -271,9 +296,11 @@ body {
     top: 5.25vh;
     width: auto; /* Adjust width as needed */
     min-width: 500px; /* Prevents it from becoming too small */
-    max-width: 50vw; /* Example: Can take up to half the viewport width */
+    max-width: 100%; /* Example: Can take up to half the viewport width */
     height: 94vh; /* Makes it cover the full height */
     border-radius: 5px;
+    box-sizing: border-box;  /* Makes sure padding doesn't increase width */
+
     display: flex;
     flex-direction: column;    
     align-self: center;
@@ -294,7 +321,7 @@ body {
     border-width: 10px;
     border-style:solid;
     min-width: 500px; /* Prevents it from becoming too small */
-    max-width: 50vw; 
+    max-width: 100%; 
     margin-bottom: 8px;
     
     flex-direction: column;
@@ -312,6 +339,8 @@ body {
     display:flex;
     flex-direction: row;
     align-content: flex-start;
+    box-sizing: border-box;  /* Makes sure padding doesn't increase width */
+
 
 }
 .profileStats h1
@@ -327,15 +356,33 @@ body {
 .profileInfo
 {
     display:flex;
-    margin-bottom: -20px;
+    margin-bottom: px;
+    width: 0;
+    box-sizing: border-box;  /* Makes sure padding doesn't increase width */
+    max-width: -50%;
     font-size: 15px;
 
 
 }
 
+.profileInfo img
+{
+    display:flex;
+    margin-bottom: -20px;
+    font-size: 15px;
+    width: 7vw;
+    margin-left: 4px;
+    margin-top: 5px;
+    height: 13vh;
+}
+
 .profileInfo h1
 {
-    margin: 10px;
+    margin: 20px;
+    font-size: 2vi;
+    word-wrap: break-word;  /* Ensures long words wrap to the next line */
+    white-space: normal;    /* Allows text to break into new lines */
+    overflow-wrap: break-word;  
 }
 
 
