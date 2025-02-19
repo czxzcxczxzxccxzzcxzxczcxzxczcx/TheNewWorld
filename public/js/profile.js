@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     const accountNumber = window.location.pathname.split('/')[2];
+    let userAccountNumber;
 
     fetch('/get-user-info', {
         method: 'GET',
@@ -9,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
     .then(data => {
         if (!data.success) {
             window.location.href = '/';
+            data.accountNumber = userAccountNumber;
         }
     })
     .catch(error => {
