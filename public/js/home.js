@@ -72,6 +72,38 @@ document.addEventListener("DOMContentLoaded", function() {
             })
     });
 
+    async function updatePost(postId, title, content) {
+        const requestBody = {
+            postId: postId,
+            title: title,
+            content: content
+        };
+
+        try {
+            const response = await fetch('/changePostData', {
+                method: 'POST',           
+                headers: {
+                    'Content-Type': 'application/json'   
+                },
+                body: JSON.stringify(requestBody)       
+            });
+
+            if (response.ok) {
+                const data = await response.json(); 
+                console.log('Post updated successfully:', data);
+                alert('Post updated successfully!');
+            } else {
+                const errorData = await response.json();
+                console.log('Error:', errorData.message);
+                alert('Failed to update post: ' + errorData.message);
+            }
+        } catch (error) {
+            console.error('Error during fetch:', error);
+            alert('An error occurred while updating the post.');
+        }
+    }
+
+
     async function fetchPost(postId) {
         try {
             await fetch('/getPost', {
@@ -126,8 +158,12 @@ document.addEventListener("DOMContentLoaded", function() {
         postImage.classList.add(username);
         postDetailsDiv.appendChild(postImage);       
 
+        const usernameTitle = document.createElement('h1');
+        usernameTitle.textContent = `${username}  -`;//@${post.accountNumber} 
+        postDetailsDiv.appendChild(usernameTitle);
+
         const titleH1 = document.createElement('h1');
-        titleH1.textContent = `${username} (${post.accountNumber}) - ${post.title}`;//@${post.accountNumber} 
+        titleH1.textContent = `${post.title}`;//@${post.accountNumber} 
         postDetailsDiv.appendChild(titleH1);
 
         const postBodyDiv = document.createElement('div');
@@ -167,22 +203,50 @@ document.addEventListener("DOMContentLoaded", function() {
         dividerDiv.appendChild(repostCounter);
 
         postBodyDiv.appendChild(dividerDiv);
-
         postDiv.appendChild(postDetailsDiv);
         postDiv.appendChild(postBodyDiv);
 
         homePanel.appendChild(postDiv);
 
-        // const images = document.getElementsByClassName(username);
-        // images.forEach((element) => 
-        // {
-        //     element.addEventListener("click", function (event) 
-        //     {
-        //         window.location.href = '/test';
+        if (accountNumber == post.accountNumber)
+        {
+            const editButton = document.createElement('button');
+            editButton.type = 'submit';
+            editButton.classList.add('postButton');
+            editButton.textContent = 'Edit Post';
+            editButton.setAttribute('data-id', post.postId);
+            dividerDiv.appendChild(editButton);
 
-        //     })
-        // });
+            editButton.addEventListener("click",function (event)
+            {
+                const isEditable = contentP.isContentEditable;
+
+                if (isEditable) {
+                    contentP.contentEditable = false;
+                    titleH1.contentEditable = false;
+
+                    editButton.textContent = 'Edit';
+
+                    contentP.style.border = '';  
+                    titleH1.style.border = '';
+
+                    updatePost(post.postId,titleH1.textContent,contentP.textContent);
+                } else {
+                    contentP.contentEditable = true; 
+                    titleH1.contentEditable = true;
+
+                    editButton.textContent = 'Save'; 
+                    contentP.style.border = '1px dashed #ccc'; 
+                    titleH1.style.border = '1px dashed #ccc';
+
+                }
+            });
+        }
+
+        postImage.addEventListener("click",function (event)
+        {
+            window.location.href = `/profile/${post.accountNumber}`;  
+        });
     }
-
     renderPosts();
 });
