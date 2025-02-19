@@ -1,6 +1,20 @@
 document.addEventListener("DOMContentLoaded", function() {
     const accountNumber = window.location.pathname.split('/')[2];
 
+    fetch('/get-user-info', {
+        method: 'GET',
+        credentials: 'same-origin', 
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            window.location.href = '/';
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching user info:", error);
+    });
+
     document.getElementById("logoutButton").addEventListener("click",function (event)
     {
         event.preventDefault();
@@ -14,7 +28,46 @@ document.addEventListener("DOMContentLoaded", function() {
         window.location.href = '/createPost';
     })
 
+    async function updatePost(postId, title, content) {
+        const requestBody = {
+            postId: postId,
+            title: title,
+            content: content
+        };
+
+        try {
+            const response = await fetch('/changePostData', {
+                method: 'POST',           
+                headers: {
+                    'Content-Type': 'application/json'   
+                },
+                body: JSON.stringify(requestBody)       
+            });
+
+            if (response.ok) {
+                const data = await response.json(); 
+                console.log('Post updated successfully:', data);
+                alert('Post updated successfully!');
+            } else {
+                const errorData = await response.json();
+                console.log('Error:', errorData.message);
+                alert('Failed to update post: ' + errorData.message);
+            }
+        } catch (error) {
+            console.error('Error during fetch:', error);
+            alert('An error occurred while updating the post.');
+        }
+    }
+
     function renderPost(post,username,pfp) {
+
+        // const post = document.querySelector('.post');
+        // const postContainer = document.querySelector('.post-container');
+
+        // const clonedPost1 = post.cloneNode(true);
+        // const clonedPost2 = post.cloneNode(true);
+
+        // postContainer.appendChild(clonedPost1);
         const postDiv = document.createElement('div');
         postDiv.classList.add('post');
 
@@ -26,19 +79,20 @@ document.addEventListener("DOMContentLoaded", function() {
         postImage.classList.add('pfp')
         postDetailsDiv.appendChild(postImage);       
     
+        const usernameTitle = document.createElement('h1');
+        usernameTitle.textContent = `${username}  -`;//@${post.accountNumber} 
+        postDetailsDiv.appendChild(usernameTitle);
+
         const titleH1 = document.createElement('h1');
-        titleH1.textContent = `${username} - ${post.title}`;//@${post.accountNumber} 
+        titleH1.textContent = `${post.title}`;//@${post.accountNumber} 
         postDetailsDiv.appendChild(titleH1);
-
         
-
         const postBodyDiv = document.createElement('div');
         postBodyDiv.classList.add('postBody');
         
         const contentP = document.createElement('p');
         contentP.textContent = post.content;
         postBodyDiv.appendChild(contentP);
-
 
         const dividerDiv = document.createElement('div');
         dividerDiv.classList.add('divider');
@@ -66,46 +120,69 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const repostCounter = document.createElement('h2');
         repostCounter.classList.add('likeCounter');
-        repostCounter.textContent = post.reposts;  // Display repost count from the post
+        repostCounter.textContent = post.reposts;  
         dividerDiv.appendChild(repostCounter);
 
-        postBodyDiv.appendChild(dividerDiv);
+        const editButton = document.createElement('button');
+        editButton.type = 'submit';
+        editButton.classList.add('postButton');
+        editButton.textContent = 'Edit Post';
+        editButton.setAttribute('data-id', post.postId);
+        dividerDiv.appendChild(editButton);
 
+
+        editButton.addEventListener("click",function (event)
+        {
+            const isEditable = contentP.isContentEditable;
+
+            if (isEditable) {
+                contentP.contentEditable = false;
+                titleH1.contentEditable = false;
+
+                editButton.textContent = 'Edit';
+
+                contentP.style.border = '';  
+                titleH1.style.border = '';
+
+                updatePost(post.postId,titleH1.textContent,contentP.textContent);
+            } else {
+                contentP.contentEditable = true; 
+                titleH1.contentEditable = true;
+
+                editButton.textContent = 'Save'; 
+                contentP.style.border = '1px dashed #ccc'; 
+                titleH1.style.border = '1px dashed #ccc';
+
+            }
+        })
+        postBodyDiv.appendChild(dividerDiv);
         postDiv.appendChild(postDetailsDiv);
         postDiv.appendChild(postBodyDiv);
-
         homePanel.appendChild(postDiv);
     }
 
+    fetch(`/api/profile/${accountNumber}`).then(response => response.json())
+    .then(data => {
+        var gebid =  document.getElementById.bind(document);
+        let username = data.username;
+        let pfp = data.pfp
 
-    fetch(`/api/profile/${accountNumber}`).then(response => response.json()
-    )
-        .then(data => 
-        {
-            var gebid =  document.getElementById.bind(document);
-            let username = data.username;
-            let pfp = data.pfp
-
-            gebid('username').textContent = data.username;
-            gebid('accountnumber').textContent = ` (${data.accountNumber})`;
-            gebid('posts').textContent = ` ${data.posts} Posts`;
-            gebid('bio').textContent = ` ${data.bio}`;
-            gebid('following').textContent = `${data.following} Following`;
-            gebid('followers').textContent = ` ${data.followers} Followers`;
-            fetch('/viewUserPosts', 
-            {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json',},
-                body: JSON.stringify({ accountNumber })  
-            }).then(response => response.json()).then(data => 
-            {
-                if (data.success) 
-                {
-                    data.posts.forEach((post) => {
-                        renderPost(post,username,pfp);
-                    });
-                }
+        gebid('username').textContent = data.username;
+        gebid('pfp').src = pfp;
+        gebid('accountnumber').textContent = ` (${data.accountNumber})`;
+        gebid('posts').textContent = ` ${data.posts} Posts`;
+        gebid('bio').textContent = ` ${data.bio}`;
+        gebid('following').textContent = `${data.following} Following`;
+        gebid('followers').textContent = ` ${data.followers} Followers`;
+        fetch('/viewUserPosts', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json',},
+            body: JSON.stringify({ accountNumber })  
+        }).then(response => response.json()).then(data => {
+        if (data.success) {
+            data.posts.forEach((post) => {
+                renderPost(post,username,pfp);
             });
-        }
-    ).catch(error => console.error('Error fetching profile data:', error));
+        }});
+    }).catch(error => console.error('Error fetching profile data:', error));
 })
