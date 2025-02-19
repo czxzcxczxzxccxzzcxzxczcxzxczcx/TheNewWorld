@@ -2,24 +2,8 @@ require('dotenv').config();
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-
 const dbURI = process.env.DB_URI;
 
-// Connect to Database
-const connectToDB = async () => {
-    try {
-        await mongoose.connect(dbURI, {
-            serverSelectionTimeoutMS: 30000,  
-            connectTimeoutMS: 30000,        
-        });
-        console.log('Database connection: Successful');
-    } catch (err) {
-        console.error('Database connection: Error: ', err);
-        throw err;
-    }
-};
-
-// User Schema
 const userSchema = new mongoose.Schema({
     accountNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -48,6 +32,20 @@ const User =  mongoose.model('User', userSchema);
 
 // Function to update password securely (hashes the new password)
 
+const connectToDB = async () => {
+    try {
+        await mongoose.connect(dbURI, {
+            serverSelectionTimeoutMS: 30000,  
+            connectTimeoutMS: 30000,        
+        });
+        console.log('Database connection:\tSuccessful');
+    } catch (err) {
+        console.error('Database connection: Error: ', err);
+        throw err;
+    }
+};
+
+
 const updateData = async (accountNumber, field, value) => {
     try {
         const updateObject = {};
@@ -60,12 +58,13 @@ const updateData = async (accountNumber, field, value) => {
         );
 
         if (updatedUser) {
-            console.log(`User ${field} updated successfully`);
+             console.log(`${field} Data Update:\tSuccessful`);
         } else {
-            console.log("User not found");
+            console.log(`${field} Data Update:\tError User Not Found`);
+
         }
     } catch (error) {
-        console.error(`Error updating ${field}:, error`);
+         console.log(`${field} Data Update:\tError`);
     }
 };
 
