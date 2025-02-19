@@ -1,15 +1,18 @@
 const express = require('express');
 const path = require('path');
+const crypto = require('crypto');
+const cookieParser = require('cookie-parser');
 const fs = require("fs");
 const app = express();
 
 const { hashPassword, comparePassword } = require('./utils/passwordHashing');
 const { connectToDB, clearDatabase, updateUserPassword, User, updateData, Post } = require('./utils/database');
+const sessionStore = {}; 
 
 const PORT = 7272;
 
-const staticPages = [ 
-    '/', 
+const staticPages = [
+    '/',
     '/home',
     '/createPost',
 ];
@@ -17,26 +20,25 @@ const staticPages = [
 const initialize = async () => {
     try {
         await connectToDB();
-        // await clearDatabase(); 
-        await updateData(4329959812,'bio',"Welcome to my profile");
+        // await updateData(7705304932, 'pfp', "https://cdn.pfps.gg/pfps/9463-little-cat.png");
+        await updateData(7705304932, 'pf3p', "https://cdn.pfps.gg/pfps/9463-little-cat.png");
+
 
     } catch (err) {
         console.error('Initialization error:', err);
     }
-};
+}; initialize();
 
 const generateUniquePostId = async () => {
     let postId;
     let postExists = true;
 
     while (postExists) {
-        // Generate a postId (e.g., combination of timestamp and a random string)
         postId = `post-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-        
-        // Check if the generated postId already exists in the database
+
         const existingPost = await Post.findOne({ postId });
         if (!existingPost) {
-            postExists = false;  // Exit the loop if postId is unique
+            postExists = false;
         }
     }
 
@@ -46,22 +48,16 @@ const generateUniquePostId = async () => {
 const generateAccountNumber = async () => {
     let accountNumber;
     let userExists = true;
-     
+
     while (userExists) {
         accountNumber = Math.floor(1000000000 + Math.random() * 9000000000);
         const existingUser = await User.findOne({ accountNumber: accountNumber });
         if (!existingUser) {
-            userExists = false;  // If no user exists with this account number, break the loop
+            userExists = false; 
         }
     }
     return accountNumber
 };
-
-initialize();
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
 
 staticPages.forEach((route) => {
     app.get(route, (req, res) => {
@@ -70,7 +66,10 @@ staticPages.forEach((route) => {
     });
 });
 
-// Routes
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());  // Make sure this is added before any routes that need to access cookies
 
 app.get('/profile/:accountNumber', async (req, res) => {
     try {
@@ -94,6 +93,7 @@ app.get('/profile/:accountNumber', async (req, res) => {
 
 
 app.get('/api/profile/:accountNumber', async (req, res) => {
+    console.log(1);
     try {
         const { accountNumber } = req.params;
         const user = await User.findOne({ accountNumber });
@@ -101,7 +101,6 @@ app.get('/api/profile/:accountNumber', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-
         res.json({
             username: user.username,
             accountNumber: user.accountNumber,
@@ -117,24 +116,18 @@ app.get('/api/profile/:accountNumber', async (req, res) => {
     }
 });
 
+app.post('/getPost', async (req, res) => {
+    const { postId } = req.body;
+    const existingPost = await Post.findOne({ postId });
 
-
-app.post('/getPost', async (req, res) => 
-    {
-        const { postId } = req.body;
-        const existingPost = await Post.findOne({ postId });
-    
-        if (existingPost)
-        {
-            const accountNumber = existingPost.accountNumber;
-            const user = await User.findOne({ accountNumber });
-            const username = user.username;
-            const pfp = user.pfp
-            console.log(existingPost);
-            res.status(201).json({ success: true, message: 'Post created successfully', post: existingPost, username: username, pfp: pfp});
-    
-        }
-    })
+    if (existingPost) {
+        const accountNumber = existingPost.accountNumber;
+        const user = await User.findOne({ accountNumber });
+        const username = user.username;
+        const pfp = user.pfp
+        res.status(201).json({ success: true, message: 'Post created successfully', post: existingPost, username: username, pfp: pfp });
+    }
+})
 
 
 app.post('/createPost', async (req, res) => {
@@ -142,6 +135,8 @@ app.post('/createPost', async (req, res) => {
     console.log(req.body);
     try {
         const user = await User.findOne({ accountNumber });
+        console.log(user);
+
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
@@ -152,9 +147,9 @@ app.post('/createPost', async (req, res) => {
             postId: postId,
             title: title,
             content: content,
-            accountNumber: user.accountNumber, 
+            accountNumber: user.accountNumber,
         });
-        
+
         await newPost.save();
         res.status(201).json({ success: true, message: 'Post created successfully', post: newPost });
     } catch (error) {
@@ -163,16 +158,18 @@ app.post('/createPost', async (req, res) => {
     }
 });
 
-
 app.post('/newAccount', async (req, res) => {
     const { fullName, password } = req.body;
-    
+
     try {
         console.log(req.body);
+
         const hashed = await hashPassword(password);
 
+        // Generate a unique account number
         const accountNumber = await generateAccountNumber();
         console.log(accountNumber);
+
         const newUser = new User({
             accountNumber: accountNumber,
             password: hashed,
@@ -180,8 +177,27 @@ app.post('/newAccount', async (req, res) => {
         });
 
         await newUser.save();
-        const user = await User.findOne({ accountNumber: accountNumber });
-        res.json({ success: true, user });
+
+        // Generate a session ID for the new user (just like in /login route)
+        const sessionId = crypto.randomBytes(16).toString('hex');
+
+        // Store session info in sessionStore (this can be Redis or any other persistent storage in production)
+        sessionStore[sessionId] = {
+            userId: newUser._id,
+            username: newUser.username,
+            accountNumber: newUser.accountNumber,
+        };
+
+        // Set the sessionId cookie for the newly created user
+        res.cookie('sessionId', sessionId, {
+            httpOnly: true,  // Cookie can't be accessed by JavaScript
+            secure: process.env.NODE_ENV === 'production',  // Set to true if using HTTPS
+            maxAge: 24 * 60 * 60 * 1000, // Cookie expiration (1 day)
+            sameSite: 'Strict',  // Prevent CSRF attacks
+        });
+
+        // Respond with success and the new user details
+        res.json({ success: true, user: newUser });
     } catch (err) {
         console.error("Error creating user:", err);
         res.json({ success: false, message: "Error creating user" });
@@ -190,8 +206,7 @@ app.post('/newAccount', async (req, res) => {
 
 app.post('/viewAllUsers', async (req, res) => {
     try {
-        if (User)
-        {
+        if (User) {
             const users = await User.find();
             console.log(users);
             res.json({
@@ -199,7 +214,7 @@ app.post('/viewAllUsers', async (req, res) => {
                 message: 'Successfully retrieved all users',
             });
         }
-        
+
     } catch (err) {
         console.error("Error fetching users:", err);
         res.json({
@@ -211,12 +226,11 @@ app.post('/viewAllUsers', async (req, res) => {
 
 app.post('/viewAllPosts', async (req, res) => {
     try {
-        if (Post)
-        {
+        if (Post) {
             const posts = await Post.find();
-           res.json({ success: true, posts: posts});
+            res.json({ success: true, posts: posts });
         }
-        
+
     } catch (err) {
         console.error("Error fetching users:", err);
     }
@@ -225,7 +239,7 @@ app.post('/viewAllPosts', async (req, res) => {
 
 app.post('/viewUserPosts', async (req, res) => {
     try {
-        const { accountNumber } = req.body; // Assuming you are sending accountNumber in the request body
+        const { accountNumber } = req.body;
 
         if (!accountNumber) {
             return res.status(400).json({ success: false, message: "Account number is required" });
@@ -247,15 +261,33 @@ app.post('/viewUserPosts', async (req, res) => {
 });
 
 
-
 app.post('/login', async (req, res) => {
     const { fullName, password } = req.body;
     try {
         const user = await User.findOne({ username: fullName });
+
         if (user) {
             const isMatch = await comparePassword(password, user.password);
             if (isMatch) {
-                res.json({ success: true, user });
+                // Generate a unique session ID
+                const sessionId = crypto.randomBytes(16).toString('hex'); // You can use UUID here as well
+
+                // Store session information in sessionStore (you could use a more permanent store like Redis or a DB)
+                sessionStore[sessionId] = {
+                    userId: user._id,
+                    username: user.username,
+                    accountNumber: user.accountNumber,
+
+                };
+                res.cookie('sessionId', sessionId, {
+                    httpOnly: true,  // Can't be accessed by JavaScript
+                    secure: process.env.NODE_ENV === 'production',  // Set to true if using HTTPS
+                    maxAge: 24 * 60 * 60 * 1000, // Cookie expiration (1 day)
+                    sameSite: 'Strict', // Prevents CSRF attacks
+                });
+
+                // Respond with success
+                res.json({ success: true, message: 'Login successful' });
             } else {
                 res.json({ success: false, message: 'Invalid password' });
             }
@@ -268,6 +300,35 @@ app.post('/login', async (req, res) => {
     }
 });
 
+
+app.post('/logout', (req, res) => {
+    res.clearCookie('sessionId', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',  // If using HTTPS
+        sameSite: 'Strict',
+    });
+
+    const sessionId = req.cookies.sessionId;
+    if (sessionId && sessionStore[sessionId]) {
+        delete sessionStore[sessionId];
+    }
+
+    res.json({ success: true, message: 'Logged out successfully' });
+});
+
+
+app.get('/get-user-info', (req, res) => {
+    const sessionId = req.cookies.sessionId;  // Get the session ID from the cookie
+
+    if (sessionId && sessionStore[sessionId]) {
+        const user = sessionStore[sessionId];  // Retrieve user data from session store
+        console.log(user);
+        res.json({ success: true, user });
+    } else {
+        res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+});
+
 app.listen(PORT, () => {
-    console.log(`New World Bank successfully hosted on http://localhost:${PORT}`);
+    console.log(`Host connection:\tSuccessful`);// - http://localhost:${PORT}`);
 });
