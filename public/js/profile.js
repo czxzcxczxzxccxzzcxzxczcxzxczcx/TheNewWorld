@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
     const accountNumber = window.location.pathname.split('/')[2];
+    var gebid =  document.getElementById.bind(document);
     let userAccountNumber;
+    let followerCount
 
     fetch('/get-user-info', {
         method: 'GET',
@@ -17,18 +19,78 @@ document.addEventListener("DOMContentLoaded", function() {
         console.error("Error fetching user info:", error);
     });
 
-    document.getElementById("logoutButton").addEventListener("click",function (event)
-    {
+    gebid("logoutButton").addEventListener("click",function (event) {
         event.preventDefault();
-        sessionStorage.removeItem("user");
-        window.location.href = '/';
+        fetch('/logout', {
+            method: 'POST',
+            credentials: 'same-origin', 
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Redirect the user to the login page
+                window.location.href = '/';
+            } else {
+                // Handle error (e.g., show a message to the user)
+                alert('Logout failed. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error during logout:', error);
+            alert('Something went wrong. Please try again later.');
+        });
     })
 
-    document.getElementById("createPostButton").addEventListener("click",function (event)
+
+    gebid('profileEdit').addEventListener("click",function (event) {
+        event.preventDefault();
+        const pfp = gebid("changePfp").textContent;
+        const username = gebid("username").textContent;
+        const bio = gebid("bio").textContent;
+        const isEditable = gebid("bio").isContentEditable;
+        
+        if (isEditable) {
+            changeEdit(false,"none","Edit Profile","","","")
+            console.log(bio);
+            fetch('/updateSettings', {
+                method: 'POST', credentials: 'same-origin', 
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({bio, pfp, username})    
+            })
+        } else {
+            changeEdit(true,"block","Save Profile",'1px dashed #ccc','1px dashed #ccc','1px dashed #ccc')
+           
+        }
+    })
+
+    gebid("createPostButton").addEventListener("click",function (event)
     {
         event.preventDefault();
         window.location.href = '/createPost';
     })
+
+    function formatBio(bio) {
+        return bio.replace(/\n/g, '<br>');
+    }
+
+    function changeEdit(edit,pfpDisplay,profileText,pfpText,bioBorder,userBorder) {
+        const bioE = gebid("bio");
+        const usernameE = gebid("username");
+        const profileEditE = gebid("profileEdit");
+        const changePfp = gebid("changePfp");
+        const isEditable = bioE.isContentEditable;
+
+        bioE.contentEditable = edit;
+        changePfp.contentEditable = edit;
+        usernameE.contentEditable = edit;
+        changePfp.style.display = pfpDisplay;
+        profileEditE.textContent = profileText;
+        changePfp.style.border = pfpText;
+        bioE.style.border = bioBorder;  
+        usernameE.style.border = userBorder;
+
+
+    }
 
     async function updatePost(postId, title, content) {
         const requestBody = {
@@ -62,76 +124,66 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function renderPost(post,username,pfp) {
-
-        // const post = document.querySelector('.post');
-        // const postContainer = document.querySelector('.post-container');
-
-        // const clonedPost1 = post.cloneNode(true);
-        // const clonedPost2 = post.cloneNode(true);
-
-        // postContainer.appendChild(clonedPost1);
         const postDiv = document.createElement('div');
-        postDiv.classList.add('post');
-
         const postDetailsDiv = document.createElement('div');
-        postDetailsDiv.classList.add('postDetails');
-        
         const postImage = document.createElement('img');
-        postImage.src = pfp;  // Add image URL if needed
-        postImage.classList.add('pfp')
-        postDetailsDiv.appendChild(postImage);       
-    
         const usernameTitle = document.createElement('h1');
-        usernameTitle.textContent = `${username}  -`;//@${post.accountNumber} 
-        postDetailsDiv.appendChild(usernameTitle);
-
         const titleH1 = document.createElement('h1');
-        titleH1.textContent = `${post.title}`;//@${post.accountNumber} 
-        postDetailsDiv.appendChild(titleH1);
-        
         const postBodyDiv = document.createElement('div');
-        postBodyDiv.classList.add('postBody');
-        
         const contentP = document.createElement('p');
-        contentP.textContent = post.content;
-        postBodyDiv.appendChild(contentP);
-
         const dividerDiv = document.createElement('div');
-        dividerDiv.classList.add('divider');
-
         const viewsH2 = document.createElement('h2');
-        viewsH2.textContent = `${post.views} Views`;  // Replace with actual view count if available
-        dividerDiv.appendChild(viewsH2);
-
         const likeButton = document.createElement('button');
-        likeButton.type = 'submit';
-        likeButton.classList.add('postButton');
-        likeButton.textContent = 'Like';
-        dividerDiv.appendChild(likeButton);
-
         const likeCounter = document.createElement('h2');
-        likeCounter.classList.add('likeCounter');
-        likeCounter.textContent = post.likes;  // Display like count from the post
-        dividerDiv.appendChild(likeCounter);
-
         const repostButton = document.createElement('button');
-        repostButton.type = 'submit';
-        repostButton.classList.add('postButton');
-        repostButton.textContent = 'Repost';
-        dividerDiv.appendChild(repostButton);
-
         const repostCounter = document.createElement('h2');
-        repostCounter.classList.add('likeCounter');
-        repostCounter.textContent = post.reposts;  
-        dividerDiv.appendChild(repostCounter);
-
         const editButton = document.createElement('button');
-        editButton.type = 'submit';
+
+        postDetailsDiv.classList.add('postDetails');
+        postImage.classList.add('pfp')
+        postBodyDiv.classList.add('postBody');
+        dividerDiv.classList.add('divider');
+        likeButton.classList.add('postButton');
+        likeCounter.classList.add('likeCounter');
+        repostButton.classList.add('postButton');
+        repostCounter.classList.add('likeCounter');
         editButton.classList.add('postButton');
+        postDiv.classList.add('post');
+        usernameTitle.classList.add('usernameTitle')
+        
+        postImage.src = pfp; 
+        usernameTitle.textContent = `@${username} `;
+        titleH1.textContent = `${post.title}`;
+        contentP.textContent = post.content;
+        viewsH2.textContent = `${post.views} Views`; 
+        likeCounter.textContent = post.likes;
+        repostCounter.textContent = post.reposts; 
+        likeButton.textContent = 'Like';
+        likeButton.type = 'submit';
+        repostButton.type = 'submit';
+        repostButton.textContent = 'Repost';
+        editButton.type = 'submit';
         editButton.textContent = 'Edit Post';
-        editButton.setAttribute('data-id', post.postId);
+        
+
+        postDiv.appendChild(postDetailsDiv);
+        postDiv.appendChild(postBodyDiv);
+
+        postDetailsDiv.appendChild(postImage);       
+        postDetailsDiv.appendChild(usernameTitle);
+        postDetailsDiv.appendChild(titleH1);
+
+        postBodyDiv.appendChild(contentP);
+        postBodyDiv.appendChild(dividerDiv);
+
+        dividerDiv.appendChild(viewsH2);
+        dividerDiv.appendChild(likeButton);
+        dividerDiv.appendChild(likeCounter);
+        dividerDiv.appendChild(repostButton);
+        dividerDiv.appendChild(repostCounter);
         dividerDiv.appendChild(editButton);
 
+        homePanel.appendChild(postDiv);
 
         editButton.addEventListener("click",function (event)
         {
@@ -157,25 +209,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
             }
         })
-        postBodyDiv.appendChild(dividerDiv);
-        postDiv.appendChild(postDetailsDiv);
-        postDiv.appendChild(postBodyDiv);
-        homePanel.appendChild(postDiv);
     }
 
-    fetch(`/api/profile/${accountNumber}`).then(response => response.json())
-    .then(data => {
-        var gebid =  document.getElementById.bind(document);
+    fetch(`/api/profile/${accountNumber}`).then(response => response.json()).then(data => {
         let username = data.username;
         let pfp = data.pfp
+        let postsCount = 0;
 
-        gebid('username').textContent = data.username;
-        gebid('pfp').src = pfp;
-        gebid('accountnumber').textContent = ` (${data.accountNumber})`;
-        gebid('posts').textContent = ` ${data.posts} Posts`;
-        gebid('bio').textContent = ` ${data.bio}`;
-        gebid('following').textContent = `${data.following} Following`;
-        gebid('followers').textContent = ` ${data.followers} Followers`;
         fetch('/viewUserPosts', {
             method: 'POST',
             headers: {'Content-Type': 'application/json',},
@@ -183,8 +223,26 @@ document.addEventListener("DOMContentLoaded", function() {
         }).then(response => response.json()).then(data => {
         if (data.success) {
             data.posts.forEach((post) => {
+                postsCount++;
+                gebid('posts').textContent = ` ${postsCount} Posts`;
                 renderPost(post,username,pfp);
+                
             });
         }});
+        
+        gebid('username').textContent = `${data.username}`;
+        gebid('pfp').src = pfp;
+        gebid('accountnumber').textContent = ` (${data.accountNumber})`;
+        // gebid('posts').textContent = ` ${postsCount} Posts`;
+
+        const formattedBio = data.bio.replace(/\n/g, '<br>');
+        console.log(data.bio)
+    
+        
+        gebid('bio').textContent = `${data.bio}`;
+        gebid('following').textContent = `${data.following} Following`;
+        gebid('followers').textContent = ` ${data.followers} Followers`;
+        gebid('changePfp').textContent = `${data.pfp}`;
+       
     }).catch(error => console.error('Error fetching profile data:', error));
 })

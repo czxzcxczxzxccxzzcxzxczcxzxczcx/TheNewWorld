@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.getElementById('viewtest').addEventListener("click", function (event) 
     {
-        fetch('/viewAllUsers', 
+        fetch('/viewAllPosts', 
             {
                 method: 'POST',
                 headers: {
@@ -123,88 +123,104 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
+    
     async function renderPosts() {
         try {
-            await fetch('/viewAllPosts', {
+            const response = await fetch('/viewAllPosts', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-            })
-            .then(response => response.json()).then(data => 
-            {
-                data.posts.forEach((post) => {
-                    fetchPost(post.postId);
-                });
-
             });
+    
+            const data = await response.json();
+    
+            // Check if data.posts is an array and if the request was successful
+            if (data.success && Array.isArray(data.posts)) {
+                // Sort posts by 'createdAt' (oldest first)
+                data.posts.sort((a, b) => {
+                    const dateA = new Date(a.createdAt);
+                    const dateB = new Date(b.createdAt);
+    
+                    // Check if date is valid
+                    if (isNaN(dateA) || isNaN(dateB)) {
+                        console.error('Invalid date format:', a.createdAt, b.createdAt);
+                        return 0;  // If date is invalid, leave order unchanged
+                    }
+    
+                    // Return comparison (oldest first)
+                    return dateA - dateB;
+                });
+    
+                // Render the sorted posts
+                data.posts.forEach((post) => {
+                    fetchPost(post.postId);  // Assuming fetchPost handles rendering the post
+                });
+            } else {
+                console.error('No posts found or data structure is invalid');
+            }
+    
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching posts:', error);
         }
     }
+    
+    
 
     function renderPost(post,username,pfp) {
-        const homePanel = document.getElementById('homePanel');
-        
         const postDiv = document.createElement('div');
-        postDiv.classList.add('post');
-
         const postDetailsDiv = document.createElement('div');
-        postDetailsDiv.classList.add('postDetails');
-
         const postImage = document.createElement('img');
-        postImage.src = pfp;  // Add image URL if neededa
-        postImage.classList.add('pfp');
-        postImage.classList.add(username);
-        postDetailsDiv.appendChild(postImage);       
-
         const usernameTitle = document.createElement('h1');
-        usernameTitle.textContent = `${username}  -`;//@${post.accountNumber} 
-        postDetailsDiv.appendChild(usernameTitle);
-
         const titleH1 = document.createElement('h1');
-        titleH1.textContent = `${post.title}`;//@${post.accountNumber} 
-        postDetailsDiv.appendChild(titleH1);
-
         const postBodyDiv = document.createElement('div');
-        postBodyDiv.classList.add('postBody');
-        
         const contentP = document.createElement('p');
-        contentP.textContent = post.content;
-        postBodyDiv.appendChild(contentP);
-
         const dividerDiv = document.createElement('div');
-        dividerDiv.classList.add('divider');
-
         const viewsH2 = document.createElement('h2');
-        viewsH2.textContent = `${post.views} Views`;  // Replace with actual view count if available
-        dividerDiv.appendChild(viewsH2);
-
         const likeButton = document.createElement('button');
-        likeButton.type = 'submit';
-        likeButton.classList.add('postButton');
-        likeButton.textContent = 'Like';
-        dividerDiv.appendChild(likeButton);
-
         const likeCounter = document.createElement('h2');
-        likeCounter.classList.add('likeCounter');
-        likeCounter.textContent = post.likes;  // Display like count from the post
-        dividerDiv.appendChild(likeCounter);
-
         const repostButton = document.createElement('button');
-        repostButton.type = 'submit';
-        repostButton.classList.add('postButton');
-        repostButton.textContent = 'Repost';
-        dividerDiv.appendChild(repostButton);
-
         const repostCounter = document.createElement('h2');
-        repostCounter.classList.add('likeCounter');
-        repostCounter.textContent = post.reposts;  // Display repost count from the post
-        dividerDiv.appendChild(repostCounter);
 
-        postBodyDiv.appendChild(dividerDiv);
+        postDetailsDiv.classList.add('postDetails');
+        postImage.classList.add('pfp')
+        postBodyDiv.classList.add('postBody');
+        dividerDiv.classList.add('divider');
+        likeButton.classList.add('postButton');
+        likeCounter.classList.add('likeCounter');
+        repostButton.classList.add('postButton');
+        repostCounter.classList.add('likeCounter');
+        postDiv.classList.add('post');
+        usernameTitle.classList.add('usernameTitle')
+        
+        postImage.src = pfp; 
+        usernameTitle.textContent = `@${username} `;
+        titleH1.textContent = `${post.title}`;
+        contentP.textContent = post.content;
+        viewsH2.textContent = `${post.views} Views`; 
+        likeCounter.textContent = post.likes;
+        repostCounter.textContent = post.reposts; 
+        likeButton.textContent = 'Like';
+        likeButton.type = 'submit';
+        repostButton.type = 'submit';
+        repostButton.textContent = 'Repost';
+        
+
         postDiv.appendChild(postDetailsDiv);
         postDiv.appendChild(postBodyDiv);
+
+        postDetailsDiv.appendChild(postImage);       
+        postDetailsDiv.appendChild(usernameTitle);
+        postDetailsDiv.appendChild(titleH1);
+
+        postBodyDiv.appendChild(contentP);
+        postBodyDiv.appendChild(dividerDiv);
+
+        dividerDiv.appendChild(viewsH2);
+        dividerDiv.appendChild(likeButton);
+        dividerDiv.appendChild(likeCounter);
+        dividerDiv.appendChild(repostButton);
+        dividerDiv.appendChild(repostCounter);
 
         homePanel.appendChild(postDiv);
 

@@ -1,1 +1,55 @@
+<!DOCTYPE html>
 
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" type="text/css" href="/styles.css">
+        <script src="/js/profile.js" defer></script>
+
+        <title>The New World</title>
+    </head>
+
+    <body>
+        <div class="bar">
+            <ul>
+                <h1 id="viewtest">The New World</h1>
+
+                <div class="buttons">
+                    <a href="" id="createPostButton">
+                        <h1>Create Post</h1>
+                    </a>
+                    <a href="/home">
+                        <h1>Home</h1>
+                    </a>
+                    <a id="logoutButton"href="">
+                        <h1>Logout</h1>
+                    </a>
+                </div>
+            </ul>
+        </div>
+        <div id="homePanel" class="homePanel"> 
+            <div class="profilePanel">
+                <div class="profileInfo">
+                    <img id="pfp" src=""/>
+                    <h1>@</h1>
+                    <h1 id="username"></h1>
+                    <h1 id="accountnumber"></h1>
+                </div>
+                <div class="profileBio">
+                    <p id="bio"></p>
+                </div>
+                <div class="profileBio">
+                    <p id="changePfp"></p>
+                </div>
+                <div class="profileStats">
+                    <h1 id="posts">0 Posts</h1>
+                    <h1 id="followers">0 Followers</h1>
+                    <h1 id="following">0 Following</h1>
+                    <button id="profileEdit" class="profileEditButton">Edit Profile</button>
+                </div>
+            </div>
+         </div>
+    </body>
+</html>

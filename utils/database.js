@@ -45,6 +45,28 @@ const connectToDB = async () => {
     }
 };
 
+const updatePost = async (postId, field, value) => {
+    try {
+        const updateObject = {};
+        updateObject[field] = value;
+
+        const updatedUser = await Post.findOneAndUpdate(
+            { postId },
+            { $set: updateObject },
+            { new: true }
+        );
+
+        if (updatedUser) {
+             console.log(`${field} Data Update:\tSuccessful`);
+        } else {
+            console.log(`${field} Data Update:\tError Post Not Found`);
+
+        }
+    } catch (error) {
+         console.log(`${field} Data Update:\tError`);
+    }
+};
+
 
 const updateData = async (accountNumber, field, value) => {
     try {
@@ -74,7 +96,7 @@ const updateUserPassword = async (accountNumber, newPassword) => {
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         const updatedUser = await User.findOneAndUpdate(
             { accountNumber },
-            { $set: { password: hashedPassword } },
+            { $set: { password: hashedPassword,  } },
             { new: true }
         );
 
@@ -102,4 +124,4 @@ const clearDatabase = async () => {
     }
 };
 
-module.exports = { connectToDB, clearDatabase, updateUserPassword, updateData, User, Post };
+module.exports = { connectToDB, clearDatabase, updateUserPassword, updateData, updatePost, User, Post };
