@@ -359,3 +359,7 @@ app.get('/get-user-info', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Host connection:\tSuccessful`);// - http://localhost:${PORT}`);
 });
+
+// git add .
+// git push TNW main --force
+// git commit -m "update"
