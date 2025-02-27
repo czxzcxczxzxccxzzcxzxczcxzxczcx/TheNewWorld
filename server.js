@@ -10,7 +10,7 @@ const { connectToDB, clearDatabase, updateUserPassword, User, updateData, update
 const sessionStore = {}; 
 
 const PORT = 7272;
-
+ 
 const staticPages = [
     '/',
     '/home',
@@ -333,6 +333,7 @@ app.get('/get-user-info', (req, res) => {
     }
 });
 
+// test
 app.listen(PORT, () => {
     console.log(`Host connection:\tSuccessful`);// - http://localhost:${PORT}`);
 });
