@@ -1,21 +1,19 @@
 const express = require('express');
 const path = require('path');
 const crypto = require('crypto');
+const validationResult  = require('express-validator');
 const cookieParser = require('cookie-parser');
 const fs = require("fs");
 const app = express();
 
+const { validateUsername, validatePassword, validateBio, validatePostTitle, validatePostContent, validateAccountNumber } = require('./utils/validator');
 const { hashPassword, comparePassword } = require('./utils/passwordHashing');
 const { connectToDB, clearDatabase, updateUserPassword, User, updateData, updatePost, Post } = require('./utils/database');
+
+const staticPages = ['/', '/home', '/createPost',];
 const sessionStore = {}; 
 
 const PORT = 7272;
- 
-const staticPages = [
-    '/',
-    '/home',
-    '/createPost',
-];
 
 // Sets up database can too be utilized for updating data manually
 const initialize = async () => {
@@ -162,6 +160,30 @@ app.post('/newAccount', async (req, res) => {
         res.json({ success: false, message: "Error creating user" });
     }
 });
+
+
+// app.post('/newAccount', [
+//     validateUsername,
+//     validatePassword
+//   ], async (req, res) => {
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//       return res.status(400).json({ errors: errors.array() });
+//     }
+  
+//     const { fullName, password } = req.body;
+  
+//     try {
+//       const hashed = await hashPassword(password);
+//       const accountNumber = await generateAccountNumber();
+//       const newUser = new User({ accountNumber: accountNumber, password: hashed, username: fullName });
+  
+//       await newUser.save();
+//       res.json({ success: true, user: newUser });
+//     } catch (err) {
+//       res.json({ success: false, message: "Error creating user" });
+//     }
+//   });
 
 // Prints users to server
 app.post('/viewAllUsers', async (req, res) => {

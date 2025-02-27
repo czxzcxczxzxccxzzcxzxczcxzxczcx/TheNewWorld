@@ -4,6 +4,7 @@
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "express-validator": "^7.2.1",
     "mongoose": "^8.10.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -13,5 +14,4 @@
     "@babel/preset-react": "^7.26.3",
     "babel-loader": "^9.2.1"
   }
-  
 }
