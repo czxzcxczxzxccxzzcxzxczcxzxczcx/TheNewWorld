@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const accountNumber = window.location.pathname.split('/')[2];
+    const profileAccountNumber = window.location.pathname.split('/')[2];
     var gebid =  document.getElementById.bind(document);
     let userAccountNumber;
     let followerCount
@@ -63,16 +63,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     })
 
-    gebid("createPostButton").addEventListener("click",function (event)
-    {
-        event.preventDefault();
-        window.location.href = '/createPost';
-    })
-
-    function formatBio(bio) {
-        return bio.replace(/\n/g, '<br>');
-    }
-
     function changeEdit(edit,pfpDisplay,profileText,pfpText,bioBorder,userBorder) {
         const bioE = gebid("bio");
         const usernameE = gebid("username");
@@ -123,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    function renderPost(post,username,pfp) {
+    function renderPost(post, username, pfp) {
         const postDiv = document.createElement('div');
         const postDetailsDiv = document.createElement('div');
         const postImage = document.createElement('img');
@@ -138,9 +128,9 @@ document.addEventListener("DOMContentLoaded", function() {
         const repostButton = document.createElement('button');
         const repostCounter = document.createElement('h2');
         const editButton = document.createElement('button');
-
+    
         postDetailsDiv.classList.add('postDetails');
-        postImage.classList.add('pfp')
+        postImage.classList.add('pfp');
         postBodyDiv.classList.add('postBody');
         dividerDiv.classList.add('divider');
         likeButton.classList.add('postButton');
@@ -149,14 +139,14 @@ document.addEventListener("DOMContentLoaded", function() {
         repostCounter.classList.add('likeCounter');
         editButton.classList.add('postButton');
         postDiv.classList.add('post');
-        usernameTitle.classList.add('usernameTitle')
-        
+        usernameTitle.classList.add('usernameTitle');
+    
         postImage.src = pfp; 
         usernameTitle.textContent = `@${username} `;
         titleH1.textContent = `${post.title}`;
         contentP.textContent = post.content;
         viewsH2.textContent = `${post.views} Views`; 
-        likeCounter.textContent = post.likes;
+        likeCounter.textContent = `${post.likes.length -1} likes`; // Show the number of likes based on the likes array
         repostCounter.textContent = post.reposts; 
         likeButton.textContent = 'Like';
         likeButton.type = 'submit';
@@ -164,55 +154,91 @@ document.addEventListener("DOMContentLoaded", function() {
         repostButton.textContent = 'Repost';
         editButton.type = 'submit';
         editButton.textContent = 'Edit Post';
-        
-
+    
         postDiv.appendChild(postDetailsDiv);
         postDiv.appendChild(postBodyDiv);
-
+    
         postDetailsDiv.appendChild(postImage);       
         postDetailsDiv.appendChild(usernameTitle);
         postDetailsDiv.appendChild(titleH1);
-
+    
         postBodyDiv.appendChild(contentP);
         postBodyDiv.appendChild(dividerDiv);
-
+    
         dividerDiv.appendChild(viewsH2);
         dividerDiv.appendChild(likeButton);
         dividerDiv.appendChild(likeCounter);
         dividerDiv.appendChild(repostButton);
         dividerDiv.appendChild(repostCounter);
         dividerDiv.appendChild(editButton);
-
+    
         homePanel.appendChild(postDiv);
-
-        editButton.addEventListener("click",function (event)
-        {
+    
+        // Like Button Click Handler
+        likeButton.addEventListener("click", function(event) {
+            const accountNumber = userAccountNumber; // Replace with actual logged-in user's account number
+            const postId = post.postId; // Get the postId
+    
+            // Send a POST request to the backend to like the post
+            fetch('/likePost', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    postId: postId,
+                    accountNumber: accountNumber,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update like counter in the UI
+                    post.likes.push(accountNumber); // Add the user's accountNumber to the likes array
+                    likeCounter.textContent = `${post.likes.length} likes`; // Update the like count
+    
+                    // Change button text or style (optional)
+                    likeButton.textContent = 'Liked';
+                    likeButton.disabled = true; // Optionally disable the button after liking
+                } else {
+                    alert(data.message); // Show message if there's an issue (e.g., already liked)
+                }
+            })
+            .catch(error => {
+                console.error('Error liking post:', error);
+                alert('An error occurred. Please try again.');
+            });
+        });
+    
+        // Edit Button Click Handler
+        editButton.addEventListener("click", function (event) {
             const isEditable = contentP.isContentEditable;
-
+    
             if (isEditable) {
                 contentP.contentEditable = false;
                 titleH1.contentEditable = false;
-
+    
                 editButton.textContent = 'Edit';
-
+    
                 contentP.style.border = '';  
                 titleH1.style.border = '';
-
-                updatePost(post.postId,titleH1.textContent,contentP.textContent);
+    
+                updatePost(post.postId, titleH1.textContent, contentP.textContent);
             } else {
                 contentP.contentEditable = true; 
                 titleH1.contentEditable = true;
-
+    
                 editButton.textContent = 'Save'; 
                 contentP.style.border = '1px dashed #ccc'; 
                 titleH1.style.border = '1px dashed #ccc';
-
             }
-        })
+        });
     }
+    
 
-    fetch(`/api/profile/${accountNumber}`).then(response => response.json()).then(data => {
+    fetch(`/api/profile/${profileAccountNumber}`).then(response => response.json()).then(data => {
         let username = data.username;
+        const accountNumber = profileAccountNumber;
         let pfp = data.pfp
         let postsCount = 0;
 
