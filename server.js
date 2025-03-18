@@ -1,5 +1,7 @@
 const express = require('express');
 const path = require('path');
+const mongoose = require('mongoose');
+
 const crypto = require('crypto');
 const validationResult  = require('express-validator');
 const cookieParser = require('cookie-parser');
@@ -10,7 +12,7 @@ const { validateUsername, validatePassword, validateBio, validatePostTitle, vali
 const { hashPassword, comparePassword } = require('./utils/passwordHashing');
 const { connectToDB, clearDatabase, updateUserPassword, User, updateData, updatePost, Post } = require('./utils/database');
 
-const staticPages = ['/', '/home', '/createPost',];
+const staticPages = ['/', '/home', '/createPost','/messages','/following'];
 const sessionStore = {}; 
 
 const PORT = 7272;
@@ -18,6 +20,22 @@ const PORT = 7272;
 // Sets up database can too be utilized for updating data manually
 const initialize = async () => {
     try {
+        async function migrateOldPosts() {
+            // Find all posts that don't have the 'likes' field
+            const postsWithoutLikes = await Post.find({ likes: { $exists: false } });
+        
+            for (const post of postsWithoutLikes) {
+                post.likes = [];  // Add an empty array to the likes field
+                await post.save();
+                console.log(`Updated post with postId: ${post.postId}`);
+            }
+        
+            console.log('Migration complete!');
+        }
+        
+        // Call the migration function
+        migrateOldPosts().catch(console.error);
+
         await connectToDB();
         await updateData("5614882946","following",-1);
         await updateUserPassword("5614882946","password");
@@ -117,6 +135,34 @@ app.post('/getPost', async (req, res) => {
         res.status(201).json({ success: true, message: 'Post created successfully', post: existingPost, username: username, pfp: pfp });
     }
 })
+
+app.post('/likePost', async (req, res) => {
+    const { postId, accountNumber } = req.body;
+
+    try {
+        const existingPost = await Post.findOne({ postId });
+        console.log(existingPost);
+        if (!existingPost) {
+            return res.status(404).json({ success: false, message: 'Post not found' });
+        }
+
+        // Check if the account has already liked the post
+        if (existingPost.likes.includes(accountNumber)) {
+            return res.status(400).json({ success: false, message: 'You already liked this post' });
+        }
+
+        // Add the like (accountNumber) to the likes array
+        existingPost.likes.push(accountNumber);
+
+        // Save the post with the updated likes array
+        await existingPost.save();
+
+        return res.status(200).json({ success: true, message: 'Post liked successfully', post: existingPost });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Error liking post', error });
+    }
+});
+
 
 // Creates a new post
 app.post('/createPost', async (req, res) => {
@@ -359,6 +405,7 @@ app.get('/get-user-info', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Host connection:\tSuccessful`);// - http://localhost:${PORT}`);
 });
+
 // git add .
 // git push TNW main --force
 // git commit -m "update"
