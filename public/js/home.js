@@ -52,12 +52,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     })
 
-    document.getElementById("createPostButton").addEventListener("click",function (event)
-    {
-        event.preventDefault();
-        window.location.href = '/createPost';
-    })
-
 
 
     document.getElementById('viewtest').addEventListener("click", function (event) 
@@ -190,6 +184,7 @@ document.addEventListener("DOMContentLoaded", function() {
         likeCounter.classList.add('likeCounter');
         repostButton.classList.add('postButton');
         repostCounter.classList.add('likeCounter');
+        
         postDiv.classList.add('post');
         usernameTitle.classList.add('usernameTitle')
         
@@ -217,10 +212,13 @@ document.addEventListener("DOMContentLoaded", function() {
         postBodyDiv.appendChild(dividerDiv);
 
         dividerDiv.appendChild(viewsH2);
-        dividerDiv.appendChild(likeButton);
+
         dividerDiv.appendChild(likeCounter);
-        dividerDiv.appendChild(repostButton);
+        dividerDiv.appendChild(likeButton);
+
         dividerDiv.appendChild(repostCounter);
+        dividerDiv.appendChild(repostButton);
+
 
         homePanel.appendChild(postDiv);
 
@@ -229,6 +227,8 @@ document.addEventListener("DOMContentLoaded", function() {
             const editButton = document.createElement('button');
             editButton.type = 'submit';
             editButton.classList.add('postButton');
+            editButton.id = 'EditPost';
+
             editButton.textContent = 'Edit Post';
             editButton.setAttribute('data-id', post.postId);
             dividerDiv.appendChild(editButton);
