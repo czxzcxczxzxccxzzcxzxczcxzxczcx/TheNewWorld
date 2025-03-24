@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", function() {
         if (data.success) {
             const user = data.user;  
             accountNumber = user.accountNumber;
+            console.log(accountNumber)
+
 
         } else {
             window.location.href = '/';  

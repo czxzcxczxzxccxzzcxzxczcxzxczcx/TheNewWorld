@@ -10,10 +10,16 @@ document.addEventListener("DOMContentLoaded", function() {
     })
     .then(response => response.json())
     .then(data => {
-        if (!data.success) {
-            window.location.href = '/';
-            data.accountNumber = userAccountNumber;
+        if (data.success) {
+            const user = data.user;  
+            userAccountNumber = user.accountNumber;
+
+
+
+        } else {
+            window.location.href = '/';  
         }
+
     })
     .catch(error => {
         console.error("Error fetching user info:", error);
@@ -41,6 +47,17 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     })
 
+    gebid("profileButton").addEventListener("click", function(event) {
+        event.preventDefault();
+
+        if (userAccountNumber) {
+
+            window.location.href = `/profile/${userAccountNumber}`;  // Redirect to user's profile page
+
+        }
+    });
+
+
 
     gebid('profileEdit').addEventListener("click",function (event) {
         event.preventDefault();
@@ -51,7 +68,6 @@ document.addEventListener("DOMContentLoaded", function() {
         
         if (isEditable) {
             changeEdit(false,"none","Edit Profile","","","")
-            console.log(bio);
             fetch('/updateSettings', {
                 method: 'POST', credentials: 'same-origin', 
                 headers: {'Content-Type': 'application/json'},
@@ -146,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function() {
         titleH1.textContent = `${post.title}`;
         contentP.textContent = post.content;
         viewsH2.textContent = `${post.views} Views`; 
-        likeCounter.textContent = `${post.likes.length -1} likes`; // Show the number of likes based on the likes array
+        likeCounter.textContent = `0 likes`; // Show the number of likes based on the likes array
         repostCounter.textContent = post.reposts; 
         likeButton.textContent = 'Like';
         likeButton.type = 'submit';

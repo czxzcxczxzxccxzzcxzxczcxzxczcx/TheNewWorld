@@ -20,21 +20,6 @@ const PORT = 7272;
 // Sets up database can too be utilized for updating data manually
 const initialize = async () => {
     try {
-        async function migrateOldPosts() {
-            // Find all posts that don't have the 'likes' field
-            const postsWithoutLikes = await Post.find({ likes: { $exists: false } });
-        
-            for (const post of postsWithoutLikes) {
-                post.likes = [];  // Add an empty array to the likes field
-                await post.save();
-                console.log(`Updated post with postId: ${post.postId}`);
-            }
-        
-            console.log('Migration complete!');
-        }
-        
-        // Call the migration function
-        migrateOldPosts().catch(console.error);
 
         await connectToDB();
         await updateData("5614882946","following",-1);
