@@ -195,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function() {
         titleH1.textContent = `${post.title}`;
         contentP.textContent = post.content;
         viewsH2.textContent = `${post.views} Views`; 
-        likeCounter.textContent = post.likes;
+        likeCounter.textContent = `${post.likes.length} likes`;;
         repostCounter.textContent = post.reposts; 
         likeButton.textContent = 'Like';
         likeButton.type = 'submit';
@@ -205,24 +205,58 @@ document.addEventListener("DOMContentLoaded", function() {
 
         postDiv.appendChild(postDetailsDiv);
         postDiv.appendChild(postBodyDiv);
-
+    
         postDetailsDiv.appendChild(postImage);       
         postDetailsDiv.appendChild(usernameTitle);
         postDetailsDiv.appendChild(titleH1);
-
+    
         postBodyDiv.appendChild(contentP);
         postBodyDiv.appendChild(dividerDiv);
-
+    
         dividerDiv.appendChild(viewsH2);
-
-        dividerDiv.appendChild(likeCounter);
         dividerDiv.appendChild(likeButton);
-
-        dividerDiv.appendChild(repostCounter);
+        dividerDiv.appendChild(likeCounter);
         dividerDiv.appendChild(repostButton);
+        dividerDiv.appendChild(repostCounter);
+    
 
 
         homePanel.appendChild(postDiv);
+
+        likeButton.addEventListener("click", function(event) {
+            const postId = post.postId; // Get the postId
+    
+            // Send a POST request to the backend to like the post
+            fetch('/likePost', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    postId: postId,
+                    accountNumber: accountNumber,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update like counter in the UI
+                    post.likes.push(accountNumber); // Add the user's accountNumber to the likes array
+                    likeCounter.textContent = `${post.likes.length} likes`; // Update the like count
+    
+                    // Change button text or style (optional)
+                    likeButton.textContent = 'Liked';
+                    likeButton.disabled = true; // Optionally disable the button after liking
+                } else {
+                    alert(data.message); // Show message if there's an issue (e.g., already liked)
+                }
+            })
+            .catch(error => {
+                console.error('Error liking post:', error);
+                alert('An error occurred. Please try again.');
+            });
+        });
+    
 
         if (accountNumber == post.accountNumber)
         {
@@ -234,6 +268,8 @@ document.addEventListener("DOMContentLoaded", function() {
             editButton.textContent = 'Edit Post';
             editButton.setAttribute('data-id', post.postId);
             dividerDiv.appendChild(editButton);
+
+
 
             editButton.addEventListener("click",function (event)
             {

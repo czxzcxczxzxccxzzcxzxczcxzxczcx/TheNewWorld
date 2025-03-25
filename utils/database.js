@@ -45,21 +45,26 @@ const connectToDB = async () => {
     }
 };
 
-const updateOldPosts = async () => {
+const updateLikesArray = async () => {
     try {
         const posts = await Post.find();
-        posts.forEach(async (post) => {
-            // console.log(post)
-            if (!post.likes) {
-                post.likes = []; // Set the new 'likes' field to an empty array if it's not present
-                await post.save(); // Save the updated post document
-                console.log(`Post with postId ${post.postId} updated with 'likes' field`);
+
+        // Loop through each post to check the 'likes' field
+        for (let post of posts) {
+            if (!post.hasOwnProperty('likes') || !Array.isArray(post.likes)) {
+                // If 'likes' doesn't exist or isn't an array, initialize it as an empty array
+                post.likes = [];
+                await post.save(); // Save the updated post
+                console.log(`Post with postId ${post.postId} fixed: 'likes' field initialized as an array.`);
             }
-        });
+        }
     } catch (error) {
-        console.error('Error updating old posts:', error);
+        console.error('Error updating posts with missing likes field:', error);
     }
 };
+
+
+
 
 
 const updatePost = async (postId, field, value) => {
@@ -141,4 +146,4 @@ const clearDatabase = async () => {
     }
 };
 
-module.exports = { connectToDB, clearDatabase, updateUserPassword, updateData, updatePost, updateOldPosts, User, Post };
+module.exports = { connectToDB, clearDatabase, updateUserPassword, updateData, updatePost, updateLikesArray, User, Post };

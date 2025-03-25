@@ -10,7 +10,7 @@ const app = express();
 
 const { validateUsername, validatePassword, validateBio, validatePostTitle, validatePostContent, validateAccountNumber } = require('./utils/validator');
 const { hashPassword, comparePassword } = require('./utils/passwordHashing');
-const { connectToDB, clearDatabase, updateUserPassword, User, updateData, updateOldPosts, Post } = require('./utils/database');
+const { connectToDB, clearDatabase, updateUserPassword, User, updateData, updateLikesArray, Post } = require('./utils/database');
 
 const staticPages = ['/', '/home', '/createPost','/messages','/following'];
 const sessionStore = {}; 
@@ -24,7 +24,7 @@ const initialize = async () => {
         await connectToDB();
         // await updateData("5614882946","following",-1);
         // await updateUserPassword("5614882946","password");
-        await updateOldPosts();
+        // await updateLikesArray();
     } catch (err) {
         console.error('DATABASE INITIALIZATION ERROR', err);
     }
@@ -122,26 +122,38 @@ app.post('/getPost', async (req, res) => {
     }
 })
 
+// Use MongoDB's update operation to set `likes` to an empty array for posts where likes is an integer
+Post.updateMany(
+    { likes: { $type: "int" } },  // Find documents where `likes` is an integer
+    { $set: { likes: [] } }       // Set `likes` to an empty array
+);
+
+
 app.post('/likePost', async (req, res) => {
     const { postId, accountNumber } = req.body;
 
     try {
         const existingPost = await Post.findOne({ postId });
         
-        // Ensure likes is an array before modifying it
-        if (!Array.isArray(existingPost.likes)) {
-            existingPost.likes = []; // Initialize likes as an empty array if it's not already an array
-        }
-
-        console.log(existingPost);
-
         if (!existingPost) {
             return res.status(404).json({ success: false, message: 'Post not found' });
         }
 
+        // Ensure likes is an array before modifying it
+        if (!Array.isArray(existingPost.likes)) {
+            console.log("NOTEXIST")
+            existingPost.likes = []; // Initialize likes as an empty array if it's not already an array
+        }
+
+        console.log(existingPost); // Log the post structure
+
         // Check if the account has already liked the post
         if (existingPost.likes.includes(accountNumber)) {
-            return res.status(400).json({ success: false, message: 'You already liked this post' });
+
+            existingPost.likes = existingPost.likes.filter(like => like.toString() !== accountNumber.toString());
+            console.log(existingPost);
+            await existingPost.save();
+            return res.status(200).json({ success: true, removed: true });
         }
 
         // Add the like (accountNumber) to the likes array
@@ -150,11 +162,41 @@ app.post('/likePost', async (req, res) => {
         // Save the post with the updated likes array
         await existingPost.save();
 
-        return res.status(200).json({ success: true, message: 'Post liked successfully', post: existingPost });
+        return res.status(200).json({ success: true, message: 'Post liked successfully', post: existingPost,  removed: false});
     } catch (error) {
+        console.error('Error liking post:', error); // Log the error in the console
         return res.status(500).json({ success: false, message: 'Error liking post', error });
     }
 });
+
+
+app.post('/checkLike', async (req, res) => {
+    const { postId, accountNumber } = req.body;
+
+    try {
+        const existingPost = await Post.findOne({ postId });
+
+        if (!existingPost) {
+            return res.status(404).json({ success: false, message: 'Post not found' });
+        }
+
+        // Check if the account has already liked the post
+        if (existingPost.likes.includes(accountNumber)) {
+            // Return true if the user has already liked the post
+            return res.status(200).json({ success: true, liked: true });
+        }
+
+        // Return false if the user hasn't liked the post
+        return res.status(200).json({ success: true, liked: false });
+        
+    } catch (error) {
+        console.error('Error checking like status:', error); // Log the error in the console
+        return res.status(500).json({ success: false, message: 'Error checking like status', error });
+    }
+});
+
+
+
 
 
 
@@ -194,7 +236,7 @@ app.post('/newAccount', async (req, res) => {
 
         sessionStore[sessionId] = {userId: newUser._id, username: newUser.username, accountNumber: newUser.accountNumber,};
 
-        res.cookie('sessionId', sessionId, {httpOnly: true,  secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000, sameSite: 'Strict',});
+        res.cookie('TNWID', sessionId, {httpOnly: true,  secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000, sameSite: 'Strict',});
         res.json({ success: true, user: newUser });
     } catch (err) {
         res.json({ success: false, message: "Error creating user" });
@@ -292,7 +334,7 @@ app.post('/login', async (req, res) => {
 
                 sessionStore[sessionId] = {userId: user._id, username: user.username, accountNumber: user.accountNumber,};
                 
-                res.cookie('sessionId', sessionId, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000,  sameSite: 'Strict', });
+                res.cookie('TNWID', sessionId, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000,  sameSite: 'Strict', });
 
                 res.json({ success: true, message: 'Login successful' });
             } else {
@@ -308,9 +350,9 @@ app.post('/login', async (req, res) => {
 
 // Logs the user out
 app.post('/logout', (req, res) => {
-    res.clearCookie('sessionId', {httpOnly: true, secure: process.env.NODE_ENV === 'production',  sameSite: 'Strict',});
+    res.clearCookie('TNWID', {httpOnly: true, secure: process.env.NODE_ENV === 'production',  sameSite: 'Strict',});
 
-    const sessionId = req.cookies.sessionId;
+    const sessionId = req.cookies.TNWID;
 
     if (sessionId && sessionStore[sessionId]) {
         delete sessionStore[sessionId];
@@ -322,7 +364,7 @@ app.post('/logout', (req, res) => {
 // Updates profile data
 app.post('/updateSettings', async (req, res) => {
     const { bio,pfp,username } = req.body;
-    const sessionId = req.cookies.sessionId;  
+    const sessionId = req.cookies.TNWID;  
     try {
         if (sessionId && sessionStore[sessionId]) {
             const user = sessionStore[sessionId];  
@@ -348,7 +390,7 @@ app.post('/updateSettings', async (req, res) => {
 app.post('/changePostData', async (req, res) => {
     const { postId, title, content } = req.body;
 
-    const sessionId = req.cookies.sessionId;  
+    const sessionId = req.cookies.TNWID;  
   
     if (sessionId && sessionStore[sessionId]) {
       const user = sessionStore[sessionId];  
@@ -385,7 +427,7 @@ app.post('/changePostData', async (req, res) => {
 
 // Gets user info
 app.get('/get-user-info', (req, res) => {
-    const sessionId = req.cookies.sessionId;  
+    const sessionId = req.cookies.TNWID;  
 
     if (sessionId && sessionStore[sessionId]) {
         const user = sessionStore[sessionId];  
