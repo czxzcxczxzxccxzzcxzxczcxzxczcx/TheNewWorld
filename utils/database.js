@@ -21,7 +21,7 @@ const postSchema = new mongoose.Schema({
     content: { type: String, required: true }, 
     accountNumber: { type: String, required: true, ref: 'User' }, 
     createdAt: { type: Date, default: Date.now }, 
-    likes: { type: Number, default: 0 }, 
+    likes: { type: [Number], default: [] },
     views: { type: Number, default: 0 },
     reposts: { type: Number, default: 0 }
 });
@@ -44,6 +44,23 @@ const connectToDB = async () => {
         throw err;
     }
 };
+
+const updateOldPosts = async () => {
+    try {
+        const posts = await Post.find();
+        posts.forEach(async (post) => {
+            // console.log(post)
+            if (!post.likes) {
+                post.likes = []; // Set the new 'likes' field to an empty array if it's not present
+                await post.save(); // Save the updated post document
+                console.log(`Post with postId ${post.postId} updated with 'likes' field`);
+            }
+        });
+    } catch (error) {
+        console.error('Error updating old posts:', error);
+    }
+};
+
 
 const updatePost = async (postId, field, value) => {
     try {
@@ -124,4 +141,4 @@ const clearDatabase = async () => {
     }
 };
 
-module.exports = { connectToDB, clearDatabase, updateUserPassword, updateData, updatePost, User, Post };
+module.exports = { connectToDB, clearDatabase, updateUserPassword, updateData, updatePost, updateOldPosts, User, Post };

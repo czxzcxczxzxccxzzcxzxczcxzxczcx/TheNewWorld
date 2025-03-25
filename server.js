@@ -10,7 +10,7 @@ const app = express();
 
 const { validateUsername, validatePassword, validateBio, validatePostTitle, validatePostContent, validateAccountNumber } = require('./utils/validator');
 const { hashPassword, comparePassword } = require('./utils/passwordHashing');
-const { connectToDB, clearDatabase, updateUserPassword, User, updateData, updatePost, Post } = require('./utils/database');
+const { connectToDB, clearDatabase, updateUserPassword, User, updateData, updateOldPosts, Post } = require('./utils/database');
 
 const staticPages = ['/', '/home', '/createPost','/messages','/following'];
 const sessionStore = {}; 
@@ -22,8 +22,9 @@ const initialize = async () => {
     try {
 
         await connectToDB();
-        await updateData("5614882946","following",-1);
-        await updateUserPassword("5614882946","password");
+        // await updateData("5614882946","following",-1);
+        // await updateUserPassword("5614882946","password");
+        await updateOldPosts();
     } catch (err) {
         console.error('DATABASE INITIALIZATION ERROR', err);
     }
@@ -126,7 +127,14 @@ app.post('/likePost', async (req, res) => {
 
     try {
         const existingPost = await Post.findOne({ postId });
+        
+        // Ensure likes is an array before modifying it
+        if (!Array.isArray(existingPost.likes)) {
+            existingPost.likes = []; // Initialize likes as an empty array if it's not already an array
+        }
+
         console.log(existingPost);
+
         if (!existingPost) {
             return res.status(404).json({ success: false, message: 'Post not found' });
         }
@@ -147,6 +155,7 @@ app.post('/likePost', async (req, res) => {
         return res.status(500).json({ success: false, message: 'Error liking post', error });
     }
 });
+
 
 
 // Creates a new post
@@ -239,7 +248,7 @@ app.post('/viewAllPosts', async (req, res) => {
     try {
         if (Post) {
             const posts = await Post.find();
-            console.log(posts);
+            // console.log(posts);
             res.json({ success: true, posts: posts });
         }
 
