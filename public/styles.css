@@ -183,13 +183,14 @@ body {
     max-width: min-content; 
     /* height: min-content;  */
     height: 42vh;
-    
+    /* height: min-content;  */
+
     border-radius: 10px;
     display: flex;
+
+
     flex-direction: column;    
     align-self: center;
-    align-content: center;
-
     background-color: rgb(36, 37, 44);
     box-shadow: 0 4px 2px rgb(49, 50, 59); /* Horizontal, Vertical, Blur, Color */
     /* border-color: white;
@@ -200,10 +201,9 @@ body {
 {
     display: flex;
     flex-direction: column;    
-    align-self: center;
-    justify-content: center;
-    width: 460px; 
     align-items: center;
+
+    width: 460px; 
 }
 
 .postPanel h1
@@ -697,4 +697,3 @@ body {
 .homePanel::-webkit-scrollbar {
     display: none;  /* Chrome, Safari */
   }
-
