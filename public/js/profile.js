@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function() {
         };
 
         try {
-            await fetch('/changePostData', {
+            await fetch('/api/changePostData', {
                 method: 'POST',           
                 headers: {
                     'Content-Type': 'application/json'   
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const accountNumber = userAccountNumber; 
         const postId = post.postId; 
         
-        fetch('/checkLike', {
+        fetch('/api/checkLike', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         likeButton.addEventListener("click", function(event) {
-            fetch('/likePost', {
+            fetch('/api/likePost', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         likeButton.style.backgroundColor = "#777777";
                     }
 
-                    fetch('/getPost', {
+                    fetch('/api/getPost', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    fetch('/get-user-info', {
+    fetch('/api/getUserInfo', {
         method: 'GET',
         credentials: 'same-origin', 
     })
@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function() {
         console.error("Error fetching user info:", error);
     });
 
-    fetch(`/api/profile/${profileAccountNumber}`).then(response => response.json()).then(data => {
+    fetch(`/api/get/profile/${profileAccountNumber}`).then(response => response.json()).then(data => {
         let username = data.username;
         const accountNumber = profileAccountNumber;
         let pfp = data.pfp
@@ -228,7 +228,7 @@ document.addEventListener("DOMContentLoaded", function() {
             gebid('profileEdit').style.display = "block";
         }
 
-        fetch('/viewUserPosts', {
+        fetch('/api/getUserPosts', {
             method: 'POST',
             headers: {'Content-Type': 'application/json',},
             body: JSON.stringify({ accountNumber })  
@@ -252,7 +252,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     gebid("logoutButton").addEventListener("click",function (event) {
         event.preventDefault();
-        fetch('/logout', {
+        fetch('/api/logout', {
             method: 'POST',
             credentials: 'same-origin', 
         })
@@ -286,7 +286,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         if (isEditable) {
             changeEdit(false,"none","Edit Profile","","","")
-            fetch('/updateSettings', {
+            fetch('/api/updateSettings', {
                 method: 'POST', credentials: 'same-origin', 
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({bio, pfp, username})    

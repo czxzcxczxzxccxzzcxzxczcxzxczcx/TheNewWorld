@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
         };
 
         try {
-            const response = await fetch('/changePostData', {
+            const response = await fetch('/api/changePostData', {
                 method: 'POST',           
                 headers: {
                     'Content-Type': 'application/json'   
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     async function fetchPost(postId) {
         try {
-            await fetch('/getPost', {
+            await fetch('/api/getPost', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     async function renderPosts() {
         try {
-            const response = await fetch('/viewAllPosts', {
+            const response = await fetch('/api/getAllPosts', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
         homePanel.appendChild(postDiv);
 
-        fetch('/checkLike', {
+        fetch('/api/checkLike', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         likeButton.addEventListener("click", function(event) {
-            fetch('/likePost', {
+            fetch('/api/likePost', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         likeButton.style.backgroundColor = "#777777";
                     }
 
-                    fetch('/getPost', {
+                    fetch('/api/getPost', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    fetch('/get-user-info', {
+    fetch('/api/getUserInfo', {
         method: 'GET',
         credentials: 'same-origin', 
     })
@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.getElementById("logoutButton").addEventListener("click",function (event) {
         event.preventDefault();
-        fetch('/logout', {
+        fetch('/api/logout', {
             method: 'POST',
             credentials: 'same-origin',  // Ensure cookies are sent with the request
         })
@@ -294,7 +294,7 @@ document.addEventListener("DOMContentLoaded", function() {
     })
 
     document.getElementById('viewtest').addEventListener("click", function (event) {
-        fetch('/viewAllPosts', {
+        fetch('/api/viewAllPosts', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

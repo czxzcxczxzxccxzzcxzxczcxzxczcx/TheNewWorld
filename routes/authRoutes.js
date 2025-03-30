@@ -1,0 +1,85 @@
+
+const express = require('express');
+const { Post, User } = require('../utils/database');
+const sessionStore = require('../utils/sessionStore'); 
+const { hashPassword, comparePassword } = require('../utils/hashing');
+const crypto = require('crypto');
+const cookieParser = require('cookie-parser');
+
+const router = express.Router();
+
+const generateAccountNumber = async () => {
+    let accountNumber;
+    let userExists = true;
+
+    while (userExists) {
+        accountNumber = Math.floor(1000000000 + Math.random() * 9000000000);
+        const existingUser = await User.findOne({ accountNumber: accountNumber });
+        if (!existingUser) {
+            userExists = false; 
+        }
+    }
+    return accountNumber
+};
+
+router.post('/newAccount', async (req, res) => {
+    const { fullName, password } = req.body;
+
+    try {
+        const hashed = await hashPassword(password);
+        const accountNumber = await generateAccountNumber();
+        const newUser = new User({accountNumber: accountNumber, password: hashed, username: fullName,});
+        const sessionId = crypto.randomBytes(16).toString('hex');
+
+        await newUser.save();
+
+        sessionStore[sessionId] = {userId: newUser._id, username: newUser.username, accountNumber: newUser.accountNumber,};
+
+        res.cookie('TNWID', sessionId, {httpOnly: true,  secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000, sameSite: 'Strict',});
+        res.json({ success: true, user: newUser });
+    } catch (err) {
+        res.json({ success: false, message: "Error creating user" });
+    }
+});
+
+router.post('/login', async (req, res) => {
+    const { fullName, password } = req.body;
+    
+    try {
+        const user = await User.findOne({ username: fullName });
+
+        if (user) {
+            const isMatch = await comparePassword(password, user.password);
+            if (isMatch) {
+                const sessionId = crypto.randomBytes(16).toString('hex'); 
+                sessionStore[sessionId] = {userId: user._id, username: user.username, accountNumber: user.accountNumber,};
+                
+                res.cookie('TNWID', sessionId, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000,  sameSite: 'Strict', });
+
+                res.json({ success: true, message: 'Login successful' });
+            } else {
+                res.json({ success: false, message: 'Invalid password' });
+            }
+        } else {
+            res.json({ success: false, message: 'Invalid account number or name' });
+        }
+    } catch (err) {
+        res.json({ success: false, message: 'Error logging in' });
+    }
+});
+
+// Logs the user out
+router.post('/logout', (req, res) => {
+    res.clearCookie('TNWID', {httpOnly: true, secure: process.env.NODE_ENV === 'production',  sameSite: 'Strict',});
+
+    const sessionId = req.cookies.TNWID;
+
+    if (sessionId && sessionStore[sessionId]) {
+        delete sessionStore[sessionId];
+    }
+
+    res.json({ success: true, message: 'Logged out successfully' });
+});
+
+
+module.exports = router;

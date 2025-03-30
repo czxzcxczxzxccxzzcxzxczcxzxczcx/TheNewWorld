@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.getElementById('viewtest').addEventListener("click", function (event) 
     {
-        fetch('/viewAllUsers', 
+        fetch('/api/viewAllUsers', 
             {
                 method: 'POST',
                 headers: {
@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (fullName && password) {
             console.log("Form submitted, creating account...");
             
-            fetch('/newAccount', {
+            fetch('/api/newAccount', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (fullName && password) 
         {
-            fetch('/login', {
+            fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

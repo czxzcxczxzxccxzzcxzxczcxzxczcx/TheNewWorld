@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     let accountNumber;
     
-    fetch('/get-user-info', {
+    fetch('/api/getUserInfo', {
         method: 'GET',
         credentials: 'same-origin', // Ensure the cookie is sent with the request
     })
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("logoutButton").addEventListener("click", function(event) {
         event.preventDefault();
 
-        fetch('/logout', { method: 'POST' })  // Call your backend route to clear the cookie
+        fetch('/api/logout', { method: 'POST' })  // Call your backend route to clear the cookie
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (title && content) {
             // Send the post request with accountNumber, title, and content
-            fetch('/createPost', {
+            fetch('/api/createPost', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Handle checking posts
     document.getElementById('checkPost').addEventListener("click", function(event) {
-        fetch('/viewAllPosts', {
+        fetch('/api/viewAllPosts', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
