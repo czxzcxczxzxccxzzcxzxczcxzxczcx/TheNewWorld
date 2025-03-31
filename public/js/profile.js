@@ -1,298 +1,252 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const profileAccountNumber = window.location.pathname.split('/')[2];
-    var gebid =  document.getElementById.bind(document);
+    var gebid = document.getElementById.bind(document);
     let userAccountNumber;
-    let followerCount
 
-    function changeEdit(edit,pfpDisplay,profileText,pfpText,bioBorder,userBorder) {
-        const bioE = gebid("bio");
-        const usernameE = gebid("username");
-        const profileEditE = gebid("profileEdit");
-        const changePfp = gebid("changePfp");
+    async function apiRequest(url, method = 'GET', body = null) {
+        const options = {method,headers: { 'Content-Type': 'application/json' },};
 
-        bioE.contentEditable = edit;
+        if (body) {options.body = JSON.stringify(body);}
+
+        try {
+            const response = await fetch(url, options);
+            return await response.json();
+        } catch (error) {
+            console.error(`Error during API request to ${url}:`, error);
+            throw error;
+        }
+    }
+
+    function changeEdit(edit, pfpDisplay, profileText, pfpText, bioBorder, userBorder) {
+        bio.contentEditable = edit;
         changePfp.contentEditable = edit;
-        usernameE.contentEditable = edit;
+        username.contentEditable = edit;
         changePfp.style.display = pfpDisplay;
-        profileEditE.textContent = profileText;
+        profileEdit.textContent = profileText;
         changePfp.style.border = pfpText;
-        bioE.style.border = bioBorder;  
-        usernameE.style.border = userBorder;
+        bio.style.border = bioBorder;
+        username.style.border = userBorder;
     }
 
     async function updatePost(postId, title, content) {
-        const requestBody = {
-            postId: postId,
-            title: title,
-            content: content
-        };
-
         try {
-            await fetch('/api/changePostData', {
-                method: 'POST',           
-                headers: {
-                    'Content-Type': 'application/json'   
-                },
-                body: JSON.stringify(requestBody)       
-            });
-
+            const data = await apiRequest('/api/changePostData', 'POST', { postId, title, content });
+            if (data.success) {
+                console.log('Post updated successfully');
+            } else {
+                console.error('Failed to update post');
+            }
         } catch (error) {
-            console.error('Error during fetch:', error);
+            console.error('Error updating post:', error);
         }
     }
 
     function renderPost(post, username, pfp) {
-        const postDiv = document.createElement('div');
-        const postDetailsDiv = document.createElement('div');
-        const postImage = document.createElement('img');
-        const usernameTitle = document.createElement('h1');
-        const titleH1 = document.createElement('h1');
-        const postBodyDiv = document.createElement('div');
-        const contentP = document.createElement('p');
-        const dividerDiv = document.createElement('div');
-        const viewsH2 = document.createElement('h2');
-        const likeButton = document.createElement('button');
-        const likeCounter = document.createElement('h2');
-        const repostButton = document.createElement('button');
-        const repostCounter = document.createElement('h2');
-    
-        postDetailsDiv.classList.add('postDetails');
-        postImage.classList.add('pfp');
-        postBodyDiv.classList.add('postBody');
-        dividerDiv.classList.add('divider');
-        likeButton.classList.add('postButton');
-        likeButton.classList.add('likeButton');
+        const postDiv = createElementWithClass('div', 'post');
+        const postDetailsDiv = createElementWithClass('div', 'postDetails');
+        const postImage = createElementWithClass('img', 'pfp');
+        const usernameTitle = createElementWithClass('h1', 'usernameTitle');
+        const titleH1 = createElementWithClass('h1');
+        const postBodyDiv = createElementWithClass('div', 'postBody');
+        const contentP = createElementWithClass('p');
+        const dividerDiv = createElementWithClass('div', 'divider');
+        const viewsH2 = createElementWithClass('h2');
+        const likeButton = createElementWithClass('button', 'postButton likeButton');
+        const likeCounter = createElementWithClass('h2', 'likeCounter');
+        const repostButton = createElementWithClass('button', 'postButton');
+        const repostCounter = createElementWithClass('h2', 'likeCounter');
 
-        likeCounter.classList.add('likeCounter');
-        repostButton.classList.add('postButton');
-        repostCounter.classList.add('likeCounter');
-        postDiv.classList.add('post');
-        usernameTitle.classList.add('usernameTitle');
-    
-        postImage.src = pfp; 
-        usernameTitle.textContent = `@${username} `;
-        titleH1.textContent = `${post.title}`;
+        // Set attributes and content
+        postImage.src = pfp;
+        usernameTitle.textContent = `@${username}`;
+        titleH1.textContent = post.title;
         contentP.textContent = post.content;
-        viewsH2.textContent = `${post.views} Views`; 
+        viewsH2.textContent = `${post.views} Views`;
         likeCounter.textContent = `${post.likes.length} likes`;
-        repostCounter.textContent = post.reposts; 
+        repostCounter.textContent = post.reposts;
         likeButton.textContent = 'Like';
         likeButton.type = 'submit';
-        repostButton.type = 'submit';
         repostButton.textContent = 'Repost';
-    
-        postDiv.appendChild(postDetailsDiv);
-        postDiv.appendChild(postBodyDiv);
-    
-        postDetailsDiv.appendChild(postImage);       
-        postDetailsDiv.appendChild(usernameTitle);
-        postDetailsDiv.appendChild(titleH1);
-    
-        postBodyDiv.appendChild(contentP);
-        postBodyDiv.appendChild(dividerDiv);
-    
-        dividerDiv.appendChild(viewsH2);
-        dividerDiv.appendChild(likeButton);
-        dividerDiv.appendChild(likeCounter);
-        dividerDiv.appendChild(repostButton);
-        dividerDiv.appendChild(repostCounter);
-    
+        repostButton.type = 'submit';
+
+
+        // Append elements to their parents
+        postDetailsDiv.append(postImage, usernameTitle, titleH1);
+        dividerDiv.append(viewsH2, likeButton, likeCounter, repostButton, repostCounter);
+        postBodyDiv.append(contentP, dividerDiv);
+        postDiv.append(postDetailsDiv, postBodyDiv);
         homePanel.appendChild(postDiv);
-    
-        const accountNumber = userAccountNumber; 
-        const postId = post.postId; 
-        
-        fetch('/api/checkLike', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                postId: postId,
-                accountNumber: accountNumber,
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.liked) {
-                likeButton.textContent = 'Liked';
-                likeButton.style.backgroundColor = "#777777";
-            }
-        })
-        .catch(error => {
-            console.error('Error liking post:', error);
-        });
 
-        likeButton.addEventListener("click", function(event) {
-            fetch('/api/likePost', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    postId: postId,
-                    accountNumber: accountNumber,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (data.removed == true) {
-                        likeButton.textContent = 'Like';
-                        likeButton.style.backgroundColor = "white";
-                    } else {
-                        likeButton.textContent = 'Liked';
-                        likeButton.style.backgroundColor = "#777777";
-                    }
+        // Setup likes functionality
+        setupLikes(likeButton, likeCounter, post);
 
-                    fetch('/api/getPost', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({postId: postId,}),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            likeCounter.textContent = `${data.post.likes.length} likes`; // Update the like count
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error fetching user info:", error);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error liking post:', error);
-            });
-        });
-    
-        if (accountNumber == post.accountNumber)    {
-            const editButton = document.createElement('button');
-            editButton.type = 'submit';
-            editButton.classList.add('postButton');
-            editButton.classList.add('postEditButton');
-
-            editButton.id = 'EditPost';
-
-            editButton.textContent = 'Edit Post';
-            editButton.setAttribute('data-id', post.postId);
-            dividerDiv.appendChild(editButton);
-
-            editButton.addEventListener("click", function (event) {
-                const isEditable = contentP.isContentEditable;
-                
-                if (isEditable) {
-                    contentP.contentEditable = false;
-                    titleH1.contentEditable = false;
-                    editButton.textContent = 'Edit';
-                    contentP.style.border = '';  
-                    titleH1.style.border = '';
-                    updatePost(post.postId, titleH1.textContent, contentP.textContent);
-                } else {
-                    contentP.contentEditable = true; 
-                    titleH1.contentEditable = true;
-                    editButton.textContent = 'Save'; 
-                    contentP.style.border = '1px dashed #ccc'; 
-                    titleH1.style.border = '1px dashed #ccc';
-                }
-            });
+        // Check if the logged-in user owns the post
+        if (userAccountNumber === post.accountNumber) {
+            setupEditButton(dividerDiv, post, titleH1, contentP);
         }
     }
 
-    fetch('/api/getUserInfo', {
-        method: 'GET',
-        credentials: 'same-origin', 
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const user = data.user;  
-            userAccountNumber = user.accountNumber;
-        } else {
-            window.location.href = '/';  
-        }
-    })
-    .catch(error => {
-        console.error("Error fetching user info:", error);
-    });
+    // Utility function to create an element with a class
+    function createElementWithClass(tag, className = '') {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
+        return element;
+    }
 
-    fetch(`/api/get/profile/${profileAccountNumber}`).then(response => response.json()).then(data => {
-        let username = data.username;
-        const accountNumber = profileAccountNumber;
-        let pfp = data.pfp
-        let postsCount = 0;
+    function changeProfileEdit(edit,text,border,cE,tE,eE) {
+        cE.contentEditable = edit;
+        tE.contentEditable = edit;
+        eE.textContent = text;
+        cE.style.border = border;
+        tE.style.border = border;
+    }
 
-        if (userAccountNumber == accountNumber) {
-            gebid('profileEdit').style.display = "block";
-        }
+    function setupEditButton(parent, post, titleElement, contentElement) {
+        const editButton = createElementWithClass('button', 'postButton postEditButton');
+        editButton.textContent = 'Edit Post';
+        editButton.setAttribute('data-id', post.postId);
 
-        fetch('/api/getUserPosts', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json',},
-            body: JSON.stringify({ accountNumber })  
-        }).then(response => response.json()).then(data => {
-        if (data.success) {
-            data.posts.forEach((post) => {
-                postsCount++;
-                gebid('posts').textContent = ` ${postsCount} Posts`;
-                renderPost(post,username,pfp);
+        editButton.addEventListener('click', () => {
+            const isEditable = contentElement.isContentEditable;
+
+            if (isEditable) {
+                changeProfileEdit(false,'Edit Post','',contentElement,titleElement,editButton);
+                updatePost(post.postId, titleElement.textContent, contentElement.textContent);
+                console.log()
+            } else {
+                changeProfileEdit(true,'Save Post','1px dashed #ccc',contentElement,titleElement,editButton);
+            }
+        });
+        parent.appendChild(editButton);
+    }
+
+    function setupLikes(likeButton, likeCounter, post) {
+        const accountNumber = userAccountNumber;
+        const postId = post.postId;
+
+        // Check if the user has already liked the post
+        apiRequest('/api/checkLike', 'POST', { postId, accountNumber })
+            .then(data => {
+                if (data.liked) {
+                    likeButton.textContent = 'Liked';
+                    likeButton.style.backgroundColor = "#777777";
+                }
+            })
+            .catch(error => {
+                console.error('Error checking like status:', error);
             });
-        }});
-        
-        gebid('username').textContent = `${data.username}`;
-        gebid('pfp').src = pfp;
-        gebid('accountnumber').textContent = ` (${data.accountNumber})`;
-        gebid('bio').textContent = `${data.bio}`;
-        gebid('following').textContent = `${data.following} Following`;
-        gebid('followers').textContent = ` ${data.followers} Followers`;
-        gebid('changePfp').textContent = `${data.pfp}`;
-    }).catch(error => console.error('Error fetching profile data:', error));
 
-    gebid("logoutButton").addEventListener("click",function (event) {
+        // Add event listener for liking/unliking the post
+        likeButton.addEventListener("click", () => {
+            apiRequest('/api/likePost', 'POST', { postId, accountNumber })
+                .then(data => {
+                    if (data.success) {
+                        if (data.removed) {
+                            likeButton.textContent = 'Like';
+                            likeButton.style.backgroundColor = "white";
+                        } else {
+                            likeButton.textContent = 'Liked';
+                            likeButton.style.backgroundColor = "#777777";
+                        }
+                        return apiRequest('/api/getPost', 'POST', { postId });
+                    }
+                })
+                .then(data => {
+                    if (data && data.success) {likeCounter.textContent = `${data.post.likes.length} likes`;}
+                })
+                .catch(error => {
+                    console.error('Error liking post or fetching updated data:', error);
+                });
+        });
+    }
+
+    function setupPage() {
+        apiRequest('/api/getUserInfo', 'GET')
+            .then(data => {
+                if (data.success) {
+                    const user = data.user;
+                    userAccountNumber = user.accountNumber;
+                } else {
+                    window.location.href = '/';
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching user info:", error);
+            });
+
+        apiRequest(`/api/get/profile/${profileAccountNumber}`, 'GET')
+            .then(data => {
+                const username = data.username;
+                const accountNumber = profileAccountNumber;
+                const pfp = data.pfp;
+                let postsCount = 0;
+
+                if (userAccountNumber === accountNumber) {
+                    gebid('profileEdit').style.display = "block";
+                }
+
+                apiRequest('/api/getUserPosts', 'POST', { accountNumber })
+                    .then(data => {
+                        if (data.success) {
+                            data.posts.forEach(post => {
+                                postsCount++;
+                                gebid('posts').textContent = ` ${postsCount} Posts`;
+                                renderPost(post, username, pfp);
+                            });
+                        }
+                    });
+
+                gebid('username').textContent = `${data.username}`;
+                gebid('pfp').src = pfp;
+                gebid('accountnumber').textContent = ` (${data.accountNumber})`;
+                gebid('bio').textContent = `${data.bio}`;
+                gebid('following').textContent = `${data.following} Following`;
+                gebid('followers').textContent = ` ${data.followers} Followers`;
+                gebid('changePfp').textContent = `${data.pfp}`;
+            })
+            .catch(error => console.error('Error fetching profile data:', error));
+    }
+
+    gebid("logoutButton").addEventListener("click", async function (event) {
         event.preventDefault();
-        fetch('/api/logout', {
-            method: 'POST',
-            credentials: 'same-origin', 
-        })
-        .then(response => response.json())
-        .then(data => {
+        try {
+            const data = await apiRequest('/api/logout', 'POST');
             if (data.success) {
                 window.location.href = '/';
             } else {
                 alert('Logout failed. Please try again.');
             }
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('Error during logout:', error);
             alert('Something went wrong. Please try again later.');
-        });
-    })
-
-    gebid("profileButton").addEventListener("click", function(event) {
-        event.preventDefault();
-        if (userAccountNumber) {
-            window.location.href = `/profile/${userAccountNumber}`;  // Redirect to user's profile page
         }
     });
 
-    gebid('profileEdit').addEventListener("click",function (event) {
+    gebid("profileButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        if (userAccountNumber) {
+            window.location.href = `/profile/${userAccountNumber}`; // Redirect to user's profile page
+        }
+    });
+
+    gebid('profileEdit').addEventListener("click", async function (event) {
         event.preventDefault();
         const pfp = gebid("changePfp").textContent;
         const username = gebid("username").textContent;
-        const bio = gebid("bio").textContent;
+        const bio = gebid("bio").textContent.trim(); // Trim unnecessary whitespace
         const isEditable = gebid("bio").isContentEditable;
-        
+
         if (isEditable) {
-            changeEdit(false,"none","Edit Profile","","","")
-            fetch('/api/updateSettings', {
-                method: 'POST', credentials: 'same-origin', 
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({bio, pfp, username})    
-            })
+            changeEdit(false, "none", "Edit Profile", "", "", "");
+            try {
+                await apiRequest('/api/updateSettings', 'POST', { bio, pfp, username });
+            } catch (error) {
+                console.error('Error updating profile settings:', error);
+            }
         } else {
-            changeEdit(true,"block","Save Profile",'1px dashed #ccc','1px dashed #ccc','1px dashed #ccc')
+            changeEdit(true, "block", "Save Profile", '1px dashed #ccc', '1px dashed #ccc', '1px dashed #ccc');
         }
-    })
-})
+    });
+
+    setupPage();
+});

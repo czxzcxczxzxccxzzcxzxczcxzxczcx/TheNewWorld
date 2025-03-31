@@ -127,7 +127,7 @@ body {
 {
     position: absolute;
 
-    height: 330px;
+    height: 40vh;
     width: 300px;
     top: 4vh;
     margin-top: 120px;
@@ -147,12 +147,23 @@ body {
     display: flex;
     flex-direction: column;    
     align-items: center;
+    height:55vh;
 }
+
 .panel h1
 {
     color:white;
     font-size: 35px;
     margin-top: 10px;
+}
+
+.panel .status
+{
+    color:white;
+    font-size: 20px;
+    margin-bottom: 10px;
+    margin: top -10px;
+    height: 1px;
 }
 
 
@@ -176,17 +187,18 @@ body {
 
 
 .postPanel
-{
+{   
+    top: 25vh;
     position: absolute;
-    top: 23vh;
+    /* margin-top: 20vh; */
     width: 520px; 
     max-width: min-content; 
     /* height: min-content;  */
-    height: 42vh;
-    /* height: min-content;  */
+    /* height: 460px; */
+    height: min-content; 
 
     border-radius: 10px;
-    display: flex;
+    display: none;
 
 
     flex-direction: column;    
@@ -202,8 +214,8 @@ body {
     display: flex;
     flex-direction: column;    
     align-items: center;
-
-    width: 460px; 
+    width: 480px;
+    height: 41vh;
 }
 
 .postPanel h1
@@ -228,6 +240,7 @@ body {
 
 
 }
+
 .postPanel  .postPanelButton
 {
     height: 4vh;

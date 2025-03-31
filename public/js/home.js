@@ -1,32 +1,30 @@
-// import { renderPost } from './src/makePost.js';
-
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     let accountNumber;
 
-    async function updatePost(postId, title, content) {
-        const requestBody = {
-            postId: postId,
-            title: title,
-            content: content
-        };
+    // Reusable API request function
+    async function apiRequest(url, method = 'GET', body = null) {
+        const options = {method,headers: { 'Content-Type': 'application/json' },};
+
+        if (body) {options.body = JSON.stringify(body);}
 
         try {
-            const response = await fetch('/api/changePostData', {
-                method: 'POST',           
-                headers: {
-                    'Content-Type': 'application/json'   
-                },
-                body: JSON.stringify(requestBody)       
-            });
+            const response = await fetch(url, options);
+            return await response.json();
+        } catch (error) {
+            console.error(`Error during API request to ${url}:`, error);
+            throw error;
+        }
+    }
 
-            if (response.ok) {
-                const data = await response.json(); 
+    async function updatePost(postId, title, content) {
+        try {
+            const data = await apiRequest('/api/changePostData', 'POST', { postId, title, content });
+            if (data.success) {
                 console.log('Post updated successfully:', data);
                 alert('Post updated successfully!');
             } else {
-                const errorData = await response.json();
-                console.log('Error:', errorData.message);
-                alert('Failed to update post: ' + errorData.message);
+                console.error('Failed to update post:', data.message);
+                alert('Failed to update post: ' + data.message);
             }
         } catch (error) {
             console.error('Error during fetch:', error);
@@ -34,63 +32,45 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-
     async function fetchPost(postId) {
         try {
-            await fetch('/api/getPost', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ postId }), // Sending the postId to the server
-            })
-            .then(response => response.json()).then(data => {
-                let pfp = data.pfp;
-                renderPost(data.post,data.username,pfp,document.getElementById("homePanel"));
-            });
+            const data = await apiRequest('/api/getPost', 'POST', { postId });
+            if (data.success) {
+                const pfp = data.pfp;
+                renderPost(data.post, data.username, pfp);
+            }
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching post:', error);
         }
     }
-    
+
     async function renderPosts() {
         try {
-            const response = await fetch('/api/getAllPosts', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-    
-            const data = await response.json();
-    
+            const data = await apiRequest('/api/getAllPosts', 'POST');
             if (data.success && Array.isArray(data.posts)) {
                 data.posts.sort((a, b) => {
                     const dateA = new Date(a.createdAt);
                     const dateB = new Date(b.createdAt);
-    
+
                     if (isNaN(dateA) || isNaN(dateB)) {
                         console.error('Invalid date format:', a.createdAt, b.createdAt);
-                        return 0;  
+                        return 0;
                     }
                     return dateA - dateB;
                 });
-    
+
                 data.posts.forEach((post) => {
-                    fetchPost(post.postId);  
+                    fetchPost(post.postId);
                 });
             } else {
                 console.error('No posts found or data structure is invalid');
             }
-    
         } catch (error) {
             console.error('Error fetching posts:', error);
         }
     }
-    
-    
 
-    function renderPost(post,username,pfp) {
+    function renderPost(post, username, pfp) {
         const postDiv = document.createElement('div');
         const postDetailsDiv = document.createElement('div');
         const postImage = document.createElement('img');
@@ -106,9 +86,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const repostCounter = document.createElement('h2');
 
         postDetailsDiv.classList.add('postDetails');
-        postImage.classList.add('pfp')
-        postImage.classList.add('homeHover')
-
+        postImage.classList.add('pfp', 'homeHover');
         postBodyDiv.classList.add('postBody');
         dividerDiv.classList.add('divider');
         likeButton.classList.add('postButton');
@@ -116,49 +94,81 @@ document.addEventListener("DOMContentLoaded", function() {
         repostButton.classList.add('postButton');
         repostCounter.classList.add('likeCounter');
         postDiv.classList.add('post');
-        usernameTitle.classList.add('usernameTitle')
-        
-        postImage.src = pfp; 
-        usernameTitle.textContent = `@${username} `;
-        titleH1.textContent = `${post.title}`;
+        usernameTitle.classList.add('usernameTitle');
+
+        postImage.src = pfp;
+        usernameTitle.textContent = `@${username}`;
+        titleH1.textContent = post.title;
         contentP.textContent = post.content;
-        viewsH2.textContent = `${post.views} Views`; 
-        likeCounter.textContent = `${post.likes.length} likes`;;
-        repostCounter.textContent = post.reposts; 
+        viewsH2.textContent = `${post.views} Views`;
+        likeCounter.textContent = `${post.likes.length} likes`;
+        repostCounter.textContent = post.reposts;
         likeButton.textContent = 'Like';
         likeButton.type = 'submit';
         repostButton.type = 'submit';
         repostButton.textContent = 'Repost';
-        
+
         postDiv.appendChild(postDetailsDiv);
         postDiv.appendChild(postBodyDiv);
-    
-        postDetailsDiv.appendChild(postImage);       
+
+        postDetailsDiv.appendChild(postImage);
         postDetailsDiv.appendChild(usernameTitle);
         postDetailsDiv.appendChild(titleH1);
-    
+
         postBodyDiv.appendChild(contentP);
         postBodyDiv.appendChild(dividerDiv);
-    
+
         dividerDiv.appendChild(viewsH2);
         dividerDiv.appendChild(likeButton);
         dividerDiv.appendChild(likeCounter);
         dividerDiv.appendChild(repostButton);
         dividerDiv.appendChild(repostCounter);
-    
+
         homePanel.appendChild(postDiv);
 
-        fetch('/api/checkLike', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                postId: post.postId,
-                accountNumber: accountNumber,
-            }),
-        })
-        .then(response => response.json())
+        setupLikes(likeButton, likeCounter, post);
+
+        if (accountNumber === post.accountNumber) {setupEditButton(dividerDiv, post, titleH1, contentP);}
+
+        postImage.addEventListener("click", function () {window.location.href = `/profile/${post.accountNumber}`;});
+    }
+
+
+    function createElementWithClass(tag, className = '') {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
+        return element;
+    }
+
+    function changeProfileEdit(edit,text,border,cE,tE,eE) {
+        cE.contentEditable = edit;
+        tE.contentEditable = edit;
+        eE.textContent = text;
+        cE.style.border = border;
+        tE.style.border = border;
+    }
+
+
+    function setupEditButton(parent, post, titleElement, contentElement) {
+        const editButton = createElementWithClass('button', 'postButton postEditButton');
+        editButton.textContent = 'Edit Post';
+        editButton.setAttribute('data-id', post.postId);
+
+        editButton.addEventListener('click', () => {
+            const isEditable = contentElement.isContentEditable;
+
+            if (isEditable) {
+                changeProfileEdit(false,'Edit Post','',contentElement,titleElement,editButton);
+                updatePost(post.postId, titleElement.textContent, contentElement.textContent);
+            } else {
+                changeProfileEdit(true,'Save Post','1px dashed #ccc',contentElement,titleElement,editButton);
+            }
+        });
+        parent.appendChild(editButton);
+    }
+
+    function setupLikes(likeButton, likeCounter, post) {
+        apiRequest('/api/checkLike', 'POST', { postId: post.postId, accountNumber })
         .then(data => {
             if (data.liked) {
                 likeButton.textContent = 'Liked';
@@ -166,25 +176,14 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(error => {
-            console.error('Error liking post:', error);
-            alert("check")
+            console.error('Error checking like status:', error);
         });
 
-        likeButton.addEventListener("click", function(event) {
-            fetch('/api/likePost', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    postId: post.postId,
-                    accountNumber: accountNumber,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
+        likeButton.addEventListener("click", async function () {
+            try {
+                const data = await apiRequest('/api/likePost', 'POST', { postId: post.postId, accountNumber });
                 if (data.success) {
-                    if (data.removed == true) {
+                    if (data.removed) {
                         likeButton.textContent = 'Like';
                         likeButton.style.backgroundColor = "white";
                     } else {
@@ -192,115 +191,50 @@ document.addEventListener("DOMContentLoaded", function() {
                         likeButton.style.backgroundColor = "#777777";
                     }
 
-                    fetch('/api/getPost', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({postId: post.postId,}),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            likeCounter.textContent = `${data.post.likes.length} likes`; // Update the like count
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error fetching user info:", error);
-                    });
+                    const updatedPost = await apiRequest('/api/getPost', 'POST', { postId: post.postId });
+                    if (updatedPost.success) {likeCounter.textContent = `${updatedPost.post.likes.length} likes`;}
                 }
-            })
-            .catch(error => {
-                console.error('Error liking post:', error);
-            });
-        });
-
-        if (accountNumber == post.accountNumber) {
-            const editButton = document.createElement('button');
-            editButton.type = 'submit';
-            editButton.classList.add('postButton');
-            editButton.id = 'EditPost';
-
-            editButton.textContent = 'Edit Post';
-            editButton.setAttribute('data-id', post.postId);
-            dividerDiv.appendChild(editButton);
-
-            editButton.addEventListener("click",function (event) {
-                const isEditable = contentP.isContentEditable;
-                if (isEditable) {
-                    contentP.contentEditable = false;
-                    titleH1.contentEditable = false;
-                    editButton.textContent = 'Edit';
-                    contentP.style.border = '';  
-                    titleH1.style.border = '';
-                    updatePost(post.postId,titleH1.textContent,contentP.textContent);
-                } else {
-                    contentP.contentEditable = true; 
-                    titleH1.contentEditable = true;
-                    editButton.textContent = 'Save'; 
-                    contentP.style.border = '1px dashed #ccc'; 
-                    titleH1.style.border = '1px dashed #ccc';
-
-                }
-            });
-        }
-
-        postImage.addEventListener("click",function (event) {
-            window.location.href = `/profile/${post.accountNumber}`;  
-        });
+            } catch (error) {
+                console.error('Error liking post or fetching updated data:', error);
+            }
+        });   
     }
 
-    fetch('/api/getUserInfo', {
-        method: 'GET',
-        credentials: 'same-origin', 
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const user = data.user;  
-            accountNumber = user.accountNumber;
-
-        } else {
-            window.location.href = '/';  
-        }
-    })
-    .catch(error => {
-        console.error("Error fetching user info:", error);
-    });
-
-
-    document.getElementById("profileButton").addEventListener("click", function(event) {
-        event.preventDefault();
-        if (accountNumber) {
-            window.location.href = `/profile/${accountNumber}`; 
-        }
-    });
-
-    document.getElementById("logoutButton").addEventListener("click",function (event) {
-        event.preventDefault();
-        fetch('/api/logout', {
-            method: 'POST',
-            credentials: 'same-origin',  // Ensure cookies are sent with the request
-        })
-        .then(response => response.json())
+    apiRequest('/api/getUserInfo', 'GET')
         .then(data => {
             if (data.success) {
+                const user = data.user;
+                accountNumber = user.accountNumber;
+            } else {
                 window.location.href = '/';
             }
         })
         .catch(error => {
-            console.error('Error during logout:', error);
+            console.error("Error fetching user info:", error);
         });
-    })
 
-    document.getElementById('viewtest').addEventListener("click", function (event) {
-        fetch('/api/viewAllPosts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
+    document.getElementById("profileButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        if (accountNumber) {window.location.href = `/profile/${accountNumber}`;}
     });
-    
+
+    document.getElementById("logoutButton").addEventListener("click", async function (event) {
+        event.preventDefault();
+        try {
+            const data = await apiRequest('/api/logout', 'POST');
+            if (data.success) {window.location.href = '/';}
+        } catch (error) {
+            console.error('Error during logout:', error);
+        }
+    });
+
+    document.getElementById('viewtest').addEventListener("click", async function () {
+        try {
+            await apiRequest('/api/viewAllPosts', 'POST');
+        } catch (error) {
+            console.error('Error fetching all posts:', error);
+        }
+    });
+
     renderPosts();
 });

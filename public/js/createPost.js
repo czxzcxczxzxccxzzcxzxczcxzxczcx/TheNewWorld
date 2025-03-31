@@ -1,85 +1,79 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     let accountNumber;
-    
-    fetch('/api/getUserInfo', {
-        method: 'GET',
-        credentials: 'same-origin', // Ensure the cookie is sent with the request
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const user = data.user;  
-            accountNumber = user.accountNumber;
 
-        } else {
-            window.location.href = '/';  
+    // Reusable API request function
+
+    document.getElementById("profilePanel").style.display = "flex";
+    async function apiRequest(url, method = 'GET', body = null) {
+        const options = {method,headers: { 'Content-Type': 'application/json' },};
+
+        if (body) {options.body = JSON.stringify(body); }
+
+        try {
+            const response = await fetch(url, options);
+            return await response.json();
+        } catch (error) {
+            console.error(`Error during API request to ${url}:`, error);
+            throw error;
         }
-    })
-    .catch(error => {
-        console.error("Error fetching user info:", error);
-        window.location.href = '/';  
-    });
+    }
 
-    document.getElementById("logoutButton").addEventListener("click", function(event) {
+    // Fetch user info
+    async function fetchUserInfo() {
+        try {
+            const data = await apiRequest('/api/getUserInfo', 'GET');
+            if (data.success) {
+                const user = data.user;
+                accountNumber = user.accountNumber;
+            } else {
+                window.location.href = '/';
+            }
+        } catch (error) {
+            console.error("Error fetching user info:", error);
+            window.location.href = '/';
+        }
+    }
+
+    // Logout functionality
+    document.getElementById("logoutButton").addEventListener("click", async function (event) {
         event.preventDefault();
-
-        fetch('/api/logout', { method: 'POST' })  // Call your backend route to clear the cookie
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = '/'; // Redirect to homepage or login page
-                }
-            })
-            .catch(error => {
-                console.error('Logout error:', error);
-            });
+        try {
+            const data = await apiRequest('/api/logout', 'POST');
+            if (data.success) {window.location.href = '/';}
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
     });
 
-    document.getElementById("profileButton").addEventListener("click", function(event) {
+    // Redirect to profile page
+    document.getElementById("profileButton").addEventListener("click", function (event) {
         event.preventDefault();
-        window.location.href = `/profile/${accountNumber}`;  // Redirect to user's profile page
+        if (accountNumber) {window.location.href = `/profile/${accountNumber}`;}
     });
 
-    document.getElementById('createPost').addEventListener("click", function() {
+    // Create a new post
+    document.getElementById('createPost').addEventListener("click", async function () {
         const title = document.getElementById("titleText").value;
         const content = document.getElementById("bodyText").value;
-        
 
         if (title && content) {
-            // Send the post request with accountNumber, title, and content
-            fetch('/api/createPost', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ accountNumber, title, content })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = '/home';  // Redirect to home after creating a post
-                }
-            })
-            .catch(error => {
+            try {
+                const data = await apiRequest('/api/createPost', 'POST', { accountNumber, title, content });
+                if (data.success) {window.location.href = '/home'; }
+            } catch (error) {
                 console.error('Error creating post:', error);
-            });
+            }
         }
     });
 
-    // Handle checking posts
-    document.getElementById('checkPost').addEventListener("click", function(event) {
-        fetch('/api/viewAllPosts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Process the posts data or update the UI accordingly
-        })
-        .catch(error => {
+    // Check all posts
+    document.getElementById('checkPost').addEventListener("click", async function () {
+        try {
+            const data = await apiRequest('/api/getAllPosts', 'POST');
+        } catch (error) {
             console.error('Error checking posts:', error);
-        });
+        }
     });
+
+    fetchUserInfo();
 });
