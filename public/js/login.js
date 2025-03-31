@@ -1,3 +1,6 @@
+import { apiRequest } from './utils/apiRequest.js';
+import { renderPost,  changeEdit } from './utils/renderPost.js';
+
 document.addEventListener("DOMContentLoaded", function () {
     const user = JSON.parse(sessionStorage.getItem("user"));
     const loginPanel = document.getElementById('loginPanel');
@@ -5,20 +8,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const newAccButton = document.getElementById('newAccount');
     const loginButton = document.getElementById('login');
 
-    // Reusable API request function
-    async function apiRequest(url, method = 'GET', body = null) {
-        const options = {method, headers: { 'Content-Type': 'application/json' },};
-
-        if (body) {options.body = JSON.stringify(body);}
-
-        try {
-            const response = await fetch(url, options);
-            return await response.json();
-        } catch (error) {
-            console.error(`Error during API request to ${url}:`, error);
-            throw error;
-        }
-    }
 
     if (user) {
         window.location.href = '/home'; } else { loginPanel.style.display = 'flex';
