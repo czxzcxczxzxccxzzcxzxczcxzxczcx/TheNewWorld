@@ -36,4 +36,44 @@ router.get('/profile/:accountNumber', async (req, res) => {
     }
 });
 
+// Route for following page
+router.get('/following/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findOne({ accountNumber: userId });
+
+        if (!user) {
+            return res.status(404).send('ERROR 404 | User Not Found');
+        }
+
+        const templatePath = path.join(__dirname, '../public/html/following.html');
+        let template = fs.readFileSync(templatePath, 'utf8');
+
+        res.send(template);
+    } catch (error) {
+        console.error('Error fetching following page:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// Route for followers page
+router.get('/followers/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findOne({ accountNumber: userId });
+
+        if (!user) {
+            return res.status(404).send('ERROR 404 | User Not Found');
+        }
+
+        const templatePath = path.join(__dirname, '../public/html/followers.html');
+        let template = fs.readFileSync(templatePath, 'utf8');
+
+        res.send(template);
+    } catch (error) {
+        console.error('Error fetching followers page:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 module.exports = router;

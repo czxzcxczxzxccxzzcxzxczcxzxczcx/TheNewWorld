@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await apiRequest('/api/getPost', 'POST', { postId });
             if (data.success) {
                 const pfp = data.pfp;
-                renderPost(data.post, data.username, pfp,data.accountNumber);
+                
+                renderPost(data.post, data.username, pfp,data.accountNumber,'home',accountNumber);
             }
         } catch (error) {
             console.error('Error fetching post:', error);
@@ -20,6 +21,10 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const data = await apiRequest('/api/getAllPosts', 'POST');
             if (data.success && Array.isArray(data.posts)) {
+                // Sort posts by 'createdAt' in descending order
+                data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+                // Render each post
                 data.posts.forEach((post) => {
                     fetchPost(post.postId);
                 });

@@ -127,7 +127,7 @@ body {
 {
     position: absolute;
 
-    height: 40vh;
+    height: min-content;
     width: 300px;
     top: 4vh;
     margin-top: 120px;
@@ -147,7 +147,7 @@ body {
     display: flex;
     flex-direction: column;    
     align-items: center;
-    height:55vh;
+    height:30vh;
 }
 
 .panel h1
@@ -190,11 +190,8 @@ body {
 {   
     top: 25vh;
     position: absolute;
-    /* margin-top: 20vh; */
     width: 520px; 
     max-width: min-content; 
-    /* height: min-content;  */
-    /* height: 460px; */
     height: min-content; 
 
     border-radius: 10px;
@@ -215,13 +212,13 @@ body {
     flex-direction: column;    
     align-items: center;
     width: 480px;
-    height: 41vh;
+    height: 45vh;
 }
 
 .postPanel h1
 {
     color: white;
-    font-size: 40px;
+    font-size: 30px;
     text-align: left;
     margin: 0;
     margin-top: 10px;
@@ -234,19 +231,23 @@ body {
     max-width: 50vw; 
     font-size: 20px;
     border-radius: 5px;
-    color:white;
-    
+    color: black;
     background-color: #ffffff;
-
-
 }
+
+.postPanel .titleInput::placeholder
+{
+    color: black;
+}
+
 
 .postPanel  .postPanelButton
 {
-    height: 4vh;
+    height: 5vh;
     width:95%;
     max-width: 50vw; 
     font-size:25px;
+
     border-radius: 5px;
     box-shadow: 0px 2px 0px 0px #d6d6d6
 
@@ -275,10 +276,15 @@ body {
     font-size: 20px;
     margin: 10px;
     background-color: #ffffff;
-    color:white;
+    color:black;
 
     width:95%;
     max-width: 500px; 
+}
+
+.postPanel .bodyInput::placeholder
+{
+    color: black;
 }
 
 
@@ -377,7 +383,9 @@ body {
 {
     display:flex;
     border-color: white;
+    margin-top: 7vh;
     flex-direction: row;
+    height: 25px;
     align-items: center;
 
 }
@@ -424,8 +432,24 @@ body {
     background-color: #9e9e9e;
 }
 
+.post .footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 5px;
+}
 
-.postBody img
+.post .footer .date {
+    font-size:20px;
+    height: 5px;
+    margin-left: 15px;
+    margin-bottom: 25px;
+}
+
+.post .postBody img
 {
     max-width: 200%;
     height:auto;
@@ -489,7 +513,7 @@ body {
     font-size: 20px;
 }
 
-.profileStats .profileEditButton
+.profileStats .profileEditButton, .profileFollowButton
 {
     width: 110px;
     height: 30px;
@@ -505,14 +529,14 @@ body {
     box-shadow: 0px 2px 0px 0px #d6d6d6;
 }
 
-.profileStats .profileEditButton:active
+.profileStats .profileEditButton:active, .profileFollowButton:active
 {
     margin-top:25px;
     margin-bottom: 0px;
     box-shadow: 0px 0px 0px 0px #d6d6d6;
 }
 
-.profileStats .profileEditButton:hover
+.profileStats .profileEditButton:hover, .profileFollowButton:hover
 {
    background-color: #C6C7C7;
 }
@@ -625,11 +649,33 @@ body {
 
 .followingPanel .followingButton 
 {
-    margin-left:auto;
+    width: 110px;
+    height: 50px;
+    font-size: 15px;
+    margin-left: 90px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    margin-top: 25px;
+    border-radius: 5px;
+    border-radius:5px;
+    display: block;
+    
+    box-shadow: 0px 2px 0px 0px #d6d6d6;
+    }
 
-    height: 40px;
-    align-self: center;
+
+/* .profileStats .profileEditButton:active, .profileFollowButton:active
+{
+margin-top:25px;
+margin-bottom: 0px;
+box-shadow: 0px 0px 0px 0px #d6d6d6;
 }
+
+.profileStats .profileEditButton:hover, .profileFollowButton:hover
+{
+background-color: #C6C7C7;
+} */
+
 
 .followingPanel h1 {
     color: white

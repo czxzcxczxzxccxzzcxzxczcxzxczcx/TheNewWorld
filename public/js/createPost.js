@@ -40,13 +40,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Create a new post
     document.getElementById('createPost').addEventListener("click", async function () {
+        event.preventDefault();
+
         const title = document.getElementById("titleText").value;
         const content = document.getElementById("bodyText").value;
 
         if (title && content) {
             try {
                 const data = await apiRequest('/api/createPost', 'POST', { accountNumber, title, content });
-                if (data.success) {window.location.href = '/home'; }
+                if (data.success) {window.location.href = `/profile/${accountNumber}`; }
             } catch (error) {
                 console.error('Error creating post:', error);
             }

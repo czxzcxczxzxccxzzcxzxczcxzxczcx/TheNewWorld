@@ -5,7 +5,7 @@ const { initializeDatabase } = require('./utils/initDatabase'); // Import databa
 const setupRoutes = require('./utils/setupRoutes'); // Import route setup
 
 const app = express();
-const PORT = 7272;
+const PORT = 9999;
 
 // Middleware
 app.use(express.json());

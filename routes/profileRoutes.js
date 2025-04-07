@@ -1,4 +1,3 @@
-
 const express = require('express');
 const { Post, User } = require('../utils/database');
 
@@ -51,6 +50,72 @@ router.post('/viewAllUsers', async (req, res) => {
     }
 });
 
+router.post('/follow', async (req, res) => {
+    const { recipientAccountNumber } = req.body; // The account number of the user to be followed/unfollowed
+    const sessionId = req.cookies.TNWID; // Get session ID from cookies
+
+    try {
+        // Verify the sender's session
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const sender = sessionStore[sessionId]; // Get sender's user data from session
+        const senderAccountNumber = sender.accountNumber;
+
+        // Ensure sender and recipient are not the same
+        if (senderAccountNumber === recipientAccountNumber) {
+            return res.status(400).json({ success: false, message: 'You cannot follow yourself' });
+        }
+
+        // Find both sender and recipient in the database
+        const senderUser = await User.findOne({ accountNumber: senderAccountNumber });
+        const recipientUser = await User.findOne({ accountNumber: recipientAccountNumber });
+
+        if (!senderUser || !recipientUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Check if the sender is already following the recipient
+        if (senderUser.following.includes(recipientAccountNumber)) {
+            // Reverse the follow action (unfollow)
+            senderUser.following = senderUser.following.filter(follow => 
+                follow && recipientAccountNumber && follow.toString() !== recipientAccountNumber.toString()
+            );
+            recipientUser.followers = recipientUser.followers.filter(follower => 
+                follower && senderAccountNumber && follower.toString() !== senderAccountNumber.toString()
+            );
+
+            console.log('Unfollowing:', { senderUser, recipientUser });
+
+            // Save the updated documents
+            await senderUser.save();
+            await recipientUser.save();
+
+            console.log('After unfollow:', { senderUser, recipientUser });
+
+            return res.json({ success: true, message: 'Unfollowed successfully' });
+        } else {
+            // Perform the follow action
+            senderUser.following.push(recipientAccountNumber);
+            recipientUser.followers.push(senderAccountNumber);
+
+            console.log('Following:', { senderUser, recipientUser });
+
+            // Save the updated documents
+            await senderUser.save();
+            await recipientUser.save();
+
+            console.log('After follow:', { senderUser, recipientUser });
+
+            return res.json({ success: true, message: 'Followed successfully' });
+        }
+    } catch (error) {
+        console.error('Error processing follow/unfollow request:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 router.post('/updateSettings', async (req, res) => {
     const { bio,pfp,username } = req.body;
     const sessionId = req.cookies.TNWID;  
@@ -72,6 +137,78 @@ router.post('/updateSettings', async (req, res) => {
 
     } catch (error) {
         console.error("Error updating password:", error);
+    }
+});
+
+router.get('/isFollowed/:recipientAccountNumber', async (req, res) => {
+    const { recipientAccountNumber } = req.params;
+    const sessionId = req.cookies.TNWID; // Get session ID from cookies
+
+    try {
+        // Verify the sender's session
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const sender = sessionStore[sessionId]; // Get sender's user data from session
+        const senderAccountNumber = sender.accountNumber;
+
+        // Find the sender in the database
+        const senderUser = await User.findOne({ accountNumber: senderAccountNumber });
+
+        if (!senderUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Check if the sender is following the recipient
+        const isFollowing = senderUser.following.includes(recipientAccountNumber);
+
+        res.json({ success: true, isFollowing });
+    } catch (error) {
+        console.error('Error checking follow status:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+router.get('/getFollowing/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        // Find the user by account number
+        const user = await User.findOne({ accountNumber: userId });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Fetch the list of users the current user is following
+        const followingUsers = await User.find({ accountNumber: { $in: user.following } }, 'username accountNumber pfp');
+
+        res.json({ success: true, following: followingUsers });
+    } catch (error) {
+        console.error('Error fetching following users:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+router.get('/getFollowers/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        // Find the user by account number
+        const user = await User.findOne({ accountNumber: userId });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Fetch the list of users who follow the current user
+        const followersUsers = await User.find({ accountNumber: { $in: user.followers } }, 'username accountNumber pfp');
+
+        res.json({ success: true, followers: followersUsers });
+    } catch (error) {
+        console.error('Error fetching followers:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 

@@ -8,12 +8,14 @@ const userSchema = new mongoose.Schema({
     accountNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     username: { type: String, required: true },
-    followers: {type: Number, default: 0},
-    following: {type: Number, default: 0},
+    followers: { type: [Number], default: [] },
+    following: { type: [Number], default: [] },
     posts: {type: Number, default: 0 },
     bio: { type: String, default: "" },
     pfp: { type: String , default: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"}
 });
+
+
 
 const postSchema = new mongoose.Schema({
     postId: { type: String, required: true },
@@ -45,25 +47,75 @@ const connectToDB = async () => {
     }
 };
 
-const updateLikesArray = async () => {
-    try {
-        const posts = await Post.find();
+// const updateLikesArray = async () => {
+//     try {
+//         const posts = await Post.find();
 
-        // Loop through each post to check the 'likes' field
-        for (let post of posts) {
-            if (!post.hasOwnProperty('likes') || !Array.isArray(post.likes)) {
-                // If 'likes' doesn't exist or isn't an array, initialize it as an empty array
-                post.likes = [];
-                await post.save(); // Save the updated post
-                console.log(`Post with postId ${post.postId} fixed: 'likes' field initialized as an array.`);
+//         // Loop through each post to check the 'likes' field
+//         for (let post of posts) {
+//             if (!post.hasOwnProperty('likes') || !Array.isArray(post.likes)) {
+//                 // If 'likes' doesn't exist or isn't an array, initialize it as an empty array
+//                 post.likes = [];
+//                 await post.save(); // Save the updated post
+//                 console.log(`Post with postId ${post.postId} fixed: 'likes' field initialized as an array.`);
+//             }
+//         }
+//     } catch (error) {
+//         console.error('Error updating posts with missing likes field:', error);
+//     }
+// };
+
+const fixProfile = async () => {
+    try {
+        const users = await User.find();
+
+        for (let user of users) {
+            let isModified = false;
+
+            // Check and fix each field in the schema
+            if (!user.hasOwnProperty('accountNumber') || typeof user.accountNumber !== 'string') {
+                user.accountNumber = user.accountNumber || 'defaultAccountNumber';
+                isModified = true;
+            }
+            if (!user.hasOwnProperty('password') || typeof user.password !== 'string') {
+                user.password = user.password || 'defaultPassword';
+                isModified = true;
+            }
+            if (!user.hasOwnProperty('username') || typeof user.username !== 'string') {
+                user.username = user.username || 'defaultUsername';
+                isModified = true;
+            }
+            if (!user.hasOwnProperty('followers') || !Array.isArray(user.followers)) {
+                user.followers = user.followers || [];
+                isModified = true;
+            }
+            if (!user.hasOwnProperty('following') || !Array.isArray(user.following)) {
+                user.following = user.following || [];
+                isModified = true;
+            }
+            if (!user.hasOwnProperty('posts') || typeof user.posts !== 'number') {
+                user.posts = user.posts || 0;
+                isModified = true;
+            }
+            if (!user.hasOwnProperty('bio') || typeof user.bio !== 'string') {
+                user.bio = user.bio || '';
+                isModified = true;
+            }
+            if (!user.hasOwnProperty('pfp') || typeof user.pfp !== 'string') {
+                user.pfp = user.pfp || 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png';
+                isModified = true;
+            }
+
+            // Save the user document if any modifications were made
+            if (isModified) {
+                await user.save();
+                console.log(`User with accountNumber ${user.accountNumber} fixed.`);
             }
         }
     } catch (error) {
-        console.error('Error updating posts with missing likes field:', error);
+        console.error('Error fixing user profiles:', error);
     }
 };
-
-
 
 
 
@@ -146,4 +198,4 @@ const clearDatabase = async () => {
     }
 };
 
-module.exports = { connectToDB, clearDatabase, updateUserPassword, updateData, updatePost, updateLikesArray, User, Post };
+module.exports = { connectToDB, clearDatabase, updateUserPassword, updateData, updatePost, fixProfile, User, Post };

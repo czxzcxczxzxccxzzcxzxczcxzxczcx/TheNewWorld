@@ -23,6 +23,10 @@ export function changeEdit(edit, pfpDisplay, profileText, pfpText, bioBorder, us
     username.style.border = userBorder;
 }
 
+export function changeFollow(text) {
+    followbutton.contentEditable = edit;
+}
+
 export async function updatePost(postId, title, content) {
     try {
         const data = await apiRequest('/api/changePostData', 'POST', { postId, title, content });
@@ -36,7 +40,7 @@ export async function updatePost(postId, title, content) {
     }
 }
 
-export function renderPost(post, username, pfp, accountNumber) {
+export function renderPost(post, username, pfp, accountNumber,from,fromAccountNumber) {
     const postDiv = createElementWithClass('div', 'post');
     const postDetailsDiv = createElementWithClass('div', 'postDetails');
     const postImage = createElementWithClass('img', 'pfp');
@@ -50,7 +54,21 @@ export function renderPost(post, username, pfp, accountNumber) {
     const likeCounter = createElementWithClass('h2', 'likeCounter');
     const repostButton = createElementWithClass('button', 'postButton');
     const repostCounter = createElementWithClass('h2', 'likeCounter');
+    const dateE = createElementWithClass('h2', 'date');
+    const footerDiv = createElementWithClass('div', 'footer');
+    const deleteE = createElementWithClass('button', 'deleteButton');
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+    
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, '0'); 
+        const day = date.getDate().toString().padStart(2, '0'); 
+        const month = date.toLocaleString('en-US', { month: 'long' }); 
+        const year = date.getFullYear();
+    
+        return `${hours}:${minutes} - ${month} ${day}  ${year}`;
+    };
     // Set attributes and content
     postImage.src = pfp;
     usernameTitle.textContent = `@${username}`;
@@ -62,17 +80,41 @@ export function renderPost(post, username, pfp, accountNumber) {
     likeButton.textContent = 'Like';
     likeButton.type = 'submit';
     repostButton.textContent = 'Repost';
+    dateE.textContent = formatDate(post.createdAt);
     repostButton.type = 'submit';
 
     postDetailsDiv.append(postImage, usernameTitle, titleH1);
     dividerDiv.append(viewsH2, likeButton, likeCounter, repostButton, repostCounter);
     postBodyDiv.append(contentP, dividerDiv);
-    postDiv.append(postDetailsDiv, postBodyDiv);
+    postDiv.append(postDetailsDiv, postBodyDiv, footerDiv);
+    footerDiv.append(dateE, deleteE);
     homePanel.appendChild(postDiv);
 
-    setupLikes(likeButton, likeCounter, post, accountNumber);
+    setupLikes(likeButton, likeCounter, post, fromAccountNumber);
+    if (post.accountNumber === fromAccountNumber) { 
+        setupEditButton(dividerDiv, post, titleH1, contentP); 
+        deleteE.addEventListener("click", () => {
+            apiRequest('/api/deletePost', 'POST', { postId })
+                .then(data => {
+                    if (data.success) {
+                        console.log('Post deleted successfully');
+                        homePanel.removeChild(postDiv);
+                    } else {
+                        console.error('Failed to delete post');
+                    }
+                })
+                .catch(error => {console.error('Error deleting post:', error);});
+        }
+        );
 
-    if (accountNumber === post.accountNumber) {setupEditButton(dividerDiv, post, titleH1, contentP);}
+    }
+    if (from == 'home') {
+        postImage.addEventListener("click", function (event) {
+            window.location.href = `/profile/${post.accountNumber}`;  
+        });
+        postImage.classList.add("homeHover");
+
+    }
 }
 
 export function createElementWithClass(tag, className = '') {

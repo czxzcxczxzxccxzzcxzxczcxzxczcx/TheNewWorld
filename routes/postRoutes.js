@@ -16,6 +16,45 @@ const generateUniquePostId = async () => {
     return postId;
 };
 
+router.post('/deletePost', async (req, res) => {
+    const { postId } = req.body;
+    const sessionId = req.cookies.TNWID;  
+
+    try {
+        if (sessionId && sessionStore[sessionId]) {
+            const user = sessionStore[sessionId];  
+            const accountNumber = user.accountNumber;
+
+            // Find the post by postId
+            const existingPost = await Post.findOne({ postId });
+
+            if (!existingPost) {
+                return res.status(404).json({ success: false, message: 'Post not found' });
+            }
+
+            // Check if the accountNumber matches the one who created the post
+            if (existingPost.accountNumber !== accountNumber) {
+                return res.status(403).json({ success: false, message: 'You are not authorized to delete this post' });
+            }
+
+            // Delete the post
+            await Post.deleteOne({ postId });
+
+            // Update the user's posts array
+            await User.updateOne(
+                { accountNumber },
+                { $pull: { posts: postId } }
+            );
+
+            res.status(200).json({ success: true, message: 'Post deleted successfully' });
+        } else {
+            res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
 
 // Route to get a post by postId
 router.post('/getPost', async (req, res) => {
@@ -50,7 +89,7 @@ router.post('/getPost', async (req, res) => {
 
 router.post('/likePost', async (req, res) => {
     const { postId, accountNumber } = req.body;
-
+    console.log(req.body);
     try {
         const existingPost = await Post.findOne({ postId });
         
@@ -60,12 +99,13 @@ router.post('/likePost', async (req, res) => {
 
         if (!Array.isArray(existingPost.likes)) {
             console.log("NOTEXIST")
-            existingPost.likes = []; y
+            existingPost.likes = []; 
         }
 
         if (existingPost.likes.includes(accountNumber)) {
-            existingPost.likes = existingPost.likes.filter(like => like.toString() !== accountNumber.toString());
-            console.log(existingPost);
+            existingPost.likes = existingPost.likes.filter(like => 
+                like && accountNumber && like.toString() !== accountNumber.toString()
+            );
             await existingPost.save();
             return res.status(200).json({ success: true, removed: true });
         }
