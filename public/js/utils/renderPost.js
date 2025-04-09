@@ -56,7 +56,8 @@ export function renderPost(post, username, pfp, accountNumber,from,fromAccountNu
     const repostCounter = createElementWithClass('h2', 'likeCounter');
     const dateE = createElementWithClass('h2', 'date');
     const footerDiv = createElementWithClass('div', 'footer');
-    const deleteE = createElementWithClass('button', 'deleteButton');
+    const spaceDiv = createElementWithClass('div', 'spaceDiv');
+    // const deleteE = createElementWithClass('button', 'deleteButton');
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -86,26 +87,26 @@ export function renderPost(post, username, pfp, accountNumber,from,fromAccountNu
     postDetailsDiv.append(postImage, usernameTitle, titleH1);
     dividerDiv.append(viewsH2, likeButton, likeCounter, repostButton, repostCounter);
     postBodyDiv.append(contentP, dividerDiv);
-    postDiv.append(postDetailsDiv, postBodyDiv, footerDiv);
-    footerDiv.append(dateE, deleteE);
+    postDiv.append(postDetailsDiv, postBodyDiv, spaceDiv,footerDiv);
+    footerDiv.append(dateE, );
     homePanel.appendChild(postDiv);
 
     setupLikes(likeButton, likeCounter, post, fromAccountNumber);
     if (post.accountNumber === fromAccountNumber) { 
-        setupEditButton(dividerDiv, post, titleH1, contentP); 
-        deleteE.addEventListener("click", () => {
-            apiRequest('/api/deletePost', 'POST', { postId })
-                .then(data => {
-                    if (data.success) {
-                        console.log('Post deleted successfully');
-                        homePanel.removeChild(postDiv);
-                    } else {
-                        console.error('Failed to delete post');
-                    }
-                })
-                .catch(error => {console.error('Error deleting post:', error);});
-        }
-        );
+        setupEditButton(footerDiv, post, titleH1, contentP); 
+        // deleteE.addEventListener("click", () => {
+        //     apiRequest('/api/deletePost', 'POST', { postId })
+        //         .then(data => {
+        //             if (data.success) {
+        //                 console.log('Post deleted successfully');
+        //                 homePanel.removeChild(postDiv);
+        //             } else {
+        //                 console.error('Failed to delete post');
+        //             }
+        //         })
+        //         .catch(error => {console.error('Error deleting post:', error);});
+        // }
+        // );
 
     }
     if (from == 'home') {

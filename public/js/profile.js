@@ -31,6 +31,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (userAccountNumber === accountNumber) { 
                     gebid('profileEdit').style.display = "block"; 
+                    gebid('followButton').style.display = "none";
+
                 } else {
                     gebid('followButton').style.display = "block";
 
@@ -87,11 +89,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("followingLink").addEventListener("click", function (event) {
         event.preventDefault();
-        if (userAccountNumber) {window.location.href = `/following/${userAccountNumber}`;}
+        if (profileAccountNumber) {window.location.href = `/following/${profileAccountNumber}`;}
     });
     document.getElementById("followerLink").addEventListener("click", function (event) {
         event.preventDefault();
-        if (userAccountNumber) {window.location.href = `/followers/${userAccountNumber}`;}
+        if (profileAccountNumber) {window.location.href = `/followers/${profileAccountNumber}`;}
     });
 
     gebid("profileButton").addEventListener("click", function (event) {

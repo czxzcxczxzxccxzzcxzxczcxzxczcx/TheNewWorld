@@ -2,6 +2,7 @@ import { apiRequest } from './utils/apiRequest.js';
 
 document.addEventListener("DOMContentLoaded", async function () {
     const homePanel = document.getElementById("homePanel");
+    const profileAccountNumber = window.location.pathname.split('/')[2];
     let accountNumber;
 
 
@@ -40,11 +41,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const followingPanel = document.createElement("div");
                 followingPanel.className = "followingPanel";
 
-                followingPanel.innerHTML = `
+                if (accountNumber == profileAccountNumber) { 
+                    followingPanel.innerHTML = `
                     <img class="pfp homeHover"  src="${user.pfp}" alt="Profile Picture"/>
-                    <h1>@${user.username} (${user.accountNumber})</h1>
+                    <h1>@${user.username} </h1>
                     <button class="followingButton" data-account-number="${user.accountNumber}">Unfollow</button>
                 `;
+                } else {
+                    followingPanel.innerHTML = `
+                    <img class="pfp homeHover"  src="${user.pfp}" alt="Profile Picture"/>
+                    <h1>@${user.username} (${user.accountNumber})</h1>
+                `;
+                }
                 homePanel.appendChild(followingPanel);
             });
 

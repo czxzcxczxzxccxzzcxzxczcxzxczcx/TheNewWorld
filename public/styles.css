@@ -1,19 +1,20 @@
+/* BODY CSS  BODY CSS  BODY CSS  BODY CSS  BODY CSS  
+BODY CSS  BODY CSS  BODY CSS  BODY CSS  BODY CSS   */
+
 body {
     position: relative;
-    /* background-image: url('https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2F1.bp.blogspot.com%2F-Afqf8m9rzBs%2FUSbyg0mQ_eI%2FAAAAAAAAAqA%2FxUbgv4HOMh0%2Fs1600%2Fouter-space-hd-wallpaper.jpg&f=1&nofb=1&ipt=fc66f1a5efbf567c74c165b23ac78be99c5660cb07055b56ee7f3591933c017d&ipo=images'); */
+    /* background-image: url('https://wallpapersok.com/images/hd/cloudy-solid-grey-background-vdmz42yyw3kak60k.jpg'); */
     background-color:rgba(18,18,21,255);
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
-    /* background-image: url('https://img.freepik.com/free-photo/hand-painted-watercolour-space-background-with-nebula-stars_1048-14650.jpg'); */
-
     display: flex;
     flex-direction: column;
     align-content: center;
     align-items: stretch;
     text-align: center;
-
+    text-shadow: black 2px 2px 0px;
     margin: 0;
     padding: 0;
     font-family: Arial, Helvetica, sans-serif;
@@ -29,53 +30,39 @@ body {
 
 
 
+/* NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  
+NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
 
-
-
-
-
-
-
-
-.bar 
-{
-     background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); /* Horizontal, Vertical, Blur, Color */
+.bar {
+    background-color: rgb(36, 37, 44);
+    box-shadow: 0 4px 2px rgb(49, 50, 59); 
     position: absolute;
     top: 0vh;
     width: 100%;
     height: 5vh; 
-    /* border-style: solid;
-    border-top: 10px;
-    border-left: 10px;
-    border-right: 10px; */
     display: flex;
     align-self: center;
-    /* border-color: white; */
 }
 
-.bar ul
-{
+.bar ul {
     display: flex;
     flex-direction: row;
     align-items: center;
     
 }
 
-.bar h1
-{
+.bar h1 {
     color: white;
     display:flex;
     align-items: center;
     justify-self: center;
     margin-bottom: 18px;
     text-align: center;
-
-    
+    font-size: 28px;
+    overflow: hidden;
 }
 
-.bar .buttons
-{
+.bar .buttons {
     display: flex;
     flex-direction: row;
     justify-self: center;
@@ -84,24 +71,21 @@ body {
     justify-content: space-evenly;
     position: absolute;
     right: 0;
-    
 }
 
-.bar .buttons  a h1
-{
+.bar .buttons  a h1 {
     margin: 10px;
     font-size: 20px;
-    
 }
-.bar .buttons a 
-{
+
+.bar .buttons a {
     text-decoration: none; 
-
 }
+
 .bar .buttons h1:hover {
-    cursor: pointer; /* Change cursor to pointer */
-    color: #007bff; /* Change text color to blue */
-    text-decoration: underline; /* Underline the text */
+    cursor: pointer; 
+    color: #007bff;
+    text-decoration: underline; 
 }
 
 
@@ -113,52 +97,37 @@ body {
 
 
 
+/*LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  
+LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
 
-
-
-
-
-
-
-
-
-
-.panel
-{
+.panel {
     position: absolute;
-
     height: min-content;
     width: 300px;
     top: 4vh;
     margin-top: 120px;
     border-radius: 10px;
-    
     display: none;
     flex-direction: column;    
     align-self: center;
     background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); /* Horizontal, Vertical, Blur, Color */
-    /* border-color: rgb(0, 0, 0);
-    border-style: solid; */
+    box-shadow: 0 4px 2px rgb(49, 50, 59); 
 }
 
-.panel form
-{
+.panel form {
     display: flex;
     flex-direction: column;    
     align-items: center;
     height:30vh;
 }
 
-.panel h1
-{
+.panel h1 {
     color:white;
     font-size: 35px;
     margin-top: 10px;
 }
 
-.panel .status
-{
+.panel .status {
     color:white;
     font-size: 20px;
     margin-bottom: 10px;
@@ -175,514 +144,8 @@ body {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-.postPanel
-{   
-    top: 25vh;
-    position: absolute;
-    width: 520px; 
-    max-width: min-content; 
-    height: min-content; 
-
-    border-radius: 10px;
-    display: none;
-
-
-    flex-direction: column;    
-    align-self: center;
-    background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); /* Horizontal, Vertical, Blur, Color */
-    /* border-color: white;
-    border-style: solid; */
-}
-
-.postPanel form
-{
-    display: flex;
-    flex-direction: column;    
-    align-items: center;
-    width: 480px;
-    height: 45vh;
-}
-
-.postPanel h1
-{
-    color: white;
-    font-size: 30px;
-    text-align: left;
-    margin: 0;
-    margin-top: 10px;
-    margin-bottom: 5px;
-}
-.postPanel .titleInput
-{
-    height: 3vw;
-    min-width: 95%;
-    max-width: 50vw; 
-    font-size: 20px;
-    border-radius: 5px;
-    color: black;
-    background-color: #ffffff;
-}
-
-.postPanel .titleInput::placeholder
-{
-    color: black;
-}
-
-
-.postPanel  .postPanelButton
-{
-    height: 5vh;
-    width:95%;
-    max-width: 50vw; 
-    font-size:25px;
-
-    border-radius: 5px;
-    box-shadow: 0px 2px 0px 0px #d6d6d6
-
-
-}
-
-.postPanel  .postPanelButton:active {
-    margin-top:2px;
-    margin-bottom: 1px;
-    box-shadow: 0px 0px 0px 0px #d6d6d6
-}
-
-.postPanel  .postPanelButton:hover {
-    background-color: #C6C7C7;
-
-}
-
-.postPanel h1
-{
-    color:white;
-}
-
-.postPanel  .bodyInput
-{
-    height: 10vw;
-    font-size: 20px;
-    margin: 10px;
-    background-color: #ffffff;
-    color:black;
-
-    width:95%;
-    max-width: 500px; 
-}
-
-.postPanel .bodyInput::placeholder
-{
-    color: black;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.post
-{
-    height: 200px;
-    border-radius: 10px;
-    width: 99%;
-
-    scroll-snap-align: start;
-    display: flex;
-    flex-direction: column;    
-    height: min-content; 
-    align-self: center; 
-    justify-items: flex-start; 
-    align-items: flex-start;
-    margin-bottom: 15px;
-    background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); /* Horizontal, Vertical, Blur, Color */
-
-    /* border-color: white; */
-    /* border-style: solid; */
-    color: white;
-}
-
-.postDetails
-{
-    display: flex;
-    margin-bottom: -10px;
-    font-size: 12px;
-    margin-left: 10px;
-    text-align: left;
-    margin-right: 10px;
-    
-}
-
-.postDetails h1 
-{
-    margin-right: 20px;
-}
-
-.postDetails .pfp
-{
-    height: 60px;
-    margin-top: 5px;
-    width: 60px;
-    margin-right: 10px;
-    border-radius: 100%;
-
-}
-
-.postDetails  .homeHover:hover {
-    border-color: white;
-    border-width: 3px;
-    border-style: solid;
-}
-
-.postBody
-{
-    text-align: left;
-    margin-left: 10px;
-    margin-top: 10px;
-    margin-right: 10px;   
-    overflow-wrap: break-word; 
-    line-height: 1.5;  
-    word-wrap:break-word;
-    font-size: 20px;
-    white-space: pre-wrap; /* Preserves whitespace and newlines */
-
-}
-
-.post .divider
-{
-    display:flex;
-    border-color: white;
-    margin-top: 7vh;
-    flex-direction: row;
-    height: 25px;
-    align-items: center;
-
-}
-
-.post .divider h2
-{
-    font-size: 20px;
-    margin-right: 20px;
-    margin-left: 5px;
-}
-.post .divider .postButton
-{
-    width: 80px;
-    height: 30px;
-    font-size: 15px;
-    margin:0 10px 0 -10px;
-    border-radius: 5px;
-    box-shadow: 0px 2px 0px 0px #d6d6d6
-}
-
-.post .divider .likeButton
-{
-    width: 60px;
-  
-}
-
-.post .divider .postEditButton
-{
-    margin-left: 60px;
-  
-}
-
-
-.post .divider .postButton:active
-{
-    margin-top:4px;
-    margin-bottom: 0px;
-    box-shadow: 0px 0px 0px 0px #d6d6d6
-}
-
-
-.post .divider .postButton:hover
-{
-    background-color: #9e9e9e;
-}
-
-.post .footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-top: 5px;
-}
-
-.post .footer .date {
-    font-size:20px;
-    height: 5px;
-    margin-left: 15px;
-    margin-bottom: 25px;
-}
-
-.post .postBody img
-{
-    max-width: 200%;
-    height:auto;
-    border-radius: 100%;
-}
-
-
-
-
-
-
-
-
-
-
-
-.profilePanel
-{
-    background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); /* Horizontal, Vertical, Blur, Color */
-
-    border-radius: 10px;
-    /* border-color: white;
-    border-style:solid; */
-    height:auto;
-    width:99%;
-    margin-bottom: 15px;
-    flex-direction: column;
-    display:flex;
-    color:white;
-}
-
-.profileBio
-{
-    display:flex;
-    flex-direction: column;
-    align-items: start;
-    overflow: auto;
-    word-wrap: break-word;  
-    white-space: pre-wrap;  
-
-    white-space: normal;  
-    margin-left: 10px;
-    margin-top: 10px;
-    font-size: 20px;
-    
-}
-
-.profileStats
-{
-    display:flex;
-    flex-direction: row;
-    align-content: flex-start;
-    align-items: center;
-    box-sizing: border-box;  
-}
-
-.profileStats h1
-{
-    margin: 10px;
-    font-size: 20px;
-}
-
-.profileStats .profileEditButton, .profileFollowButton
-{
-    width: 110px;
-    height: 30px;
-    font-size: 15px;
-    margin-left: 90px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    margin-top: 25px;
-    border-radius: 5px;
-    border-radius:5px;
-    display: none;
-
-    box-shadow: 0px 2px 0px 0px #d6d6d6;
-}
-
-.profileStats .profileEditButton:active, .profileFollowButton:active
-{
-    margin-top:25px;
-    margin-bottom: 0px;
-    box-shadow: 0px 0px 0px 0px #d6d6d6;
-}
-
-.profileStats .profileEditButton:hover, .profileFollowButton:hover
-{
-   background-color: #C6C7C7;
-}
-
-.profileStats a {
-    text-decoration: none;
-    color: white;
-}
-
-.profileStats a:hover {
-    text-decoration: underline;
-    color: #007bff;
-}
-
-.profileInfo {
-    display:flex;
-    flex-direction: row;
-    margin-bottom: 5px;
-    height: min-content; 
-    max-width: 500px;
-    box-sizing: border-box; 
-    font-size: 15px;
-}
-
-.profileInfo img {
-    display:flex;
-    margin-bottom: -20px;
-    font-size: 15px;
-    width: 100px;
-    margin-left: 4px;
-    margin-top: 5px;
-    height: 100px;
-}
-
-.profileInfo img:hover {
-    color:red;
-}
-
-.profileInfo h1 {
-    margin-left: 10px;
-    font-size: 30px;
-    text-decoration: none;
-    color:white;
-}
-
-.profileInfo a {
-    text-decoration: none;
-    color: white;
-}
-
-.profileInfo .profileUser {
-    display: flex;
-    flex: 1;  
-    flex-direction: row;
-    font-size:90px;
-    width: auto;
-    white-space: nowrap; /* Prevent wrapping */
-    overflow: hidden; 
-}
-
-
-.profileBio #changePfp {
-    display: none;
-    overflow: auto;
-    word-wrap: break-word; 
-    margin: 0;
-}
-
-.profileBio p {
-    text-align: left;
-    word-wrap: break-word;  
-    white-space: normal;  
-    width: 95%;
-    overflow: hidden;
-    word-wrap: break-word;  
-    white-space: pre-wrap;  
-}
-
-
-
-
-
-.followingPanel 
-{
-    width: 99%;
-    border-radius: 10px;
-
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 15px;
-
-    background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); /* Horizontal, Vertical, Blur, Color */    border-color: white;
-    /* border-style: solid;
-    color: white; */
-
-}
-
-.followingPanel .pfp
-{
-
-    height: 70px;
-    width: 70px;
-
-    align-self: center;
-    margin: 5px;
-
-
-}
-
-.followingPanel .followingButton 
-{
-    width: 110px;
-    height: 50px;
-    font-size: 15px;
-    margin-left: 90px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    margin-top: 25px;
-    border-radius: 5px;
-    border-radius:5px;
-    display: block;
-    
-    box-shadow: 0px 2px 0px 0px #d6d6d6;
-    }
-
-
-/* .profileStats .profileEditButton:active, .profileFollowButton:active
-{
-margin-top:25px;
-margin-bottom: 0px;
-box-shadow: 0px 0px 0px 0px #d6d6d6;
-}
-
-.profileStats .profileEditButton:hover, .profileFollowButton:hover
-{
-background-color: #C6C7C7;
-} */
-
-
-.followingPanel h1 {
-    color: white
-}
-
-
-
+/* LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS
+LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS */
 
 .inputText
 {
@@ -702,12 +165,6 @@ background-color: #C6C7C7;
     box-shadow: 0px 2px 0px 0px #d6d6d6
 }
 
-/* .inputSubmit:hover
-{
-    margin-top:2px;
-    box-shadow: 0px 0px 0px 0px #d6d6d6
-} */
-
 .inputSubmit:active {
     margin-top:2px;
     margin-bottom: 48px;
@@ -716,6 +173,246 @@ background-color: #C6C7C7;
 
 .inputSubmit:hover {
     background-color: #C6C7C7;
+}
+
+
+
+
+
+
+
+
+
+/* CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS  
+CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
+
+.postPanel {   
+    top: 25vh;
+    position: absolute;
+    width: 520px; 
+    max-width: min-content; 
+    height: min-content; 
+    border-radius: 10px;
+    display: none;
+    flex-direction: column;    
+    align-self: center;
+    background-color: rgb(36, 37, 44);
+    box-shadow: 0 4px 2px rgb(49, 50, 59); 
+}
+
+.postPanel form {
+    display: flex;
+    flex-direction: column;    
+    align-items: center;
+    width: 480px;
+    height: min-content; 
+}
+
+.postPanel h1 {
+    color: white;
+    font-size: 30px;
+    text-align: left;
+    margin: 0;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+.postPanel .titleInput {
+    height: 50px;
+    min-width: 95%;
+    max-width: 50vw; 
+    font-size: 20px;
+    border-radius: 5px;
+    color: black;
+    background-color: #ffffff;
+}
+
+.postPanel .titleInput::placeholder {
+    color: black;
+}
+
+.postPanel  .postPanelButton {
+    height: 5vh;
+    width:95%;
+    max-width: 50vw; 
+    font-size:25px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 0px 0px #d6d6d6
+}
+
+.postPanel  .postPanelButton:active {
+    margin-top:2px;
+    margin-bottom: 1px;
+    box-shadow: 0px 0px 0px 0px #d6d6d6
+}
+
+.postPanel  .postPanelButton:hover {
+    background-color: #C6C7C7;
+}
+
+.postPanel h1 {
+    color:white;
+}
+
+.postPanel  .bodyInput {
+    height: 125px;
+    font-size: 20px;
+    margin: 10px;
+    background-color: #ffffff;
+    color:black;
+    width:95%;
+    max-width: 500px; 
+}
+
+.postPanel .bodyInput::placeholder {
+    color: black;
+}
+
+
+
+
+
+
+
+
+
+
+/* POST CSS POST CSS POST CSS 
+POST CSS POST CSS POST CSS */
+
+
+.post {
+    height: 200px;
+    border-radius: 10px;
+    width: 99%;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;    
+    height: min-content; 
+    align-self: center; 
+    justify-items: flex-start; 
+    align-items: flex-start;
+    margin-bottom: 15px;
+    background-color: rgb(36, 37, 44);
+    box-shadow: 0 4px 2px rgb(49, 50, 59); 
+    color: white;
+}
+
+.post .postDetails {
+    display: flex;
+    margin-bottom: -10px;
+    font-size: 12px;
+    margin-left: 10px;
+    text-align: left;
+    margin-right: 10px;
+}
+
+.post   .postDetails h1  {
+    margin-right: 20px;
+}
+
+.post   .postDetails .pfp {
+    height: 60px;
+    margin-top: 5px;
+    width: 60px;
+    margin-right: 10px;
+    border-radius: 100%;
+}
+
+.post   .postDetails  .homeHover:hover {
+    border-color: white;
+    border-width: 3px;
+    border-style: solid;
+}
+
+.post   .postBody
+{
+    text-align: left;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-right: 10px;   
+    flex-direction: column;
+    display: flex;
+    justify-items: center;
+    overflow-wrap: break-word; 
+    line-height: 1.5;  
+    height: auto;
+    word-wrap:break-word;
+    font-size: 20px;
+    white-space: pre-wrap;
+}
+
+.post .divider {
+    display:flex;
+    border-color: white;
+    flex-direction: row;
+    height: 40px;
+    flex-wrap: wrap ;
+    overflow: wrap;
+    align-items: center;
+}
+
+.post .divider h2 {
+    font-size: 20px;
+    margin-right: 20px;
+    margin-left: 5px;
+}
+
+.post .divider .postButton, .post .footer .postEditButton {
+    width: 80px;
+    height: 30px;
+    font-size: 15px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 0px 0px #d6d6d6
+}
+
+.post .footer .postEditButton {
+    margin-left: auto;
+    margin-right: 20px
+}
+.post .divider .likeButton {
+    width: 60px;
+}
+
+.post .footer .postButton:active {
+    margin-top:4px;
+    margin-bottom: 0px;
+    box-shadow: 0px 0px 0px 0px #d6d6d6
+}
+
+.post .divider .postButton:hover {
+    background-color: #9e9e9e;
+}
+
+.post .footer {
+    display: flex;
+    flex-direction: row;
+    width:100%;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.post .footer .date {
+    font-size:20px;
+    height: 5px;
+    margin-left: 7px;
+    margin-bottom: 25px;
+}
+
+.post .postBody img {
+    max-width: 200%;
+    height:auto;
+    border-radius: 100%;
+}
+
+.post .spaceDiv {
+    background-color: white;
+    width: 95%;
+    align-self: center;
+    border-radius: 10px;
+    height: 2.5px;
+    margin-top: 25px;
 
 }
 
@@ -727,32 +424,247 @@ background-color: #C6C7C7;
 
 
 
-.homePanel
-{
+
+/* PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  
+PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
+
+.profilePanel {
+    background-color: rgb(36, 37, 44);
+    box-shadow: 0 4px 2px rgb(49, 50, 59);
+    border-radius: 10px;
+    height:auto;
+    width:99%;
+    margin-bottom: 15px;
+    flex-direction: column;
+    display:flex;
+    color:white;
+}
+
+.profilePanel .profileBio {
+    display:flex;
+    flex-direction: column;
+    align-items: start;
+    overflow: auto;
+    word-wrap: break-word;  
+    white-space: pre-wrap;  
+    white-space: normal;  
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 20px;
+}
+
+.profilePanel .profileStats {
+    display:flex;
+    flex-direction: row;
+    align-content: flex-start;
+    align-items: center;
+    box-sizing: border-box;  
+}
+
+.profilePanel .profileStats h1 {
+    margin: 10px;
+    font-size: 20px;
+}
+
+.profilePanel .profileStats .profileEditButton, .profileFollowButton {
+    width: 110px;
+    height: 30px;
+    font-size: 15px;
+    margin-left: 90px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    margin-top: 25px;
+    border-radius: 5px;
+    border-radius:5px;
+    display: none;
+    box-shadow: 0px 2px 0px 0px #d6d6d6;
+}
+
+.profilePanel .profileStats .profileEditButton:active, .profileFollowButton:active {
+    margin-top:25px;
+    margin-bottom: 0px;
+    box-shadow: 0px 0px 0px 0px #d6d6d6;
+}
+
+.profilePanel .profileStats .profileEditButton:hover, .profileFollowButton:hover {
+   background-color: #C6C7C7;
+}
+
+.profilePanel .profileStats a {
+    text-decoration: none;
+    color: white;
+}
+
+.profilePanel .profileStats a:hover {
+    text-decoration: underline;
+    color: #007bff;
+}
+
+.profilePanel .profileInfo {
+    display:flex;
+    flex-direction: row;
+    margin-bottom: 5px;
+    height: min-content; 
+    max-width: 500px;
+    box-sizing: border-box; 
+    font-size: 15px;
+}
+
+.profilePanel .profileInfo img {
+    display:flex;
+    margin-bottom: -20px;
+    font-size: 15px;
+    width: 100px;
+    margin-left: 4px;
+    margin-top: 5px;
+    height: 100px;
+}
+
+.profilePanel .profileInfo img:hover {
+    color:red;
+}
+
+.profilePanel .profileInfo h1 {
+    margin-left: 10px;
+    font-size: 30px;
+    text-decoration: none;
+    color:white;
+}
+
+.profilePanel .profileInfo a {
+    text-decoration: none;
+    color: white;
+}
+
+.profilePanel .profileInfo .profileUser {
+    display: flex;
+    flex: 1;  
+    flex-direction: row;
+    font-size:90px;
+    width: auto;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden; 
+}
+
+.profilePanel .profileBio #changePfp {
+    display: none;
+    overflow: auto;
+    word-wrap: break-word; 
+    margin: 0;
+}
+
+.profilePanel .profileBio p {
+    text-align: left;
+    word-wrap: break-word;  
+    white-space: normal;  
+    width: 95%;
+    overflow: hidden;
+    word-wrap: break-word;  
+    white-space: pre-wrap;  
+}
+
+
+
+
+
+
+
+
+
+
+/* FOLLOWING PANEL CSS  FOLLOWING PANEL CSS  FOLLOWING PANEL CSS  
+FOLLOWING PANEL CSS  FOLLOWING PANEL CSS  FOLLOWING PANEL CSS   */
+
+.followingPanel {
+    width: 99%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 15px;
+    background-color: rgb(36, 37, 44);
+    box-shadow: 0 4px 2px rgb(49, 50, 59); 
+}
+
+.followingPanel .pfp {
+    height: 70px;
+    width: 70px;
+    align-self: center;
+    margin: 5px;
+}
+
+.followingPanel .followingButton {
+    width: 90px;
+    height: 50px;
+    font-size: 15px;
+    margin-left: auto;
+    margin-right: 10px;
+    border-radius: 5px;
+    border-radius:5px;
+    justify-self: center;
+    align-self: center;
+    box-shadow: 0px 2px 0px 0px #d6d6d6;
+}
+
+.followingPanel h1 {
+    color: white;
+    
+}
+
+
+
+
+
+
+
+
+
+
+/* HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS 
+HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
+
+.homePanel {
     position: absolute;
     overflow-y:scroll;
     box-sizing: border-box;  
-
     top: 6.25vh;
     width: 540px;
     min-width: 540px; 
     height: 93vh; 
     border-radius: 5px;
-    
-
     display: flex;
     flex-direction: column;    
     align-self: center;
     align-items: center;
     align-content:  flex-start;
     justify-content:  flex-start;
-
-    /* background-color: rgba(0, 0, 0, 0.7);
-    border-color: white;
-    border-style: solid;
-    color:white */
 }
 
 .homePanel::-webkit-scrollbar {
     display: none;  /* Chrome, Safari */
-  }
+}
+
+
+
+
+
+
+
+
+
+
+/* MOBILE DISPLAY CSS  MOBILE DISPLAY CSS  MOBILE DISPLAY CSS  
+MOBILE DISPLAY CSS  MOBILE DISPLAY CSS  MOBILE DISPLAY CSS   */
+
+@media (max-width: 767px) {
+    .homePanel {
+        width: 100vw;  
+        min-width: 100vw;
+        left: 0; 
+    }
+    .post .footer .postEditButton, .post .divider .likeButton, .post .divider .postButton {
+        width: 100px;  
+    }
+    .bar .logo {
+        display: none;  
+    }
+}

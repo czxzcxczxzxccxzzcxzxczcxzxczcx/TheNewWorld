@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 followerPanel.innerHTML = `
                     <img class="pfp homeHover" src="${user.pfp}" alt="Profile Picture"/>
-                    <h1>@${user.username} (${user.accountNumber})</h1>
+                    <h1>@${user.username}</h1>
                 `;
                 homePanel.appendChild(followerPanel);
             });
