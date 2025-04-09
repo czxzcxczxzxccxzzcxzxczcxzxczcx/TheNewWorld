@@ -15,8 +15,6 @@ const userSchema = new mongoose.Schema({
     pfp: { type: String , default: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"}
 });
 
-
-
 const postSchema = new mongoose.Schema({
     postId: { type: String, required: true },
     title: { type: String, required: true }, 
@@ -46,24 +44,6 @@ const connectToDB = async () => {
         throw err;
     }
 };
-
-// const updateLikesArray = async () => {
-//     try {
-//         const posts = await Post.find();
-
-//         // Loop through each post to check the 'likes' field
-//         for (let post of posts) {
-//             if (!post.hasOwnProperty('likes') || !Array.isArray(post.likes)) {
-//                 // If 'likes' doesn't exist or isn't an array, initialize it as an empty array
-//                 post.likes = [];
-//                 await post.save(); // Save the updated post
-//                 console.log(`Post with postId ${post.postId} fixed: 'likes' field initialized as an array.`);
-//             }
-//         }
-//     } catch (error) {
-//         console.error('Error updating posts with missing likes field:', error);
-//     }
-// };
 
 const fixProfile = async () => {
     try {

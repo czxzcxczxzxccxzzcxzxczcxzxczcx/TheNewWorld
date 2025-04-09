@@ -55,10 +55,13 @@ router.post('/login', async (req, res) => {
                 sessionStore[sessionId] = {userId: user._id, username: user.username, accountNumber: user.accountNumber,};
                 
                 res.cookie('TNWID', sessionId, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000,  sameSite: 'Strict', });
-
                 res.json({ success: true, message: 'Login successful' });
+
+                console.log(`Server Login:\t\tSuccessful`);
             } else {
                 res.json({ success: false, message: 'Invalid password' });
+                console.log(`Server Login:\t\tError: Invalid password`);
+
             }
         } else {
             res.json({ success: false, message: 'Invalid account number or name' });
