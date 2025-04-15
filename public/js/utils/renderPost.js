@@ -77,7 +77,7 @@ export function renderPost(post, username, pfp, accountNumber,from,fromAccountNu
     contentP.textContent = post.content;
     viewsH2.textContent = `${post.views} Views`;
     likeCounter.textContent = `${post.likes.length} likes`;
-    repostCounter.textContent = post.reposts;
+    repostCounter.textContent = `${ post.reposts.length} reposts`;
     likeButton.textContent = 'Like';
     likeButton.type = 'submit';
     repostButton.textContent = 'Repost';
@@ -92,6 +92,7 @@ export function renderPost(post, username, pfp, accountNumber,from,fromAccountNu
     homePanel.appendChild(postDiv);
 
     setupLikes(likeButton, likeCounter, post, fromAccountNumber);
+    setupReposts(repostButton, repostCounter, post, fromAccountNumber);
     if (post.accountNumber === fromAccountNumber) { 
         setupEditButton(footerDiv, post, titleH1, contentP); 
         // deleteE.addEventListener("click", () => {
@@ -183,5 +184,45 @@ export function setupLikes(likeButton, likeCounter, post, accountNumber) {
                 if (data && data.success) { likeCounter.textContent = `${data.post.likes.length} likes`; }
             })
             .catch(error => {console.error('Error liking post or fetching updated data:', error);});
+    });
+}
+
+export function setupReposts(repostButton, repostCounter, post, accountNumber) {
+    const postId = post.postId;
+
+    // Check if the user has already reposted the post
+    apiRequest('/api/checkRepost', 'POST', { postId, accountNumber })
+        .then(data => {
+            if (data.reposted) {
+                repostButton.textContent = 'Reposted';
+                repostButton.style.backgroundColor = "#777777";
+                console.log('Reposted');
+            }
+        })
+        .catch(error => { console.error('Error checking repost status:', error); });
+
+    // Add event listener for reposting/unreposting the post
+    repostButton.addEventListener("click", () => {
+        apiRequest('/api/repost', 'POST', { postId, accountNumber })
+            .then(data => {
+                if (data.success) {
+                    if (data.removed) {
+                        repostButton.textContent = 'Repost';
+                        repostButton.style.backgroundColor = "white";
+                    } else {
+                        repostButton.textContent = 'Reposted';
+                        repostButton.style.backgroundColor = "#777777";
+                    }
+                    // Fetch the updated repost count after the button is clicked
+                    return apiRequest('/api/getPost', 'POST', { postId });
+                }
+            })
+            .then(data => {
+                if (data && data.success) { 
+                    console.log(data.post.reposts);
+                    repostCounter.textContent = `${data.post.reposts.length} reposts`; 
+                }
+            })
+            .catch(error => { console.error('Error reposting post or fetching updated data:', error); });
     });
 }

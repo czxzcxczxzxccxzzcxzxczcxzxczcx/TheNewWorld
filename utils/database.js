@@ -12,8 +12,12 @@ const userSchema = new mongoose.Schema({
     following: { type: [Number], default: [] },
     posts: {type: Number, default: 0 },
     bio: { type: String, default: "" },
-    pfp: { type: String , default: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"}
+    pfp: { type: String , default: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"},
+    liked: { type: [String], default: [] },
+    reposts: { type: [String], default: [] },
 });
+
+
 
 const postSchema = new mongoose.Schema({
     postId: { type: String, required: true },
@@ -23,7 +27,7 @@ const postSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }, 
     likes: { type: [Number], default: [] },
     views: { type: Number, default: 0 },
-    reposts: { type: Number, default: 0 }
+    reposts: { type: [Number], default: [] }, // Set default to an empty array
 });
 
 
@@ -44,6 +48,24 @@ const connectToDB = async () => {
         throw err;
     }
 };
+
+// const updateLikesArray = async () => {
+//     try {
+//         const posts = await Post.find();
+
+//         // Loop through each post to check the 'likes' field
+//         for (let post of posts) {
+//             if (!post.hasOwnProperty('likes') || !Array.isArray(post.likes)) {
+//                 // If 'likes' doesn't exist or isn't an array, initialize it as an empty array
+//                 post.likes = [];
+//                 await post.save(); // Save the updated post
+//                 console.log(`Post with postId ${post.postId} fixed: 'likes' field initialized as an array.`);
+//             }
+//         }
+//     } catch (error) {
+//         console.error('Error updating posts with missing likes field:', error);
+//     }
+// };
 
 const fixProfile = async () => {
     try {
@@ -68,10 +90,22 @@ const fixProfile = async () => {
             if (!user.hasOwnProperty('followers') || !Array.isArray(user.followers)) {
                 user.followers = user.followers || [];
                 isModified = true;
+            } else {
+                const uniqueFollowers = [...new Set(user.followers)];
+                if (uniqueFollowers.length !== user.followers.length) {
+                    user.followers = uniqueFollowers;
+                    isModified = true;
+                }
             }
             if (!user.hasOwnProperty('following') || !Array.isArray(user.following)) {
                 user.following = user.following || [];
                 isModified = true;
+            } else {
+                const uniqueFollowing = [...new Set(user.following)];
+                if (uniqueFollowing.length !== user.following.length) {
+                    user.following = uniqueFollowing;
+                    isModified = true;
+                }
             }
             if (!user.hasOwnProperty('posts') || typeof user.posts !== 'number') {
                 user.posts = user.posts || 0;
@@ -85,6 +119,26 @@ const fixProfile = async () => {
                 user.pfp = user.pfp || 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png';
                 isModified = true;
             }
+            if (!user.hasOwnProperty('liked') || !Array.isArray(user.liked)) {
+                user.liked = user.liked || [];
+                isModified = true;
+            } else {
+                const uniqueLiked = [...new Set(user.liked)];
+                if (uniqueLiked.length !== user.liked.length) {
+                    user.liked = uniqueLiked;
+                    isModified = true;
+                }
+            }
+            if (!user.hasOwnProperty('reposts') || !Array.isArray(user.reposts)) {
+                user.reposts = user.reposts || [];
+                isModified = true;
+            } else {
+                const uniqueReposts = [...new Set(user.reposts)];
+                if (uniqueReposts.length !== user.reposts.length) {
+                    user.reposts = uniqueReposts;
+                    isModified = true;
+                }
+            }
 
             // Save the user document if any modifications were made
             if (isModified) {
@@ -97,7 +151,114 @@ const fixProfile = async () => {
     }
 };
 
+const fixPosts = async () => {
+    try {
+        const posts = await Post.find();
 
+        for (let post of posts) {
+            let isModified = false;
+
+            // Check and fix each field in the schema
+            if (!post.postId || typeof post.postId !== 'string') {
+                console.error(`Post with invalid or missing postId found: ${post._id}`);
+                continue; // Skip fixing if postId is invalid
+            }
+            if (!post.title || typeof post.title !== 'string') {
+                post.title = 'Untitled Post';
+                isModified = true;
+            }
+            if (!post.content || typeof post.content !== 'string') {
+                post.content = 'No content';
+                isModified = true;
+            }
+            if (!post.accountNumber || typeof post.accountNumber !== 'string') {
+                post.accountNumber = 'unknownAccount';
+                isModified = true;
+            }
+            if (!post.createdAt || !(post.createdAt instanceof Date)) {
+                post.createdAt = new Date();
+                isModified = true;
+            }
+            if (!Array.isArray(post.likes)) {
+                post.likes = [];
+                isModified = true;
+            } else {
+                const uniqueLikes = [...new Set(post.likes)];
+                if (uniqueLikes.length !== post.likes.length) {
+                    post.likes = uniqueLikes;
+                    isModified = true;
+                }
+            }
+            if (typeof post.views !== 'number') {
+                post.views = 0;
+                isModified = true;
+            }
+            if (!Array.isArray(post.reposts)) {
+                post.reposts = [];
+                isModified = true;
+            } else {
+                const uniqueReposts = [...new Set(post.reposts)].filter(reposter => reposter !== 0);
+                if (uniqueReposts.length !== post.reposts.length) {
+                    post.reposts = uniqueReposts;
+                    isModified = true;
+                }
+            }
+
+            // Save the post document if any modifications were made
+            if (isModified) {
+                await post.save();
+                console.log(`Post with postId ${post.postId} fixed.`);
+            }
+        }
+    } catch (error) {
+        console.error('Error fixing posts:', error);
+    }
+};
+
+const fixUserLikedAndReposts = async () => {
+    try {
+        const users = await User.find();
+        const posts = await Post.find();
+
+        for (let user of users) {
+            let isModified = false;
+
+            // Initialize liked and reposts arrays if not present
+            if (!Array.isArray(user.liked)) {
+                user.liked = [];
+                isModified = true;
+            }
+            if (!Array.isArray(user.reposts)) {
+                user.reposts = [];
+                isModified = true;
+            }
+
+            // Clear existing liked and reposts arrays to rebuild them
+            user.liked = [];
+            user.reposts = [];
+
+            // Iterate through posts to find matches for the user
+            for (let post of posts) {
+                if (post.likes.includes(Number(user.accountNumber))) {
+                    user.liked.push(post.postId); // Add postId as a string
+                    isModified = true;
+                }
+                if (post.reposts.includes(Number(user.accountNumber))) {
+                    user.reposts.push(post.postId); // Add postId as a string
+                    isModified = true;
+                }
+            }
+
+            // Save the user document if any modifications were made
+            if (isModified) {
+                await user.save();
+                console.log(`User with accountNumber ${user.accountNumber} updated with liked and reposted posts.`);
+            }
+        }
+    } catch (error) {
+        console.error('Error fixing user liked and reposts data:', error);
+    }
+};
 
 const updatePost = async (postId, field, value) => {
     try {
@@ -178,4 +339,4 @@ const clearDatabase = async () => {
     }
 };
 
-module.exports = { connectToDB, clearDatabase, updateUserPassword, updateData, updatePost, fixProfile, User, Post };
+module.exports = { connectToDB, clearDatabase, updateUserPassword, updateData, updatePost, fixProfile, fixPosts, fixUserLikedAndReposts, User, Post };

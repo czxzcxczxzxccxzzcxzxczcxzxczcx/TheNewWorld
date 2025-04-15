@@ -1,8 +1,10 @@
-const { connectToDB, updateUserPassword, updateData, fixProfile } = require('./database');
+const { connectToDB, updateUserPassword, updateData, fixProfile, fixPosts, fixUserLikedAndReposts } = require('./database');
 
 const initializeDatabase = async () => {
     try {
         await connectToDB();
+        await fixPosts();
+        // await fixUserLikedAndReposts();
     } catch (err) {
         console.error('DATABASE INITIALIZATION ERROR', err);
     }

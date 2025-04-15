@@ -81,6 +81,9 @@ NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
 .bar .buttons a {
     text-decoration: none; 
 }
+.bar .buttons a:hover {
+    border-bottom: 2px solid white; /* Add a bottom border on hover */
+}
 
 .bar .buttons h1:hover {
     cursor: pointer; 
@@ -283,7 +286,7 @@ POST CSS POST CSS POST CSS */
 .post {
     height: 200px;
     border-radius: 10px;
-    width: 99%;
+    width: 95%;
     scroll-snap-align: start;
     display: flex;
     flex-direction: column;    
@@ -358,7 +361,7 @@ POST CSS POST CSS POST CSS */
 }
 
 .post .divider .postButton, .post .footer .postEditButton {
-    width: 80px;
+    min-width: 60px;
     height: 30px;
     font-size: 15px;
     border-radius: 5px;
@@ -407,15 +410,15 @@ POST CSS POST CSS POST CSS */
 }
 
 .post .spaceDiv {
+    display: flex;
+    align-self: center;
     background-color: white;
     width: 95%;
     align-self: center;
     border-radius: 10px;
     height: 2.5px;
     margin-top: 25px;
-
 }
-
 
 
 
@@ -433,7 +436,7 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     box-shadow: 0 4px 2px rgb(49, 50, 59);
     border-radius: 10px;
     height:auto;
-    width:99%;
+    width:95%;
     margin-bottom: 15px;
     flex-direction: column;
     display:flex;
@@ -472,7 +475,7 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     font-size: 15px;
     margin-left: 90px;
     margin-right: 10px;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
     margin-top: 25px;
     border-radius: 5px;
     border-radius:5px;
@@ -563,6 +566,41 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     white-space: pre-wrap;  
 }
 
+.profilePanel .selectionDiv {
+    width: 95%;
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-top: 5px;
+    border-radius: 10px;
+    height: min-content;
+
+}
+
+.profilePanel .profileButton {
+    width: 110px;
+    height: 30px;
+    font-size: 15px;
+    background-color: white;
+
+    margin-bottom: 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+    border-radius:5px;
+    box-shadow: 0px 2px 0px 0px #d6d6d6;
+}
+
+.profilePanel .spaceDiv {
+    display: flex;
+    align-self: center;
+    background-color: white;
+    width: 98%;
+    align-self: center;
+    border-radius: 10px;
+    height: 2.5px;
+}
 
 
 
@@ -640,7 +678,7 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 }
 
 .homePanel::-webkit-scrollbar {
-    display: none;  /* Chrome, Safari */
+    display: none; 
 }
 
 
@@ -659,7 +697,6 @@ MOBILE DISPLAY CSS  MOBILE DISPLAY CSS  MOBILE DISPLAY CSS   */
     .homePanel {
         width: 100vw;  
         min-width: 100vw;
-        left: 0; 
     }
     .post .footer .postEditButton, .post .divider .likeButton, .post .divider .postButton {
         width: 100px;  

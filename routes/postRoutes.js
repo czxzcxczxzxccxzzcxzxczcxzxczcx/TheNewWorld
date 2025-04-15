@@ -42,7 +42,6 @@ router.post('/deletePost', async (req, res) => {
 
             // Update the user's posts array
             await User.updateOne(
-                { accountNumber },
                 { $pull: { posts: postId } }
             );
 
@@ -143,6 +142,75 @@ router.post('/checkLike', async (req, res) => {
     }
 });
 
+// Route to check if a post is reposted by a user
+router.post('/checkRepost', async (req, res) => {
+    const { postId, accountNumber } = req.body;
+
+    try {
+        const post = await Post.findOne({ postId });
+
+        if (!post) {
+            return res.status(404).json({ success: false, message: 'Post not found' });
+        }
+
+        if (post.reposts.includes(accountNumber)) {
+            return res.status(200).json({ success: true, reposted: true });
+        }
+
+        return res.status(200).json({ success: true, reposted: false });
+    } catch (error) {
+        console.error('Error checking repost status:', error);
+        return res.status(500).json({ success: false, message: 'Error checking repost status', error });
+    }
+});
+
+// Route to repost or remove repost of a post
+router.post('/repost', async (req, res) => {
+    const { postId, accountNumber } = req.body;
+
+    try {
+        const user = await User.findOne({ accountNumber });
+        const post = await Post.findOne({ postId });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        if (!post) {
+            return res.status(404).json({ success: false, message: 'Post not found' });
+        }
+
+        // Ensure reposts array exists in both User and Post
+        if (!Array.isArray(user.reposts)) {
+            user.reposts = [];
+        }
+        if (!Array.isArray(post.reposts)) {
+            post.reposts = [];
+        }
+
+        // Check if the user has already reposted the post
+        if (user.reposts.includes(postId)) {
+            // Remove repost from User and Post
+            user.reposts = user.reposts.filter(repost => repost !== postId);
+            post.reposts = post.reposts.filter(reposter => reposter.toString() !== accountNumber.toString());
+            await user.save();
+            await post.save();
+            return res.status(200).json({ success: true, removed: true, message: 'Repost removed successfully' });
+        }
+
+        // Add repost to User and Post
+        user.reposts.push(postId);
+        post.reposts.push(accountNumber);
+        await user.save();
+        await post.save();
+
+        return res.status(200).json({ success: true, message: 'Post reposted successfully', user, post, removed: false });
+    } catch (error) {
+        console.error('Error reposting post:', error);
+        return res.status(500).json({ success: false, message: 'Error reposting post', error });
+    }
+});
+
 // Creates a new post
 router.post('/createPost', async (req, res) => {
     const { accountNumber, title, content } = req.body;
@@ -170,7 +238,7 @@ router.post('/getAllPosts', async (req, res) => {
     try {
         if (Post) {
             const posts = await Post.find();
-            // console.log(posts);
+            console.log(posts);
             res.json({ success: true, posts: posts });
         }
 
