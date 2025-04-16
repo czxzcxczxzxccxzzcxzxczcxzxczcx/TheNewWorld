@@ -3,6 +3,8 @@ import { apiRequest } from './utils/apiRequest.js';
 document.addEventListener("DOMContentLoaded", async function () {
     const homePanel = document.getElementById("homePanel");
     const profileAccountNumber = window.location.pathname.split('/')[2];
+    var gebid = document.getElementById.bind(document);
+
     let accountNumber;
 
 
@@ -43,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 if (accountNumber == profileAccountNumber) { 
                     followingPanel.innerHTML = `
-                    <img class="pfp homeHover"  src="${user.pfp}" alt="Profile Picture"/>
+                    <img class="pfp homeHover" id="${user.accountNumber}"  src="${user.pfp}" alt="Profile Picture"/>
                     <h1>@${user.username} </h1>
                     <button class="followingButton" data-account-number="${user.accountNumber}">Unfollow</button>
                 `;
@@ -53,6 +55,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     <h1>@${user.username} (${user.accountNumber})</h1>
                 `;
                 }
+                // document.getElementById("2369255378").addEventListener("click", async function (event) {
+                //     window.location.href = `/profile/${user.accountNumber}`;  
+                // });
                 homePanel.appendChild(followingPanel);
             });
 
@@ -92,6 +97,19 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("profileButton").addEventListener("click", function (event) {
             event.preventDefault();
             if (accountNumber) {window.location.href = `/profile/${accountNumber}`;}
+        });
+
+        apiRequest('/api/verify', 'GET')
+        .then(data => {
+            if (data.success) {
+                const adminButton = document.getElementById('adminPanelButton');
+                if (adminButton) {
+                    adminButton.style.display = 'block'; // Set display to block if authorized
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error verifying admin access:', error);
         });
 
     fetchAndRenderFollowing();

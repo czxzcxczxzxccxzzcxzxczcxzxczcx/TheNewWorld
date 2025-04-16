@@ -88,7 +88,6 @@ router.post('/getPost', async (req, res) => {
 
 router.post('/likePost', async (req, res) => {
     const { postId, accountNumber } = req.body;
-    console.log(req.body);
     try {
         const existingPost = await Post.findOne({ postId });
         
@@ -97,7 +96,6 @@ router.post('/likePost', async (req, res) => {
         }
 
         if (!Array.isArray(existingPost.likes)) {
-            console.log("NOTEXIST")
             existingPost.likes = []; 
         }
 
@@ -238,7 +236,6 @@ router.post('/getAllPosts', async (req, res) => {
     try {
         if (Post) {
             const posts = await Post.find();
-            console.log(posts);
             res.json({ success: true, posts: posts });
         }
 

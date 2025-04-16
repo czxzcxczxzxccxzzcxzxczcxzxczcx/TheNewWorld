@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
+
     async function fetchAndRenderFollowers() {
         try {
             // Get the user ID from the URL
@@ -71,6 +72,19 @@ document.addEventListener("DOMContentLoaded", async function () {
             window.location.href = `/profile/${accountNumber}`;
         }
     });
+
+    apiRequest('/api/verify', 'GET')
+            .then(data => {
+                if (data.success) {
+                    const adminButton = document.getElementById('adminPanelButton');
+                    if (adminButton) {
+                        adminButton.style.display = 'block'; // Set display to block if authorized
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error verifying admin access:', error);
+            });
 
     fetchAndRenderFollowers();
     fetchUserInfo();

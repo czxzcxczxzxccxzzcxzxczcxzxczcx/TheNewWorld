@@ -9,6 +9,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     function setupPage() {
+        apiRequest('/api/verify', 'GET')
+                .then(data => {
+                    if (data.success) {
+                        const adminButton = document.getElementById('adminPanelButton');
+                        if (adminButton) {
+                            adminButton.style.display = 'block'; // Set display to block if authorized
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error verifying admin access:', error);
+                });
+
         apiRequest('/api/getUserInfo', 'GET')
             .then(data => {
                 if (data.success) {
@@ -34,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     gebid('followButton').style.display = "none";
 
                 } else {
+                    console.log(userAccountNumber, accountNumber)
                     gebid('followButton').style.display = "block";
 
                     // Check if the profile is followed

@@ -72,6 +72,7 @@ export function renderPost(post, username, pfp, accountNumber,from,fromAccountNu
     };
     // Set attributes and content
     postImage.src = pfp;
+    postDiv.id = post.postId;
     usernameTitle.textContent = `@${username}`;
     titleH1.textContent = post.title;
     contentP.textContent = post.content;

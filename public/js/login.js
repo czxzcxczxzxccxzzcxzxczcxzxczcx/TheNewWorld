@@ -8,10 +8,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const newAccButton = document.getElementById('newAccount');
     const loginButton = document.getElementById('login');
 
-
-    if (user) {
-        window.location.href = '/home'; } else { loginPanel.style.display = 'flex';
-    }
+    apiRequest('/api/getUserInfo', 'GET').then(data => {
+        if (data.success) {
+            window.location.href = '/home';
+        } else {
+            loginPanel.style.display = 'flex'
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching user info:", error);
+    });
 
     document.addEventListener("click", function (event) {
         if (event.target === loginButton) {
