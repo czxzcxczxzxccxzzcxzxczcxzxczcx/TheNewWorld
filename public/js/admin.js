@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        apiRequest('/api/updateData', 'POST', { field, value })
+        apiRequest('/api/updateData', 'POST', { accountNumber, field, value })
             .then(data => {
                 if (data.success) {
                     console.log('User data updated successfully:', data.user);

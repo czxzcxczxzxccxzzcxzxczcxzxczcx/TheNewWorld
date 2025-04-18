@@ -4,7 +4,6 @@ const authRoutes = require('../routes/authRoutes');
 const staticRoutes = require('../routes/staticRoutes');
 const adminRoutes = require('../routes/adminRoutes');
 
-
 const setupRoutes = (app) => {
     app.use('/api', postRoutes);
     app.use('/api', profileRoutes);

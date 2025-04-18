@@ -1,8 +1,8 @@
 const express = require('express');
 const path = require('path');
+const { initDatabase } = require('./utils/initDatabase'); 
 const cookieParser = require('cookie-parser');
-const { initializeDatabase } = require('./utils/initDatabase'); // Import database initialization
-const setupRoutes = require('./utils/setupRoutes'); // Import route setup
+const setupRoutes = require('./utils/setupRoutes'); 
 
 const app = express();
 const PORT = 9999;
@@ -13,13 +13,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Initialize database
-initializeDatabase();
-
-// Setup routes
+// Setting up server
+initDatabase();
 setupRoutes(app);
 
 // Start the server
-app.listen(PORT, () => {
-    console.log(`Host connection:\tSuccessful`);
-});
+app.listen(PORT, () => {console.log(`Host connection:\tSuccessful`);});

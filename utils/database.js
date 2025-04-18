@@ -17,8 +17,6 @@ const userSchema = new mongoose.Schema({
     reposts: { type: [String], default: [] },
 });
 
-
-
 const postSchema = new mongoose.Schema({
     postId: { type: String, required: true },
     title: { type: String, required: true }, 
@@ -27,14 +25,11 @@ const postSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }, 
     likes: { type: [Number], default: [] },
     views: { type: Number, default: 0 },
-    reposts: { type: [Number], default: [] }, // Set default to an empty array
+    reposts: { type: [Number], default: [] }, 
 });
-
 
 const Post = mongoose.model('Post', postSchema);
 const User =  mongoose.model('User', userSchema);
-
-// Function to update password securely (hashes the new password)
 
 const connectToDB = async () => {
     try {
@@ -48,24 +43,6 @@ const connectToDB = async () => {
         throw err;
     }
 };
-
-// const updateLikesArray = async () => {
-//     try {
-//         const posts = await Post.find();
-
-//         // Loop through each post to check the 'likes' field
-//         for (let post of posts) {
-//             if (!post.hasOwnProperty('likes') || !Array.isArray(post.likes)) {
-//                 // If 'likes' doesn't exist or isn't an array, initialize it as an empty array
-//                 post.likes = [];
-//                 await post.save(); // Save the updated post
-//                 console.log(`Post with postId ${post.postId} fixed: 'likes' field initialized as an array.`);
-//             }
-//         }
-//     } catch (error) {
-//         console.error('Error updating posts with missing likes field:', error);
-//     }
-// };
 
 const fixProfile = async () => {
     try {

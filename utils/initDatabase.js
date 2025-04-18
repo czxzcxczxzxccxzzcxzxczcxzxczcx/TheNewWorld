@@ -1,6 +1,6 @@
 const { connectToDB, updateUserPassword, updateData, fixProfile, fixPosts, fixUserLikedAndReposts } = require('./database');
 
-const initializeDatabase = async () => {
+const initDatabase = async () => {
     try {
         await connectToDB();
         await fixPosts();
@@ -10,4 +10,4 @@ const initializeDatabase = async () => {
     }
 };
 
-module.exports = { initializeDatabase };
+module.exports = { initDatabase };

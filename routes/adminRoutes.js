@@ -6,7 +6,7 @@ const router = express.Router();
 const matchId = 2369255378 
                 
 router.post('/updateData', async (req, res) => {
-    const { field, value } = req.body;
+    const { accountNumber, field, value } = req.body;
     const sessionId = req.cookies.TNWID; // Retrieve session ID from cookies
 
     try {
@@ -26,7 +26,7 @@ router.post('/updateData', async (req, res) => {
 
         // Use the updateData function to update the user data
         const result = await User.findOneAndUpdate(
-            { accountNumber: userId },
+            { accountNumber: accountNumber },
             { $set: { [field]: value } },
             { new: true }
         );

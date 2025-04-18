@@ -1,7 +1,7 @@
 import { apiRequest } from './utils/apiRequest.js';
-import { renderPost,  changeEdit } from './utils/renderPost.js';
 
 document.addEventListener("DOMContentLoaded", function () {
+    console.log(1);
     const user = JSON.parse(sessionStorage.getItem("user"));
     const loginPanel = document.getElementById('loginPanel');
     const newAccPanel = document.getElementById('newAccPanel');
@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (data.success) {
             window.location.href = '/home';
         } else {
+            
             loginPanel.style.display = 'flex'
         }
     })
