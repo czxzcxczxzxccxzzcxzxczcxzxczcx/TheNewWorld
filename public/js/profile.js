@@ -65,6 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 apiRequest('/api/getUserPosts', 'POST', { accountNumber })
                 .then(data => {
                     if (data.success) {
+                        console.log(data)
                         // Sort posts by 'createdAt' in descending order
                         data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             
@@ -74,6 +75,21 @@ document.addEventListener("DOMContentLoaded", function () {
                             renderPost(post, username, pfp, accountNumber, 'profile',userAccountNumber);
                         });
                     }
+                });
+                apiRequest('/api/getUserReposts', 'POST', { accountNumber })
+                .then(data => {
+                    if (data && Array.isArray(data)) {
+                        // Sort posts by 'createdAt' in descending order
+                        data.sort((a, b) => new Date(b.post.createdAt) - new Date(a.post.createdAt));
+            
+                        data.forEach(item => {
+                            const { post, username, pfp } = item;
+                            renderPost(post, username, pfp, post.accountNumber, 'profilePosts', userAccountNumber);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching reposts:', error);
                 });
                 gebid('username').textContent = `${data.username}`;
                 gebid('pfp').src = pfp;
@@ -169,6 +185,23 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    document.getElementById("repostsButton").addEventListener("click", function () {
+        const profilePosts = document.getElementById("profilePosts");
+        const profileReposts = document.getElementById("profileReposts");
+
+        profilePosts.style.display = "none";
+        profileReposts.style.display = "flex";
+    });
+
+    document.getElementById("postsButton").addEventListener("click", function () {
+        const profilePosts = document.getElementById("profilePosts");
+        const profileReposts = document.getElementById("profileReposts");
+
+        console.log("posts")
+
+        profilePosts.style.display = "flex";
+        profileReposts.style.display = "none";
+    });
 
     setupPage();
 });

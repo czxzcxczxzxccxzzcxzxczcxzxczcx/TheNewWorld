@@ -297,4 +297,44 @@ router.post('/changePostData', async (req, res) => {
     }
   });
 
+router.post('/getUserReposts', async (req, res) => {
+    const { accountNumber } = req.body;
+
+    try {
+        if (!accountNumber) {
+            return res.status(400).json({ success: false, message: "Account number is required" });
+        }
+
+        const user = await User.findOne({ accountNumber });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        if (!Array.isArray(user.reposts) || user.reposts.length === 0) {
+            return res.status(404).json({ success: false, message: "No reposts found for this user" });
+        }
+
+        const repostedPosts = await Post.find({ postId: { $in: user.reposts } });
+
+        const postsWithUserData = await Promise.all(
+            repostedPosts.map(async (post) => {
+                const postOwner = await User.findOne({ accountNumber: post.accountNumber });
+                return {
+                    success: true,
+                    message: 'Post retrieved successfully',
+                    post,
+                    username: postOwner?.username || null,
+                    pfp: postOwner?.pfp || null,
+                };
+            })
+        );
+
+        res.status(201).json(postsWithUserData);
+    } catch (error) {
+        console.error('Error fetching reposts:', error);
+        res.status(500).json({ success: false, message: "Error fetching reposts" });
+    }
+});
+
 module.exports = router;

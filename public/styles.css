@@ -425,6 +425,17 @@ POST CSS POST CSS POST CSS */
 }
 
 
+.profilePosts {
+    display: flex;
+    flex-direction: column;
+    height: min-content;
+    width: 100%;
+}
+
+#profileReposts  {
+    display: none;
+}
+
 
 
 

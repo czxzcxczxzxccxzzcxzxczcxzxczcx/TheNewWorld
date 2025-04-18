@@ -56,8 +56,7 @@ export function renderPost(post, username, pfp, accountNumber,from,fromAccountNu
     const repostCounter = createElementWithClass('h2', 'likeCounter');
     const dateE = createElementWithClass('h2', 'date');
     const footerDiv = createElementWithClass('div', 'footer');
-    const spaceDiv = createElementWithClass('div', 'spaceDiv');
-    // const deleteE = createElementWithClass('button', 'deleteButton');
+    const spaceDiv = createElementWithClass('div', 'spaceDiv');    // const deleteE = createElementWithClass('button', 'deleteButton');
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -90,7 +89,20 @@ export function renderPost(post, username, pfp, accountNumber,from,fromAccountNu
     postBodyDiv.append(contentP, dividerDiv);
     postDiv.append(postDetailsDiv, postBodyDiv, spaceDiv,footerDiv);
     footerDiv.append(dateE, );
-    homePanel.appendChild(postDiv);
+
+    if (from == 'home') { 
+        homePanel.appendChild(postDiv);
+     } else if (from == 'profile') {
+        const profilePosts = document.getElementById('profilePosts');
+        profilePosts.appendChild(postDiv);
+
+     } else if (from == 'profilePosts') {
+        const profileReposts = document.getElementById('profileReposts');
+        console.log("appended")
+        profileReposts.appendChild(postDiv);
+     }
+
+
 
     setupLikes(likeButton, likeCounter, post, fromAccountNumber);
     setupReposts(repostButton, repostCounter, post, fromAccountNumber);
