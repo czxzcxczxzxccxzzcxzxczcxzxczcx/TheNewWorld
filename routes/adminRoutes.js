@@ -1,6 +1,6 @@
 const express = require('express');
 const { Post, User, fixPosts, fixProfile } = require('../utils/database');
-const sessionStore = require('../utils/sessionStore'); // Import sessionStore
+const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 const router = express.Router();
 
 const matchId = 2369255378 
@@ -17,7 +17,7 @@ router.post('/updateData', async (req, res) => {
 
         const user = sessionStore[sessionId]; // Get user from session store
         const userId = Number(user.accountNumber); // Ensure userId is a number
-        console.log(userId, matchId); // Debugging log
+        // console.log(userId, matchId); // Debugging log
 
         // Verify if the userId matches matchId
         if (userId !== matchId) {
@@ -135,7 +135,7 @@ router.get('/verify', async (req, res) => {
 
         const user = sessionStore[sessionId]; // Get user from session store
         const userId = Number(user.accountNumber); // Ensure userId is a number
-        console.log(userId, matchId); // Debugging log
+        // console.log(userId, matchId); // Debugging log
 
         // Check if the userId matches matchId
         if (userId === matchId) {

@@ -76,4 +76,24 @@ router.get('/followers/:userId', async (req, res) => {
     }
 });
 
+// Route for direct message page
+router.get('/dm/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findOne({ accountNumber: userId });
+
+        if (!user) {
+            return res.status(404).send('ERROR 404 | User Not Found');
+        }
+
+        const templatePath = path.join(__dirname, '../public/html/dm.html');
+        let template = fs.readFileSync(templatePath, 'utf8');
+
+        res.send(template);
+    } catch (error) {
+        console.error('Error fetching DM page:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 module.exports = router;

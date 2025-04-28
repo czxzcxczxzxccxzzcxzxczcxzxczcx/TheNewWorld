@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const { initDatabase } = require('./utils/initDatabase'); 
+const { initDatabase } = require('./utils/database/initDatabase'); // Updated path
 const cookieParser = require('cookie-parser');
 const setupRoutes = require('./utils/setupRoutes'); 
 

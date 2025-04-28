@@ -4,7 +4,9 @@ BODY CSS  BODY CSS  BODY CSS  BODY CSS  BODY CSS   */
 body {
     position: relative;
     /* background-image: url('https://wallpapersok.com/images/hd/cloudy-solid-grey-background-vdmz42yyw3kak60k.jpg'); */
-    background-color:rgba(18,18,21,255);
+    /* background-color: rgba(1,4,9,255); */
+    background-color:  rgb(0, 0, 0);
+    /* background-color:rgba(18,18,21,255); */
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
@@ -14,10 +16,12 @@ body {
     align-content: center;
     align-items: stretch;
     text-align: center;
-    text-shadow: black 2px 2px 0px;
+    text-shadow: black 2.5px 2.5px 0px;
     margin: 0;
     padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Roboto', sans-serif;
+
+    /* font-family: Arial, Helvetica, sans-serif; */
     justify-content: center;    
 }
 
@@ -34,8 +38,13 @@ body {
 NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
 
 .bar {
-    background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); 
+    /* background-color: rgb(18, 24, 33); */
+    background-color: rgb(13, 17, 23);
+
+    box-shadow: 0 4px 2px rgb(25, 33, 44); 
+
+    /* background-color: rgb(36, 37, 44);
+    box-shadow: 0 4px 2px rgb(49, 50, 59);  */
     position: absolute;
     top: 0vh;
     width: 100%;
@@ -117,8 +126,11 @@ LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
     display: none;
     flex-direction: column;    
     align-self: center;
-    background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); 
+    /* background-color: rgb(36, 37, 44);
+    box-shadow: 0 4px 2px rgb(49, 50, 59);  */
+
+    background-color: rgb(18, 24, 33);
+    box-shadow: 0 4px 2px rgb(31, 41,56); 
 }
 
 .panel form {
@@ -289,7 +301,7 @@ POST CSS POST CSS POST CSS */
 
 .post {
     height: 200px;
-    border-radius: 10px;
+    border-radius: 5px;
     width: 95%;
     scroll-snap-align: start;
     display: flex;
@@ -298,13 +310,22 @@ POST CSS POST CSS POST CSS */
     align-self: center; 
     justify-items: flex-start; 
     align-items: flex-start;
-    margin-bottom: 15px;
-    background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); 
+    border-color: black;
+    border-width:5px;
+    margin-bottom: 30px;
+    background-color: rgb(13, 17, 23);
+    box-shadow: 0 4px 2px rgb(25, 33, 44); 
+
+    /* background-color: rgb(36, 37, 44);
+    box-shadow: 0 4px 2px rgb(49, 50, 59);  */
+    /* background-color: rgb(18, 24, 33); */
+    /* box-shadow: 0 4px 2px rgb(31, 41,56);  */
     color: white;
 }
 
-.post .postDetails {
+
+
+.post .postDetails, .post .postCommentDetails  {
     display: flex;
     margin-bottom: -10px;
     font-size: 12px;
@@ -313,11 +334,15 @@ POST CSS POST CSS POST CSS */
     margin-right: 10px;
 }
 
+.post .postCommentDetails  {
+    font-size: 10px;
+}
+
 .post   .postDetails h1  {
     margin-right: 20px;
 }
 
-.post   .postDetails .pfp {
+.post   .postDetails .pfp, .post .postCommentDetails .pfp {
     height: 60px;
     margin-top: 5px;
     width: 60px;
@@ -331,11 +356,13 @@ POST CSS POST CSS POST CSS */
     border-style: solid;
 }
 
-.post   .postBody
-{
+.post   .postBody, .postCommentBody {
+    display: flex;
+    /* margin-bottom: -10px; */
     text-align: left;
-    margin-left: 10px;
-    margin-top: 10px;
+    margin-left: 30px;
+    margin-top: 25px;
+    margin-bottom: 10px;
     margin-right: 10px;   
     flex-direction: column;
     display: flex;
@@ -348,10 +375,14 @@ POST CSS POST CSS POST CSS */
     white-space: pre-wrap;
 }
 
+
 .post .divider {
     display:flex;
     border-color: white;
     flex-direction: row;
+    margin-bottom: 20px;
+    margin-left: 30px;
+
     height: 40px;
     flex-wrap: wrap ;
     overflow: wrap;
@@ -361,12 +392,13 @@ POST CSS POST CSS POST CSS */
 .post .divider h2 {
     font-size: 20px;
     margin-right: 20px;
-    margin-left: 5px;
+    /* margin-left: 5px; */
 }
 
 .post .divider .postButton, .post .footer .postEditButton {
     min-width: 60px;
-    height: 30px;
+    height: 25px;
+    margin-right: 5px;
     font-size: 15px;
     border-radius: 5px;
     box-shadow: 0px 2px 0px 0px #d6d6d6
@@ -390,14 +422,16 @@ POST CSS POST CSS POST CSS */
     background-color: #9e9e9e;
 }
 
-.post .footer {
+.post .footer, .commentFooter {
     display: flex;
     flex-direction: row;
     width:100%;
+    height:10px;
     justify-content: flex-start;
     align-items: center;
-    margin-left: 10px;
+    margin-left: 21.5px;
     margin-right: 10px;
+    margin-bottom: 20px;
 }
 
 .post .footer .date {
@@ -413,15 +447,17 @@ POST CSS POST CSS POST CSS */
     border-radius: 100%;
 }
 
-.post .spaceDiv {
+.post .spaceDiv, .spaceDiv {
     display: flex;
     align-self: center;
     background-color: white;
-    width: 95%;
+    width: 100%;
     align-self: center;
     border-radius: 10px;
-    height: 2.5px;
+    height: 2px;
     margin-top: 25px;
+
+    margin-bottom: 20px;
 }
 
 
@@ -443,12 +479,110 @@ POST CSS POST CSS POST CSS */
 
 
 
+
+
+
+
+
+
+
+.dmUser {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: rgb(36, 37, 44);
+    align-items: flex-start;
+    color: white;
+    /* justify-content: center; */
+}
+
+.dmUser h2 {
+    color: white
+}
+
+.dmUser .dmUserImage {
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+    border-radius: 100%;
+}
+
+
+
+
+
+/* COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  
+COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
+
+.commentSection {
+    display: flex;
+    flex-direction: column; 
+    width: 100%;
+    align-self: center; 
+    /* justify-items: flex-start; 
+    align-items: flex-start; */
+}
+
+.commentSection .comment {
+    display: flex;
+    flex-direction: column; 
+    width: 100%;
+    align-self: center; 
+    justify-items: flex-start; 
+    align-items: flex-start;
+}
+
+.commentSection .postCommentDetails .pfp {
+    margin-left: 20px;
+}
+
+.commentSection .postCommentBody {
+    margin-left: 39px;
+}
+
+.commentSection .commentFooter {
+    margin-left: 32.5px;
+    width:90%;
+
+    font-size: 15px;
+
+}
+.commentInputDiv {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.commentTextBox {
+
+    width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
 /* PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  
 PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 
 .profilePanel {
-    background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59);
+    /* background-color: rgb(36, 37, 44);
+    box-shadow: 0 4px 2px rgb(49, 50, 59); */
+    background-color: rgb(18, 24, 33);
+    box-shadow: 0 4px 2px rgb(31, 41,56); 
     border-radius: 10px;
     height:auto;
     width:95%;
@@ -696,6 +830,53 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     display: none; 
 }
 
+#homePanel {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    height: 100vh; /* Full height of the viewport */
+    padding-bottom: 70px; /* Add padding to prevent overlap with the input box */
+    position: relative;
+}
+
+.inputContainer {
+    position: fixed; /* Ensure the input box stays visible at the bottom */
+    bottom: 0;
+    width: 38%;
+    background-color: rgb(13, 17, 23);
+    box-shadow: 0 4px 2px rgb(25, 33, 44);
+    padding: 10px;
+    display: flex;
+    align-self: center;
+
+    align-items: center;
+    z-index: 10; /* Ensure it stays above other elements */
+}
+
+#messagePanel {
+ height:84vh;
+}
+
+#messageInput {
+    flex: 1;
+    resize: none;
+    padding: 10px;
+    color: black;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white; /* Ensure visibility */
+}
+
+#sendButton {
+    margin-left: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 
 
 
@@ -825,5 +1006,30 @@ MOBILE DISPLAY CSS  MOBILE DISPLAY CSS  MOBILE DISPLAY CSS   */
     }
     .bar .logo {
         display: none;  
+        width: 100%;
+        text-align: center;
     }
+}
+
+/* Styles for messages */
+.message {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+    word-wrap: break-word;
+    /* Removed shadow effect */
+    text-shadow: none;
+}
+
+.message.sent {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+}
+
+.message.received {
+    background-color: #f1f1f1;
+    color: black;
+    align-self: flex-start;
 }

@@ -1,7 +1,7 @@
 const express = require('express');
 const { Post, User } = require('../utils/database');
 
-const sessionStore = require('../utils/sessionStore'); // Import sessionStore
+const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 
 
 const router = express.Router();
@@ -86,13 +86,13 @@ router.post('/follow', async (req, res) => {
                 follower && senderAccountNumber && follower.toString() !== senderAccountNumber.toString()
             );
 
-            console.log('Unfollowing:', { senderUser, recipientUser });
+            // console.log('Unfollowing:', { senderUser, recipientUser });
 
             // Save the updated documents
             await senderUser.save();
             await recipientUser.save();
 
-            console.log('After unfollow:', { senderUser, recipientUser });
+            // console.log('After unfollow:', { senderUser, recipientUser });
 
             return res.json({ success: true, message: 'Unfollowed successfully' });
         } else {
@@ -100,13 +100,13 @@ router.post('/follow', async (req, res) => {
             senderUser.following.push(recipientAccountNumber);
             recipientUser.followers.push(senderAccountNumber);
 
-            console.log('Following:', { senderUser, recipientUser });
+            // console.log('Following:', { senderUser, recipientUser });
 
             // Save the updated documents
             await senderUser.save();
             await recipientUser.save();
 
-            console.log('After follow:', { senderUser, recipientUser });
+            // console.log('After follow:', { senderUser, recipientUser });
 
             return res.json({ success: true, message: 'Followed successfully' });
         }

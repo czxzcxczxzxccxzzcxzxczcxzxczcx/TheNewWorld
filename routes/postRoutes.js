@@ -1,6 +1,6 @@
 const express = require('express');
 const { Post, User } = require('../utils/database');
-const sessionStore = require('../utils/sessionStore'); // Import sessionStore
+const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 const router = express.Router();
 
 const generateUniquePostId = async () => {
@@ -18,32 +18,39 @@ const generateUniquePostId = async () => {
 
 router.post('/deletePost', async (req, res) => {
     const { postId } = req.body;
-    const sessionId = req.cookies.TNWID;  
+    const sessionId = req.cookies.TNWID;
 
     try {
         if (sessionId && sessionStore[sessionId]) {
-            const user = sessionStore[sessionId];  
+            const user = sessionStore[sessionId];
             const accountNumber = user.accountNumber;
 
-            // Find the post by postId
+            // Find the post by postId in the Posts collection
             const existingPost = await Post.findOne({ postId });
 
             if (!existingPost) {
                 return res.status(404).json({ success: false, message: 'Post not found' });
             }
 
-            // Check if the accountNumber matches the one who created the post
+            // Check if the accountNumber of the post matches the accountNumber from the session
             if (existingPost.accountNumber !== accountNumber) {
                 return res.status(403).json({ success: false, message: 'You are not authorized to delete this post' });
             }
 
+            // Remove the post from the reposts array of all users
+            await User.updateMany(
+                { reposts: postId },
+                { $pull: { reposts: postId } }
+            );
+
+            // Remove the post from the liked array of all users
+            await User.updateMany(
+                { liked: postId },
+                { $pull: { liked: postId } }
+            );
+
             // Delete the post
             await Post.deleteOne({ postId });
-
-            // Update the user's posts array
-            await User.updateOne(
-                { $pull: { posts: postId } }
-            );
 
             res.status(200).json({ success: true, message: 'Post deleted successfully' });
         } else {
@@ -301,19 +308,12 @@ router.post('/getUserReposts', async (req, res) => {
     const { accountNumber } = req.body;
 
     try {
-        if (!accountNumber) {
-            return res.status(400).json({ success: false, message: "Account number is required" });
-        }
+        if (!accountNumber) {return res.status(400).json({ success: false, message: "Account number is required" });}
 
         const user = await User.findOne({ accountNumber });
 
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-
-        if (!Array.isArray(user.reposts) || user.reposts.length === 0) {
-            return res.status(404).json({ success: false, message: "No reposts found for this user" });
-        }
+        if (!user) {return res.status(404).json({ success: false, message: "User not found" });}
+        if (!Array.isArray(user.reposts) || user.reposts.length === 0) {return res.status(404).json({ success: false, message: "No reposts found for this user" });}
 
         const repostedPosts = await Post.find({ postId: { $in: user.reposts } });
 

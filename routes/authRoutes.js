@@ -1,7 +1,7 @@
 
 const express = require('express');
 const { Post, User } = require('../utils/database');
-const sessionStore = require('../utils/sessionStore'); 
+const sessionStore = require('../utils/database/sessionStore'); 
 const { hashPassword, comparePassword } = require('../utils/hashing');
 const crypto = require('crypto');
 const cookieParser = require('cookie-parser');

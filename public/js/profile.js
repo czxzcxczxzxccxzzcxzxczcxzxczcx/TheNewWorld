@@ -40,14 +40,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 const username = data.username;
                 const accountNumber = profileAccountNumber;
                 const pfp = data.pfp;
-                let postsCount = 0;
-
+                
                 if (userAccountNumber === accountNumber) { 
                     gebid('profileEdit').style.display = "block"; 
                     gebid('followButton').style.display = "none";
 
                 } else {
-                    console.log(userAccountNumber, accountNumber)
                     gebid('followButton').style.display = "block";
 
                     // Check if the profile is followed
@@ -65,14 +63,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 apiRequest('/api/getUserPosts', 'POST', { accountNumber })
                 .then(data => {
                     if (data.success) {
-                        console.log(data)
+
+                        // Update the number of posts displayed on the profile page
+                        const postCountElement = gebid('posts');
+                        if (postCountElement) {
+                            postCountElement.textContent = `${data.posts.length} Posts`; // Set the total post count
+                        }
                         // Sort posts by 'createdAt' in descending order
                         data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            
+
                         data.posts.forEach(post => {
-                            postsCount++;
-                            gebid('posts').textContent = ` ${postsCount} Posts`;
-                            renderPost(post, username, pfp, accountNumber, 'profile',userAccountNumber);
+                            renderPost(post, username, pfp, accountNumber, 'profile', userAccountNumber);
                         });
                     }
                 });
@@ -185,23 +186,60 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    document.getElementById("repostsButton").addEventListener("click", function () {
+    gebid("postsButton").style.backgroundColor = "#777777";
+
+    gebid("repostsButton").addEventListener("click", function () {
         const profilePosts = document.getElementById("profilePosts");
         const profileReposts = document.getElementById("profileReposts");
 
         profilePosts.style.display = "none";
         profileReposts.style.display = "flex";
+        gebid("postsButton").style.backgroundColor = "white";
+        gebid("repostsButton").style.backgroundColor = "#777777";
+
     });
 
-    document.getElementById("postsButton").addEventListener("click", function () {
+    gebid("postsButton").addEventListener("click", function () {
         const profilePosts = document.getElementById("profilePosts");
         const profileReposts = document.getElementById("profileReposts");
 
-        console.log("posts")
 
         profilePosts.style.display = "flex";
         profileReposts.style.display = "none";
+        gebid("postsButton").style.backgroundColor = "#777777";
+        gebid("repostsButton").style.backgroundColor = "white";
     });
+
+    // Add Open DM button functionality
+    if (userAccountNumber !== profileAccountNumber) {
+        const openDMButton = document.createElement('button');
+        openDMButton.className = 'profileButton';
+        openDMButton.id = 'openDMButton';
+        openDMButton.textContent = 'Open DM';
+
+        // Append the button next to the reposts button
+        const repostsButton = gebid('repostsButton');
+        if (repostsButton) {
+            repostsButton.parentNode.insertBefore(openDMButton, repostsButton.nextSibling);
+        }
+
+        // Add event listener for the Open DM button
+        openDMButton.addEventListener('click', async function () {
+            try {
+                const data = await apiRequest('/api/addOpenDM', 'POST', { recipientAccountNumber: profileAccountNumber });
+
+                if (data.success) {
+                    alert('Direct message opened successfully.');
+                    window.location.href = `/dm/${profileAccountNumber}`; // Redirect to the DM page
+                } else {
+                    alert(data.message || 'Failed to open direct message. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error opening direct message:', error);
+                alert('Something went wrong. Please try again later.');
+            }
+        });
+    }
 
     setupPage();
 });

@@ -7,6 +7,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const newAccPanel = document.getElementById('newAccPanel');
     const newAccButton = document.getElementById('newAccount');
     const loginButton = document.getElementById('login');
+    const logo = document.getElementById('viewtest');
+
+    logo.style.display='block';
 
     apiRequest('/api/getUserInfo', 'GET').then(data => {
         if (data.success) {
