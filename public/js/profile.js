@@ -1,38 +1,42 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderPost, changeEdit } from './utils/renderPost.js';
 
-
 document.addEventListener("DOMContentLoaded", function () {
     const profileAccountNumber = window.location.pathname.split('/')[2];
     var gebid = document.getElementById.bind(document);
     let userAccountNumber;
 
+    // Fetch user info and then set up the page
+    async function fetchUserInfoAndSetupPage() {
+        try {
+            const data = await apiRequest('/api/getUserInfo', 'GET');
+            if (data.success) {
+                const user = data.user;
+                userAccountNumber = user.accountNumber; // Set userAccountNumber
+                console.log("User Account Number:", userAccountNumber);
+
+                // Call setupPage only after userAccountNumber is set
+                setupPage();
+            } else {
+                window.location.href = '/';
+            }
+        } catch (error) {
+            console.error("Error fetching user info:", error);
+        }
+    }
 
     function setupPage() {
         apiRequest('/api/verify', 'GET')
-                .then(data => {
-                    if (data.success) {
-                        const adminButton = document.getElementById('adminPanelButton');
-                        if (adminButton) {
-                            adminButton.style.display = 'block'; // Set display to block if authorized
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error verifying admin access:', error);
-                });
-
-        apiRequest('/api/getUserInfo', 'GET')
             .then(data => {
                 if (data.success) {
-                    const user = data.user;
-                    userAccountNumber = user.accountNumber;
-                } else {
-                    window.location.href = '/';
+                    const adminButton = document.getElementById('adminPanelButton');
+                    if (adminButton) {
+                        adminButton.style.display = 'block'; // Set display to block if authorized
+                    }
                 }
             })
             .catch(error => {
-                console.error("Error fetching user info:", error);
+                console.error('Error verifying admin access:', error);
             });
 
         apiRequest(`/api/get/profile/${profileAccountNumber}`, 'GET')
@@ -40,12 +44,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 const username = data.username;
                 const accountNumber = profileAccountNumber;
                 const pfp = data.pfp;
-                
-                if (userAccountNumber === accountNumber) { 
-                    gebid('profileEdit').style.display = "block"; 
-                    gebid('followButton').style.display = "none";
 
+                if (userAccountNumber === accountNumber) {
+                    gebid('profileEdit').style.display = "block";
+                    gebid('followButton').style.display = "none";
                 } else {
+                    console.log("Not profile", "uAN", userAccountNumber, "pAN", profileAccountNumber);
                     gebid('followButton').style.display = "block";
 
                     // Check if the profile is followed
@@ -61,37 +65,39 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 apiRequest('/api/getUserPosts', 'POST', { accountNumber })
-                .then(data => {
-                    if (data.success) {
+                    .then(data => {
+                        if (data.success) {
 
-                        // Update the number of posts displayed on the profile page
-                        const postCountElement = gebid('posts');
-                        if (postCountElement) {
-                            postCountElement.textContent = `${data.posts.length} Posts`; // Set the total post count
+                            // Update the number of posts displayed on the profile page
+                            const postCountElement = gebid('posts');
+                            if (postCountElement) {
+                                postCountElement.textContent = `${data.posts.length} Posts`; // Set the total post count
+                            }
+                            // Sort posts by 'createdAt' in descending order
+                            data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                            data.posts.forEach(post => {
+                                renderPost(post, username, pfp, accountNumber, 'profile', userAccountNumber);
+                            });
                         }
-                        // Sort posts by 'createdAt' in descending order
-                        data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    });
 
-                        data.posts.forEach(post => {
-                            renderPost(post, username, pfp, accountNumber, 'profile', userAccountNumber);
-                        });
-                    }
-                });
                 apiRequest('/api/getUserReposts', 'POST', { accountNumber })
-                .then(data => {
-                    if (data && Array.isArray(data)) {
-                        // Sort posts by 'createdAt' in descending order
-                        data.sort((a, b) => new Date(b.post.createdAt) - new Date(a.post.createdAt));
-            
-                        data.forEach(item => {
-                            const { post, username, pfp } = item;
-                            renderPost(post, username, pfp, post.accountNumber, 'profilePosts', userAccountNumber);
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching reposts:', error);
-                });
+                    .then(data => {
+                        if (data && Array.isArray(data)) {
+                            // Sort posts by 'createdAt' in descending order
+                            data.sort((a, b) => new Date(b.post.createdAt) - new Date(a.post.createdAt));
+
+                            data.forEach(item => {
+                                const { post, username, pfp } = item;
+                                renderPost(post, username, pfp, post.accountNumber, 'profilePosts', userAccountNumber);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching reposts:', error);
+                    });
+
                 gebid('username').textContent = `${data.username}`;
                 gebid('pfp').src = pfp;
                 gebid('accountnumber').textContent = ` (${data.accountNumber})`;
@@ -102,6 +108,9 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => console.error('Error fetching profile data:', error));
     }
+
+    // Call fetchUserInfoAndSetupPage to ensure userAccountNumber is set before setupPage
+    fetchUserInfoAndSetupPage();
 
     gebid("logoutButton").addEventListener("click", async function (event) {
         event.preventDefault();
@@ -240,6 +249,4 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-
-    setupPage();
 });

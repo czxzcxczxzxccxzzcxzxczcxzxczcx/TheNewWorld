@@ -212,4 +212,28 @@ router.get('/getFollowers/:userId', async (req, res) => {
     }
 });
 
+router.post('/getUser', async (req, res) => {
+    const { accountNumber } = req.body;
+
+    try {
+        const user = await User.findOne({ accountNumber });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        res.json({
+            success: true,
+            user: {
+                username: user.username,
+                pfp: user.pfp,
+                accountNumber: user.accountNumber,
+            },
+        });
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 module.exports = router;

@@ -40,7 +40,6 @@ function createElementWithClass(tag, className = '') {
 }
 
 function openDirectMessage(accountNumber) {
-    console.log(`Opening DM with user: ${accountNumber}`);
 
 
     const user = getUserData(accountNumber); 

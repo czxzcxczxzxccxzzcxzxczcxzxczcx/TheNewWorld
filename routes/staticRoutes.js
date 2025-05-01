@@ -6,7 +6,15 @@ const { User } = require('../utils/database'); // Import User model if needed
 const router = express.Router();
 
 // Define static pages
-const staticPages = ['/', '/home', '/createPost', '/messages', '/following', '/admin'];
+const staticPages = [
+    '/', 
+    '/home', 
+    '/createPost', 
+    '/messages', 
+    '/following', 
+    '/admin',
+    '/search'
+];
 
 // Set up routes for static pages
 staticPages.forEach((route) => {

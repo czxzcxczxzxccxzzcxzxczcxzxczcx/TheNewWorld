@@ -108,11 +108,6 @@ NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
 
 
 
-
-
-
-
-
 /*LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  
 LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
 
@@ -302,7 +297,7 @@ POST CSS POST CSS POST CSS */
 .post {
     height: 200px;
     border-radius: 5px;
-    width: 95%;
+    width: 96%;
     scroll-snap-align: start;
     display: flex;
     flex-direction: column;    
@@ -323,6 +318,18 @@ POST CSS POST CSS POST CSS */
     color: white;
 }
 
+
+.post .deleteButton {
+    border-radius: 10px;
+    margin-top: 10px;
+    width: 20px;
+    height: 60px; /* Ensure height matches width for proper centering */
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Horizontally center the text */
+    align-items: center; /* Vertically center the text */
+    font-weight: bold;
+    text-align: center; /* Optional, but not necessary with flexbox */
+}
 
 
 .post .postDetails, .post .postCommentDetails  {
@@ -384,7 +391,7 @@ POST CSS POST CSS POST CSS */
     margin-left: 30px;
 
     height: 40px;
-    flex-wrap: wrap ;
+    flex-wrap:nowrap ;
     overflow: wrap;
     align-items: center;
 }
@@ -491,9 +498,9 @@ POST CSS POST CSS POST CSS */
     flex-direction: row;
     width: 100%;
     height: 50px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    background-color: rgb(36, 37, 44);
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: rgb(18, 24, 33);
     align-items: flex-start;
     color: white;
     /* justify-content: center; */
@@ -816,7 +823,7 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     top: 6.25vh;
     width: 540px;
     min-width: 540px; 
-    height: 93vh; 
+    height: 92vh; 
     border-radius: 5px;
     display: flex;
     flex-direction: column;    
@@ -834,27 +841,48 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    height: 100vh; /* Full height of the viewport */
+    height: 93vh; /* Full height of the viewport */
     padding-bottom: 70px; /* Add padding to prevent overlap with the input box */
     position: relative;
 }
 
-.inputContainer {
-    position: fixed; /* Ensure the input box stays visible at the bottom */
-    bottom: 0;
-    width: 38%;
-    background-color: rgb(13, 17, 23);
-    box-shadow: 0 4px 2px rgb(25, 33, 44);
-    padding: 10px;
+#messagePanel {
+    position: absolute;
+    top: 6.25vh; /* Adjust based on the height of the nav bar */
+    width: 510px;
+    min-width: 510px;
+    height: calc(100vh - (6.25vh + 100px)); /* Adjust height to leave space for the input container */
+    border-radius: 5px;
     display: flex;
+    flex-direction: column;
     align-self: center;
-
     align-items: center;
-    z-index: 10; /* Ensure it stays above other elements */
+    align-content: flex-start;
+    justify-content: flex-start;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    background-color: rgb(13, 17, 23); /* Ensure visibility */
+    z-index: 5; /* Ensure it stays below the input container */
 }
 
-#messagePanel {
- height:84vh;
+#messagePanel::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for cleaner UI */
+}
+
+.inputContainer {
+    position: fixed; /* Ensure it stays at the bottom of the viewport */
+    bottom: 0; /* Align it to the bottom of the viewport */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust for centering */
+    width: 500px; /* Match the width of the message panel */
+    height: 70px; /* Fixed height for the input container */
+    background-color: rgb(13, 17, 23);
+    box-shadow: 0 -4px 2px rgb(25, 33, 44); /* Add shadow above the input container */
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10; /* Ensure it stays above the message panel */
 }
 
 #messageInput {
@@ -914,8 +942,9 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 
 
 .adminDiv {
+
     height: 200px;
-    border-radius: 10px;
+    border-radius: 5px;
     width: 95%;
     scroll-snap-align: start;
     display: flex;
@@ -925,8 +954,8 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     justify-items: flex-start; 
     align-items: flex-start;
     margin-bottom: 15px;
-    background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); 
+    background-color: rgb(13, 17, 23);
+    box-shadow: 0 4px 2px rgb(25, 33, 44); 
     color: white;
 }
 
@@ -947,9 +976,10 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     background-color: white;
     width: 95%;
     align-self: center;
+    justify-self: center;
     border-radius: 10px;
-    height: 2.5px;
-    margin-top: 5px;
+    height: 1px;
+    padding-top: 5px;
     /* margin-bottom: 25px; */
 }
 
@@ -983,18 +1013,17 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     background-color: #C6C7C7;
 }
 
-
-
-
-
-
-
-
-
-
-
-/* MOBILE DISPLAY CSS  MOBILE DISPLAY CSS  MOBILE DISPLAY CSS  
-MOBILE DISPLAY CSS  MOBILE DISPLAY CSS  MOBILE DISPLAY CSS   */
+.message {
+    /* margin: 10px; */
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+    max-width: 60%;
+    font-size: 20px;
+    word-wrap: break-word;
+    text-shadow: none; /* Remove text shadow for better readability */
+    display: inline-block; /* Ensure the message bubbles are inline */
+}
 
 @media (max-width: 767px) {
     .homePanel {
@@ -1011,25 +1040,91 @@ MOBILE DISPLAY CSS  MOBILE DISPLAY CSS  MOBILE DISPLAY CSS   */
     }
 }
 
-/* Styles for messages */
-.message {
-    margin: 10px;
-    padding: 10px;
-    border-radius: 10px;
-    max-width: 60%;
-    word-wrap: break-word;
-    /* Removed shadow effect */
-    text-shadow: none;
-}
-
 .message.sent {
-    background-color: #007bff;
+    background-color: #007bff; /* Blue for sent messages */
     color: white;
-    align-self: flex-end;
+    align-self: flex-end; /* Align sent messages to the right */
+    text-align: left; /* Align text inside the bubble */
 }
 
 .message.received {
-    background-color: #f1f1f1;
+    background-color: #f1f1f1; /* White for received messages */
     color: black;
-    align-self: flex-start;
+    align-self: flex-start; /* Align received messages to the left */
+    text-align: left; /* Align text inside the bubble */
+}
+
+/* Ensure the message panel displays messages in a column layout */
+#messagePanel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align messages to the left by default */
+    padding: 10px; /* Add padding for spacing */
+    overflow-y: scroll; /* Allow scrolling for overflow */
+}
+
+.searchBar {
+    position: relative;
+    top: 8vh;
+    width: 540px;
+    min-width: 540px;
+    height: 50px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    justify-self: center;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    background-color: white;
+}
+
+.searchBar input {
+    width: 100%;
+    height: 30px;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 20px;
+    color: black;
+    background-color: white; /* Ensure visibility */
+    border: 1px solid #ccc; /* Add border for input */
+}
+
+.searchBar button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px; /* Adjust font size for better readability */
+}
+
+.searchBar button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.searchPanel {
+    position: absolute;
+    top: calc(8vh + 50px); /* Align the top of the panel with the bottom of the search bar */
+    width: 540px;
+    min-width: 540px;
+    height: calc(100vh - (8vh + 50px)); /* Adjust height dynamically to fit within the viewport */
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    align-items: center;
+    align-content: flex-start;
+    justify-content: flex-start;
+    overflow-y: scroll; /* Allow scrolling for overflow */
+    box-sizing: border-box;
+    background-color: rgb(13, 17, 23); /* Ensure visibility */
+    z-index: 5; /* Ensure it stays below the search bar */
+}
+
+.searchPanel::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for cleaner UI */
 }

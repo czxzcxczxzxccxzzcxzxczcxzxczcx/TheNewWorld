@@ -41,10 +41,8 @@ document.addEventListener("DOMContentLoaded", function () {
         apiRequest('/api/updateData', 'POST', { accountNumber, field, value })
             .then(data => {
                 if (data.success) {
-                    console.log('User data updated successfully:', data.user);
                     alert('User data updated successfully!');
                 } else {
-                    console.error('Error updating user data:', data.message);
                     alert('Failed to update user data.');
                 }
             })
@@ -79,7 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
         apiRequest('/api/updatePost', 'POST', { postId, field, value })
             .then(data => {
                 if (data.success) {
-                    console.log('Post data updated successfully:', data.post);
                     alert('Post data updated successfully!');
                 } else {
                     console.error('Error updating post data:', data.message);
@@ -134,7 +131,6 @@ document.addEventListener("DOMContentLoaded", function () {
         apiRequest('/api/getAllPosts', 'GET')
             .then(data => {
                 if (data.success) {
-                    console.log('Posts:', data.posts);
                     alert('Posts fetched successfully! Check console for details.');
                 } else {
                     console.error('Error fetching posts:', data.message);
@@ -152,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
         apiRequest('/api/getAllUsers', 'GET')
             .then(data => {
                 if (data.success) {
-                    console.log('Users:', data.users);
+                    console.log(data); // Log the users to the console
                     alert('Users fetched successfully! Check console for details.');
                 } else {
                     console.error('Error fetching users:', data.message);
