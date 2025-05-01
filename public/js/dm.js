@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const user = data.user;
                 accountNumber = user.accountNumber;
 
+                // Fetch recipient's profile data and populate dmTop
+                fetchRecipientInfo(recipientAccountNumber);
+
                 // Fetch and render messages
                 fetchAndRenderMessages(accountNumber, recipientAccountNumber);
                 setupRealTimeUpdates(accountNumber, recipientAccountNumber);
@@ -23,6 +26,27 @@ document.addEventListener("DOMContentLoaded", async function () {
         } catch (error) {
             console.error("Error fetching user info:", error);
             window.location.href = '/';
+        }
+    }
+
+    async function fetchRecipientInfo(recipientAccountNumber) {
+        try {
+            const accountNumber = recipientAccountNumber;
+            const data = await apiRequest('/api/getUser', 'POST', { accountNumber: accountNumber }); // Send accountNumber as input
+            if (data.success) {
+                const recipient = data.user;
+
+                // Populate the profile image and name in the dmTop div
+                const profileImage = document.getElementById("profileImage");
+                const profileName = document.getElementById("profileName");
+
+                profileImage.src = recipient.pfp || "/images/default-profile.png"; // Use default if no image
+                profileName.textContent = recipient.username || "Unknown User";
+            } else {
+                console.error("Failed to fetch recipient info:", data.message);
+            }
+        } catch (error) {
+            console.error("Error fetching recipient info:", error);
         }
     }
 
