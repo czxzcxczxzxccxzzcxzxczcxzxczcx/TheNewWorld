@@ -851,25 +851,16 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 
 #messagePanel {
     position: absolute;
-    top: 16vh; /* Adjust based on the height of the nav bar */
+    top: calc(6.5vh + 68px); /* Dynamically align with the bottom of .dmTop */
     width: 510px;
     min-width: 510px;
-    height: calc(90vh - (6.25vh + 100px)); /* Adjust height to leave space for the input container */
+    height: calc(100vh - (6.5vh + 80px + 90px)); /* Adjust height to leave space for .dmTop and .inputContainer */
     border-radius: 5px;
-    /* display: flex;
-    flex-direction: column;
-    align-self: center;
-    align-items: center;
-    align-content: flex-start;
-    justify-content: flex-start; */
     overflow-y: scroll;
     box-sizing: border-box;
     background-color: rgb(13, 17, 23); /* Ensure visibility */
     z-index: 5; /* Ensure it stays below the input container */
 }
-
-
-
 
 #messagePanel::-webkit-scrollbar {
     display: none; /* Hide scrollbar for cleaner UI */
@@ -970,7 +961,18 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 }
 
 
-
+#notificationsPanel {
+    position: absolute;
+    top: calc(6.5vh + 68px); /* Dynamically align with the bottom of .dmTop */
+    width: 510px;
+    min-width: 510px;
+    height: calc(100vh - (6.5vh + 80px + 90px)); /* Adjust height to leave space for .dmTop and .inputContainer */
+    border-radius: 5px;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    background-color: rgb(13, 17, 23); /* Ensure visibility */
+    z-index: 5; /* Ensure it stays below the input container */
+}
 
 .adminDiv {
 

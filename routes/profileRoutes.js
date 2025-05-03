@@ -1,5 +1,5 @@
 const express = require('express');
-const { Post, User } = require('../utils/database');
+const { Post, User, Notification } = require('../utils/database');
 
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 
@@ -232,6 +232,28 @@ router.post('/getUser', async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching user data:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+router.get('/getNotifications', async (req, res) => {
+    const sessionId = req.cookies.TNWID; // Get session ID from cookies
+
+    try {
+        // Verify the user's session
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const user = sessionStore[sessionId]; // Get user's data from session
+        const accountNumber = user.accountNumber;
+
+        // Fetch notifications for the user
+        const notifications = await Notification.find({ to: accountNumber }).sort({ sentAt: -1 });
+
+        res.json({ success: true, notifications });
+    } catch (error) {
+        console.error('Error fetching notifications:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });

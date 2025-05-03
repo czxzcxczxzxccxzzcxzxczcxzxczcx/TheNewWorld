@@ -1,6 +1,7 @@
 const express = require('express');
 const { Comment, Post, User } = require('../utils/database');
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
+const { createNotification } = require('../utils/genNotification'); // Import the notification utility
 const router = express.Router();
 
 const generateUniqueCommentId = async () => {
@@ -50,6 +51,17 @@ router.post('/createComment', async (req, res) => {
         }
         post.replies.push(commentId);
         await post.save();
+
+        // Generate a notification for the post owner if the commenter is not the post owner
+        if (post.accountNumber !== accountNumber) {
+            const notification = await createNotification({
+                from: accountNumber,
+                to: post.accountNumber,
+                content: `${user.username} commented on your post.`,
+            });
+
+            console.log('Notification created:', notification); // Print the notification data
+        }
 
         res.status(201).json({
             success: true,

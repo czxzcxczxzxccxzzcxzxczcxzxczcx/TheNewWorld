@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     pfp: { type: String , default: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"},
     liked: { type: [String], default: [] },
     reposts: { type: [String], default: [] },
-    openDM: { type: [String], default: [] }, // Array of account numbers for opened direct messages
+    openDM: { type: [String], default: [] }, 
 });
 
 const postSchema = new mongoose.Schema({
@@ -32,7 +32,7 @@ const commentSchema = new mongoose.Schema({
     commentId: { type: String, required: true },
     content: { type: String, required: true },
     accountNumber: { type: String, required: true, ref: 'User' },
-    postId: { type: String, required: true, ref: 'Post' }, // Link comment to a specific post
+    postId: { type: String, required: true, ref: 'Post' },
     createdAt: { type: Date, default: Date.now },
     likes: { type: [Number], default: [] },
     replies: { type: [String], default: [] },
@@ -40,16 +40,28 @@ const commentSchema = new mongoose.Schema({
 
 const messageSchema = new mongoose.Schema({
     messageId: { type: String, required: true, unique: true },
-    from: { type: String, required: true, ref: 'User' }, // Sender's account number
-    to: { type: String, required: true, ref: 'User' },   // Recipient's account number
-    content: { type: String, required: true },           // Message content
-    sentAt: { type: Date, default: Date.now },           // Date the message was sent
+    from: { type: String, required: true, ref: 'User' }, 
+    to: { type: String, required: true, ref: 'User' },  
+    content: { type: String, required: true },         
+    sentAt: { type: Date, default: Date.now },        
 });
+
+const notificationSchema = new mongoose.Schema({
+    notificationId: { type: String, required: true, unique: true },
+    from: { type: String, required: true, ref: 'User' }, 
+    to: { type: String, required: true, ref: 'User' },  
+    content: { type: String, required: true },         
+    sentAt: { type: Date, default: Date.now },        
+});
+
+
+
 
 const User = mongoose.model('User', userSchema);
 const Post = mongoose.model('Post', postSchema);
 const Comment = mongoose.model('Comment', commentSchema);
 const Message = mongoose.model('Message', messageSchema);
+const Notification = mongoose.model('Notification', notificationSchema);
 
 const connectToDB = async () => {
     try {
@@ -64,4 +76,4 @@ const connectToDB = async () => {
     }
 };
 
-module.exports = { connectToDB, User, Post, Comment, Message };
+module.exports = { connectToDB, User, Post, Comment, Message, Notification };

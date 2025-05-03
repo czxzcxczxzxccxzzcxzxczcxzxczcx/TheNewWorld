@@ -36,6 +36,26 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    async function renderNotifications() {
+        try {
+            const data = await apiRequest('/api/getNotifications', 'GET');
+            if (data.success && Array.isArray(data.notifications)) {
+                const notificationsList = document.getElementById('notificationsList');
+                notificationsList.innerHTML = ''; // Clear existing notifications
+
+                data.notifications.forEach(notification => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${notification.content} (From: ${notification.from})`;
+                    notificationsList.appendChild(listItem);
+                });
+            } else {
+                console.error('No notifications found or data structure is invalid');
+            }
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
+        }
+    }
+
     apiRequest('/api/verify', 'GET')
         .then(data => {
             if (data.success) {
@@ -86,4 +106,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     renderPosts();
+    renderNotifications();
 });

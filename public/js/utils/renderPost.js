@@ -76,6 +76,32 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         displayPfp
     );
 
+    // Add delete button if the post belongs to the logged-in user
+    if (post.accountNumber === fromAccountNumber) {
+        const deleteButton = createElementWithClass('button', 'deleteButton');
+        deleteButton.textContent = 'X';
+
+        deleteButton.addEventListener('click', async () => {
+            if (confirm('Are you sure you want to delete this post?')) {
+                try {
+                    const response = await apiRequest('/api/deletePost', 'POST', { postId: post.postId });
+                    if (response.success) {
+                        alert('Post deleted successfully.');
+                        postDiv.remove();
+                    } else {
+                        alert('Failed to delete post.');
+                    }
+                } catch (error) {
+                    console.error('Error deleting post:', error);
+                    alert('An error occurred while deleting the post.');
+                }
+            }
+        });
+
+        // Add the delete button to the left of the profile picture
+        postDetailsDiv.insertBefore(deleteButton, postImage);
+    }
+
     postDiv.append(postDetailsDiv, postBodyDiv, dividerDiv, footerDiv);
 
     const commentDiv = createElementWithClass('div', 'commentSection');

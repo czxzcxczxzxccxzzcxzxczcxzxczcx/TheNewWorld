@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const profileImage = document.getElementById("profileImage");
                 const profileName = document.getElementById("profileName");
 
-                profileImage.src = recipient.pfp || "/images/default-profile.png"; // Use default if no image
+                profileImage.src = recipient.pfp || "/src/default.png"; // Use default if no image
                 profileName.textContent = recipient.username || "Unknown User";
             } else {
                 console.error("Failed to fetch recipient info:", data.message);
