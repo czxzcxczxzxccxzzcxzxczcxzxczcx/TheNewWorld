@@ -98,6 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    
     document.getElementById('viewtest').addEventListener("click", async function () {
         try {
             await apiRequest('/api/viewAllPosts', 'POST');
