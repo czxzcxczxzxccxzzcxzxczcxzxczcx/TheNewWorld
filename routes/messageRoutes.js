@@ -2,7 +2,7 @@ const express = require('express');
 const { Message, User } = require('../utils/database');
 const router = express.Router();
 const sessionStore = require('../utils/database/sessionStore'); 
-
+const { createNotification } = require('../utils/genNotification');
 
 // Generate a unique message ID
 const generateUniqueMessageId = async () => {
@@ -62,6 +62,15 @@ router.post('/sendMessage', async (req, res) => {
             recipientUser.openDM.push(from);
             await recipientUser.save();
         }
+
+        // Generate a notification for the recipient of the direct message
+        const notification = await createNotification({
+            from: sender.accountNumber,
+            to: recipientUser.accountNumber,
+            content: `${senderUser.username} sent you a message.`,
+        });
+
+        console.log('Notification created:', notification); // Print the notification data
 
         res.status(201).json({ success: true, message: 'Message sent successfully', messageData: newMessage });
     } catch (error) {

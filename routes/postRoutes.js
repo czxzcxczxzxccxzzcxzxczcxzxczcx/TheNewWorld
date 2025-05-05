@@ -1,6 +1,7 @@
 const express = require('express');
 const { Post, User } = require('../utils/database');
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
+const { createNotification } = require('../utils/genNotification');
 const router = express.Router();
 
 const generateUniquePostId = async () => {
@@ -97,6 +98,8 @@ router.post('/likePost', async (req, res) => {
     const { postId, accountNumber } = req.body;
     try {
         const existingPost = await Post.findOne({ postId });
+        const user = await User.findOne({ accountNumber });
+
         
         if (!existingPost) {
             return res.status(404).json({ success: false, message: 'Post not found' });
@@ -116,6 +119,17 @@ router.post('/likePost', async (req, res) => {
 
         existingPost.likes.push(accountNumber);
         await existingPost.save();
+
+        // Generate a notification for the post owner if the user likes their post
+        if (existingPost.accountNumber !== accountNumber) {
+            const notification = await createNotification({
+                from: accountNumber,
+                to: existingPost.accountNumber,
+                content: `${user.username} liked your post.`,
+            });
+
+            console.log('Notification created:', notification); // Print the notification data
+        }
 
         return res.status(200).json({ success: true, message: 'Post liked successfully', post: existingPost,  removed: false});
     } catch (error) {
@@ -208,6 +222,17 @@ router.post('/repost', async (req, res) => {
         post.reposts.push(accountNumber);
         await user.save();
         await post.save();
+
+        // Generate a notification for the post owner if the user reposts their post
+        if (post.accountNumber !== accountNumber) {
+            const notification = await createNotification({
+                from: accountNumber,
+                to: post.accountNumber,
+                content: `${user.username} reposted your post.`,
+            });
+
+            console.log('Notification created:', notification); // Print the notification data
+        }
 
         return res.status(200).json({ success: true, message: 'Post reposted successfully', user, post, removed: false });
     } catch (error) {

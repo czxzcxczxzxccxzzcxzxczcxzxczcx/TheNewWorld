@@ -1,5 +1,6 @@
 const express = require('express');
 const { Post, User, Notification } = require('../utils/database');
+const { createNotification } = require('../utils/genNotification');
 
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 
@@ -105,6 +106,17 @@ router.post('/follow', async (req, res) => {
             // Save the updated documents
             await senderUser.save();
             await recipientUser.save();
+
+            // Generate a notification for the followee if the follower is not the same user
+            if (senderAccountNumber !== recipientAccountNumber) {
+                const notification = await createNotification({
+                    from: senderAccountNumber,
+                    to: recipientAccountNumber,
+                    content: `${sender.username} started following you.`,
+                });
+
+                console.log('Notification created:', notification); // Print the notification data
+            }
 
             // console.log('After follow:', { senderUser, recipientUser });
 

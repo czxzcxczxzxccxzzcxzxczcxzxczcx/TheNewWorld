@@ -39,10 +39,11 @@ document.addEventListener("DOMContentLoaded", function () {
     async function renderNotifications() {
         try {
             const data = await apiRequest('/api/getNotifications', 'GET');
+            console.log(data)
             if (data.success && Array.isArray(data.notifications)) {
                 const notificationsList = document.getElementById('notificationsList');
                 notificationsList.innerHTML = ''; // Clear existing notifications
-
+                console.log(data)
                 data.notifications.forEach(notification => {
                     const listItem = document.createElement('li');
                     listItem.textContent = `${notification.content} (From: ${notification.from})`;

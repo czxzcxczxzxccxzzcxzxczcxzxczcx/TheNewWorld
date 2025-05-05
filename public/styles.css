@@ -964,15 +964,21 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 #notificationsPanel {
     position: absolute;
     top: calc(6.5vh + 68px); /* Dynamically align with the bottom of .dmTop */
-    width: 510px;
-    min-width: 510px;
+    width: 200px;
+    min-width: 200px;
     height: calc(100vh - (6.5vh + 80px + 90px)); /* Adjust height to leave space for .dmTop and .inputContainer */
     border-radius: 5px;
     overflow-y: scroll;
     box-sizing: border-box;
-    background-color: rgb(13, 17, 23); /* Ensure visibility */
+    background-color: rgb(13, 17, 23);
     z-index: 5; /* Ensure it stays below the input container */
 }
+
+
+#notificationsPanel::-webkit-scrollbar {
+    display: none; 
+}
+
 
 .adminDiv {
 

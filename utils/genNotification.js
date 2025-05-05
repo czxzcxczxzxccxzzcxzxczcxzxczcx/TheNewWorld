@@ -7,7 +7,7 @@ const generateUniqueNotificationId = async () => {
     while (exists) {
         notificationId = `notification-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
         const existingNotification = await Notification.findOne({ notificationId });
-        if (!existingNotification) {
+if (!existingNotification) {
             exists = false;
         }
     }
