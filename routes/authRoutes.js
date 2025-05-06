@@ -71,6 +71,18 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.get('/getUserInfo', (req, res) => {
+    const sessionId = req.cookies.TNWID;  
+
+    if (sessionId && sessionStore[sessionId]) {
+        const user = sessionStore[sessionId];  
+        res.json({ success: true, user });
+    } else {
+        res.status(200).json({ success: false, message: 'Not authenticated' });
+    }
+});
+
+
 // Logs the user out
 router.post('/logout', (req, res) => {
     res.clearCookie('TNWID', {httpOnly: true, secure: process.env.NODE_ENV === 'production',  sameSite: 'Strict',});

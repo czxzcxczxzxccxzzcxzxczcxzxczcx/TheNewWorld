@@ -202,16 +202,22 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
 
 .postPanel {   
     top: 25vh;
-    position: absolute;
-    width: 520px; 
+    position: fixed;
+    width: 100%;
+    z-index: 1000; /* High z-index to ensure it is in front of everything */
+    background-color: white; /* Optional: Add a background color */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better visibility */
     max-width: min-content; 
+    border-color:white;
+    border-width: 2px;
+    border-style: solid;
     height: min-content; 
     border-radius: 10px;
     display: none;
     flex-direction: column;    
     align-self: center;
-    background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); 
+    background-color: rgb(13, 17, 23);
+    box-shadow: 0 -4px 2px rgb(25, 33, 44); /* Add shadow above the input container */
 }
 
 .postPanel form {
@@ -219,7 +225,8 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
     flex-direction: column;    
     align-items: center;
     width: 480px;
-    height: min-content; 
+    height: min-content;
+    margin-bottom: 15px 
 }
 
 .postPanel h1 {
@@ -322,8 +329,10 @@ POST CSS POST CSS POST CSS */
 .post .deleteButton {
     border-radius: 10px;
     margin-top: 10px;
-    width: 20px;
-    height: 60px; /* Ensure height matches width for proper centering */
+    width: 30px;
+    margin-right: 10px;
+    font-weight: bold;
+    height: 30px; /* Ensure height matches width for proper centering */
     display: flex; /* Use flexbox for centering */
     justify-content: center; /* Horizontally center the text */
     align-items: center; /* Vertically center the text */

@@ -1,5 +1,9 @@
 import { renderPost } from './utils/renderPost.js';
 import { apiRequest } from './utils/apiRequest.js'; // Import apiRequest for AJAX requests
+import { initializeCreatePost } from './utils/createPostHandler.js';
+import { renderBar } from './utils/renderBar.js';
+
+renderBar();
 
 document.addEventListener("DOMContentLoaded", () => {
     const searchInput = document.getElementById("searchInput"); // Input field for search
@@ -11,6 +15,19 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Required elements are missing from the DOM.");
         return;
     }
+
+    apiRequest('/api/getUserInfo', 'GET')
+        .then(data => {
+            if (data.success) {
+                const user = data.user;
+                initializeCreatePost(user.accountNumber);
+            } else {
+                window.location.href = '/';
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching user info:", error);
+        });
 
     // Function to perform search
     async function performSearch(query) {

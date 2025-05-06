@@ -1,4 +1,5 @@
 import { apiRequest } from './utils/apiRequest.js';
+import { initializeGlobalButtons } from './utils/renderBar.js';
 
 document.addEventListener("DOMContentLoaded", async function () {
     const homePanel = document.getElementById("homePanel");
@@ -10,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (data.success) {
                 const user = data.user;
                 accountNumber = user.accountNumber;
+                initializeGlobalButtons(accountNumber); // Initialize global buttons
             } else {
                 window.location.href = '/';
             }
@@ -18,7 +20,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             window.location.href = '/';
         }
     }
-
 
     async function fetchAndRenderFollowers() {
         try {
@@ -47,44 +48,24 @@ document.addEventListener("DOMContentLoaded", async function () {
                 `;
                 homePanel.appendChild(followerPanel);
             });
-           
+
         } catch (error) {
             console.error('Error fetching followers data:', error);
         }
     }
 
-    document.getElementById("logoutButton").addEventListener("click", async function (event) {
-        event.preventDefault();
-        try {
-            const data = await apiRequest('/api/logout', 'POST');
-            if (data.success) {
-                window.location.href = '/';
-            }
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
-    });
-
-    // Redirect to profile page
-    document.getElementById("profileButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        if (accountNumber) {
-            window.location.href = `/profile/${accountNumber}`;
-        }
-    });
-
     apiRequest('/api/verify', 'GET')
-            .then(data => {
-                if (data.success) {
-                    const adminButton = document.getElementById('adminPanelButton');
-                    if (adminButton) {
-                        adminButton.style.display = 'block'; // Set display to block if authorized
-                    }
+        .then(data => {
+            if (data.success) {
+                const adminButton = document.getElementById('adminPanelButton');
+                if (adminButton) {
+                    adminButton.style.display = 'block'; // Set display to block if authorized
                 }
-            })
-            .catch(error => {
-                console.error('Error verifying admin access:', error);
-            });
+            }
+        })
+        .catch(error => {
+            console.error('Error verifying admin access:', error);
+        });
 
     fetchAndRenderFollowers();
     fetchUserInfo();

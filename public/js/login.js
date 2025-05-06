@@ -1,8 +1,6 @@
 import { apiRequest } from './utils/apiRequest.js';
 
 document.addEventListener("DOMContentLoaded", function () {
-    console.log(1);
-    const user = JSON.parse(sessionStorage.getItem("user"));
     const loginPanel = document.getElementById('loginPanel');
     const newAccPanel = document.getElementById('newAccPanel');
     const newAccButton = document.getElementById('newAccount');
@@ -32,14 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
             newAccPanel.style.display = 'flex';
         }
     });
-
-    document.getElementById('viewtest').addEventListener("click", async function (event) {
-        try {
-            await apiRequest('/api/viewAllUsers', 'POST'); } catch (error) { console.error("Error fetching all users:", error);
-        }
-    });
-
-    
 
     document.getElementById('newAccForm').onsubmit = async function (event) {
         event.preventDefault();

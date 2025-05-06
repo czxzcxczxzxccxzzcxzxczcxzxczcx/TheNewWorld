@@ -1,5 +1,9 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderPost,  changeEdit } from './utils/renderPost.js';
+import { initializeCreatePost } from './utils/createPostHandler.js';
+import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
+
+renderBar();
 
 document.addEventListener("DOMContentLoaded", function () {
     let accountNumber;
@@ -75,6 +79,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.success) {
                 const user = data.user;
                 accountNumber = user.accountNumber;
+                initializeGlobalButtons(accountNumber); // Initialize global buttons
+                initializeCreatePost(user.accountNumber);
             } else {
                 window.location.href = '/';
             }
@@ -82,30 +88,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => {
             console.error("Error fetching user info:", error);
         });
-
-    document.getElementById("profileButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        if (accountNumber) {window.location.href = `/profile/${accountNumber}`;}
-    });
-
-    document.getElementById("logoutButton").addEventListener("click", async function (event) {
-        event.preventDefault();
-        try {
-            const data = await apiRequest('/api/logout', 'POST');
-            if (data.success) {window.location.href = '/';}
-        } catch (error) {
-            console.error('Error during logout:', error);
-        }
-    });
-
-    
-    document.getElementById('viewtest').addEventListener("click", async function () {
-        try {
-            await apiRequest('/api/viewAllPosts', 'POST');
-        } catch (error) {
-            console.error('Error fetching all posts:', error);
-        }
-    });
 
     renderPosts();
     renderNotifications();

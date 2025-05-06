@@ -1,4 +1,5 @@
 import { apiRequest } from './utils/apiRequest.js';
+import { initializeGlobalButtons } from './utils/renderBar.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     let accountNumber;
@@ -24,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.success) {
                 const user = data.user;
                 accountNumber = user.accountNumber;
+                initializeGlobalButtons(accountNumber); // Initialize global buttons
             } else {
                 window.location.href = '/';
             }
@@ -32,23 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.href = '/';
         }
     }
-
-    // Logout functionality
-    document.getElementById("logoutButton").addEventListener("click", async function (event) {
-        event.preventDefault();
-        try {
-            const data = await apiRequest('/api/logout', 'POST');
-            if (data.success) {window.location.href = '/';}
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
-    });
-
-    // Redirect to profile page
-    document.getElementById("profileButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        if (accountNumber) {window.location.href = `/profile/${accountNumber}`;}
-    });
 
     // Create a new post
     document.getElementById('createPost').addEventListener("click", async function () {
@@ -64,15 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
             } catch (error) {
                 console.error('Error creating post:', error);
             }
-        }
-    });
-
-    // Check all posts
-    document.getElementById('checkPost').addEventListener("click", async function () {
-        try {
-            const data = await apiRequest('/api/getAllPosts', 'POST');
-        } catch (error) {
-            console.error('Error checking posts:', error);
         }
     });
 

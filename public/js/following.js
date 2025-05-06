@@ -1,4 +1,5 @@
 import { apiRequest } from './utils/apiRequest.js';
+import { initializeGlobalButtons } from './utils/renderBar.js';
 
 document.addEventListener("DOMContentLoaded", async function () {
     const homePanel = document.getElementById("homePanel");
@@ -14,6 +15,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (data.success) {
                 const user = data.user;
                 accountNumber = user.accountNumber;
+                initializeGlobalButtons(accountNumber); // Initialize global buttons
             } else {
                 window.location.href = '/';
             }
@@ -83,23 +85,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    document.getElementById("logoutButton").addEventListener("click", async function (event) {
-            event.preventDefault();
-            try {
-                const data = await apiRequest('/api/logout', 'POST');
-                if (data.success) {window.location.href = '/';}
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-        });
-    
-        // Redirect to profile page
-        document.getElementById("profileButton").addEventListener("click", function (event) {
-            event.preventDefault();
-            if (accountNumber) {window.location.href = `/profile/${accountNumber}`;}
-        });
-
-        apiRequest('/api/verify', 'GET')
+    apiRequest('/api/verify', 'GET')
         .then(data => {
             if (data.success) {
                 const adminButton = document.getElementById('adminPanelButton');

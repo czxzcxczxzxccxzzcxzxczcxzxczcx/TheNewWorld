@@ -1,5 +1,9 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderPost, changeEdit } from './utils/renderPost.js';
+import { initializeCreatePost } from './utils/createPostHandler.js';
+import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
+
+renderBar();
 
 document.addEventListener("DOMContentLoaded", function () {
     const profileAccountNumber = window.location.pathname.split('/')[2];
@@ -111,21 +115,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Call fetchUserInfoAndSetupPage to ensure userAccountNumber is set before setupPage
     fetchUserInfoAndSetupPage();
-
-    gebid("logoutButton").addEventListener("click", async function (event) {
-        event.preventDefault();
-        try {
-            const data = await apiRequest('/api/logout', 'POST');
-            if (data.success) {
-                window.location.href = '/';
-            } else {
-                alert('Logout failed. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error during logout:', error);
-            alert('Something went wrong. Please try again later.');
-        }
-    });
 
     document.getElementById("followingLink").addEventListener("click", function (event) {
         event.preventDefault();
@@ -249,4 +238,18 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
+    apiRequest('/api/getUserInfo', 'GET')
+        .then(data => {
+            if (data.success) {
+                const user = data.user;
+                initializeCreatePost(user.accountNumber);
+                initializeGlobalButtons(user.accountNumber); // Initialize global buttons
+            } else {
+                window.location.href = '/';
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching user info:", error);
+        });
 });

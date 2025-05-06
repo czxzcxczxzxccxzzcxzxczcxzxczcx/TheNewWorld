@@ -99,7 +99,8 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         });
 
         // Add the delete button to the left of the profile picture
-        postDetailsDiv.insertBefore(deleteButton, postImage);
+        // postDetailsDiv.insertBefore(deleteButton, postImage);
+        postDetailsDiv.appendChild(deleteButton);
     }
 
     postDiv.append(postDetailsDiv, postBodyDiv, dividerDiv, footerDiv);

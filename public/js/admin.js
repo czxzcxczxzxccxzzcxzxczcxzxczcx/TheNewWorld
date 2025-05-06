@@ -1,4 +1,8 @@
 import { apiRequest } from './utils/apiRequest.js';
+import { initializeCreatePost } from './utils/createPostHandler.js';
+import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
+
+renderBar();
 
 document.addEventListener("DOMContentLoaded", function () {
     let accountNumber;
@@ -8,6 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.success) {
                 const user = data.user;
                 accountNumber = user.accountNumber;
+                initializeCreatePost(user.accountNumber);
+                initializeGlobalButtons(accountNumber); // Initialize global buttons
             } else {
                 window.location.href = '/';
             }
@@ -46,23 +52,23 @@ document.addEventListener("DOMContentLoaded", function () {
                     alert('Failed to update user data.');
                 }
             })
-.catch(error => {
+            .catch(error => {
                 console.error('Error making update request:', error);
                 alert('An error occurred while updating user data.');
             });
     });
 
     document.getElementById("logoutButton").addEventListener("click", async function (event) {
-            event.preventDefault();
-            try {
-                const data = await apiRequest('/api/logout', 'POST');
-                if (data.success) {
-                    window.location.href = '/';
-                }
-            } catch (error) {
-                console.error('Logout error:', error);
+        event.preventDefault();
+        try {
+            const data = await apiRequest('/api/logout', 'POST');
+            if (data.success) {
+                window.location.href = '/';
             }
-        });
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    });
     // Update post data
     document.getElementById("updatePost").addEventListener("click", async function (event) {
         const postId = document.getElementById('postId').value; // Use accountNumber input for postId
@@ -107,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     document.getElementById("profileButton").addEventListener("click", function (event) {
         event.preventDefault();
-        if (accountNumber) {window.location.href = `/profile/${accountNumber}`;}
+        if (accountNumber) { window.location.href = `/profile/${accountNumber}`; }
     });
     // Fix post data
     document.getElementById("fixPostData").addEventListener("click", async function () {

@@ -23,17 +23,6 @@ router.get('/get/profile/:accountNumber', async (req, res) => {
     }
 });
 
-router.get('/getUserInfo', (req, res) => {
-    const sessionId = req.cookies.TNWID;  
-
-    if (sessionId && sessionStore[sessionId]) {
-        const user = sessionStore[sessionId];  
-        res.json({ success: true, user });
-    } else {
-        res.status(401).json({ success: false, message: 'Not authenticated' });
-    }
-});
-
 router.post('/viewAllUsers', async (req, res) => {
     try {
         if (User) {

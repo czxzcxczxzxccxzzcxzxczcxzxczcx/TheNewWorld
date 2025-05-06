@@ -1,5 +1,9 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderOpenDMUsers } from './utils/renderMessage.js';
+import { initializeCreatePost } from './utils/createPostHandler.js';
+import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
+
+renderBar();
 
 document.addEventListener("DOMContentLoaded", async function () {
     const homePanel = document.getElementById("homePanel");
@@ -16,6 +20,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 // Fetch and render open DMs
                 fetchAndRenderOpenDMs(accountNumber);
+
+                // Initialize create post functionality
+                initializeCreatePost(user.accountNumber);
+
+                // Initialize global buttons
+                initializeGlobalButtons(accountNumber);
             } else {
                 window.location.href = '/';
             }
@@ -135,22 +145,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Fetch and render incoming DMs
     // fetchAndRenderIncomingDMs();
-
-    document.getElementById("logoutButton").addEventListener("click", async function (event) {
-        event.preventDefault();
-        try {
-            const data = await apiRequest('/api/logout', 'POST');
-            if (data.success) { window.location.href = '/'; }
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
-    });
-
-    // Redirect to profile page
-    document.getElementById("profileButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        if (accountNumber) { window.location.href = `/profile/${accountNumber}`; }
-    });
 
     apiRequest('/api/verify', 'GET')
         .then(data => {
