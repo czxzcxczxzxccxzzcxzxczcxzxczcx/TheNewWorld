@@ -3,7 +3,7 @@ Social media platform project.
 The New World is a social media platform which allows users to create an account and create posts.
 
 Features:
-  - Direct Messaging 
+  - Real Time Direct Messaging 
   - Post Creation
   - Post Editing
   - Post Deletion
@@ -11,6 +11,7 @@ Features:
   - Following Users
   - Liking Posts 
   - Reposting
+  - Notifications
   - Commenting
 
 How to use:
