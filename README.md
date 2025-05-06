@@ -17,9 +17,9 @@ Features in the website:
   - Commenting:  Engage with posts by leaving comments and starting discussions.
 
 How to set up the website:
-  1) To begin, install all neccessary depencies that the server utilizes.
-    - To auto install, type the 'npm install' command into the console.
-    - To manually install, type the following commands into the console.
+  1) To begin, install all neccessary depencies that the server utilizes.  
+    - To auto install, type the 'npm install' command into the console.  
+    - To manually install, type the following commands into the console.  
       - "npm install express"
       - "npm install mongoose"
       - "npm install dotenv"
@@ -28,7 +28,7 @@ How to set up the website:
       - "npm install --save-dev nodemon" (OPTIONAL BUT IS RECOMMENDED FOR REALTIME SERVER UPDATES)
 
   2) Next, directly inside the projects directory create a file called '.env'
-    - This will be utilized to securely store our MongoDB API key.
-    - Once you have created the file, type inside of it: "DB_URI= " following the database key.
+    - This will be utilized to securely store our MongoDB API key.  
+    - Once you have created the file, type inside of it: "DB_URI= " following the database key.  
 
   3) After that, you should be set. Start the website by typing into the console "node server.js"
