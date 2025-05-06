@@ -317,11 +317,6 @@ POST CSS POST CSS POST CSS */
     margin-bottom: 30px;
     background-color: rgb(13, 17, 23);
     box-shadow: 0 4px 2px rgb(25, 33, 44); 
-
-    /* background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59);  */
-    /* background-color: rgb(18, 24, 33); */
-    /* box-shadow: 0 4px 2px rgb(31, 41,56);  */
     color: white;
 }
 
@@ -408,13 +403,11 @@ POST CSS POST CSS POST CSS */
 .post .divider h2 {
     font-size: 20px;
     margin-right: 20px;
-    /* margin-left: 5px; */
 }
 
 .post .divider .postButton, .post .footer .postEditButton {
     min-width: 60px;
     height: 25px;
-    margin-right: 5px;
     font-size: 15px;
     border-radius: 5px;
     box-shadow: 0px 2px 0px 0px #d6d6d6
@@ -422,7 +415,7 @@ POST CSS POST CSS POST CSS */
 
 .post .footer .postEditButton {
     margin-left: auto;
-    margin-right: 20px
+    margin-right: 30px
 }
 .post .divider .likeButton {
     width: 60px;

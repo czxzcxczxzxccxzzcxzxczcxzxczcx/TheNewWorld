@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             } else {
                 console.error('No notifications found or data structure is invalid');
-            }
+            }58
         } catch (error) {
             console.error('Error fetching notifications:', error);
         }
