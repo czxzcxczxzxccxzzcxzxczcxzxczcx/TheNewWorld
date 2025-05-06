@@ -1,8 +1,10 @@
 Social media platform project.
 
-The New World is a social platform made to mimic the features of Twitter, allowing for users to create and view posts and engage with others.
+The New World is a social media platform designed to mimic the features of Twitter, allowing for users to create a account and engage with others.
 
-Features in the project:
+The project presents both front-end and back-end functionality, utilizing MongoDB for its database.
+
+Features in the website:
   - Real-Time Direct Messaging:  Instantly send and receive direct messages with other users.
   - Post Creation:  Easily create and share posts with your followers.
   - Post Editing:  Edit your posts after publishing to update content or correct mistakes.
@@ -14,7 +16,7 @@ Features in the project:
   - Real-Time Notifications:  Receive notifications about activity on your posts and interactions.
   - Commenting:  Engage with posts by leaving comments and starting discussions.
 
-How to use:
+How to set up the website:
   1) To begin, install all neccessary depencies that the server utilizes.
     - To auto install, type the 'npm install' command into the console.
     - To manually install, type the following commands into the console.
