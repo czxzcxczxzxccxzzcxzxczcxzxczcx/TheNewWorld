@@ -27,7 +27,7 @@ How to set up the website:
       - "npm install bcrypt"
       - "npm install --save-dev nodemon" (OPTIONAL BUT IS RECOMMENDED FOR REALTIME SERVER UPDATES)
 
-  2) Next, directly inside the projects directory create a file called '.env'
+  2) Next, directly inside the projects directory create a file called '.env'  
     - This will be utilized to securely store our MongoDB API key.  
     - Once you have created the file, type inside of it: "DB_URI= " following the database key.  
 
