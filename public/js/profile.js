@@ -5,10 +5,26 @@ import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
 
 renderBar();
 
-document.addEventListener("DOMContentLoaded", function () {
-    const profileAccountNumber = window.location.pathname.split('/')[2];
+document.addEventListener("DOMContentLoaded", async function () {
+    let profileAccountNumber = window.location.pathname.split('/')[2];
     var gebid = document.getElementById.bind(document);
     let userAccountNumber;
+
+    // Check if profileAccountNumber is a username and fetch the account number if needed
+    if (isNaN(profileAccountNumber)) { // If it's not a number, assume it's a username
+        try {
+            const response = await apiRequest('/api/getAccountNumber', 'POST', { username: profileAccountNumber });
+            if (response.success) {
+                profileAccountNumber = response.accountNumber; // Update to the fetched account number
+            } else {
+                console.error('Failed to fetch account number:', response.message);
+                window.location.href = '/'; // Redirect to home if the username is invalid
+            }
+        } catch (error) {
+            console.error('Error fetching account number:', error);
+            window.location.href = '/'; // Redirect to home on error
+        }
+    }
 
     // Fetch user info and then set up the page
     async function fetchUserInfoAndSetupPage() {

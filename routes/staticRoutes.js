@@ -24,11 +24,19 @@ staticPages.forEach((route) => {
     });
 });
 
-// Route for profile page
-router.get('/profile/:accountNumber', async (req, res) => {
+// Unified route for profile page by account number or username
+router.get('/profile/:identifier', async (req, res) => {
     try {
-        const { accountNumber } = req.params;
-        const user = await User.findOne({ accountNumber });
+        const { identifier } = req.params;
+        let user;
+
+        if (isNaN(identifier)) {
+            // If identifier is not a number, treat it as a username
+            user = await User.findOne({ username: identifier });
+        } else {
+            // Otherwise, treat it as an account number
+            user = await User.findOne({ accountNumber: identifier });
+        }
 
         if (!user) {
             return res.status(404).send('ERROR 404 | User Profile Not Found');

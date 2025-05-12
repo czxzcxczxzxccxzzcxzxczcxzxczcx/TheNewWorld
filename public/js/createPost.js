@@ -52,5 +52,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // Check all posts
+    document.getElementById('checkPost').addEventListener("click", async function () {
+        try {
+            const data = await apiRequest('/api/getAllPosts', 'POST');
+        } catch (error) {
+            console.error('Error checking posts:', error);
+        }
+    });
+
     fetchUserInfo();
 });

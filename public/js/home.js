@@ -3,9 +3,11 @@ import { renderPost,  changeEdit } from './utils/renderPost.js';
 import { initializeCreatePost } from './utils/createPostHandler.js';
 import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
 
+
 renderBar();
 
 document.addEventListener("DOMContentLoaded", function () {
+    
     let accountNumber;
 
     async function fetchPost(postId) {
@@ -45,34 +47,37 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await apiRequest('/api/getNotifications', 'GET');
             console.log(data)
             if (data.success && Array.isArray(data.notifications)) {
+               
                 const notificationsList = document.getElementById('notificationsList');
                 notificationsList.innerHTML = ''; // Clear existing notifications
                 console.log(data)
+                 console.log(datra)
                 data.notifications.forEach(notification => {
+                     console.log(2)
                     const listItem = document.createElement('li');
                     listItem.textContent = `${notification.content} (From: ${notification.from})`;
                     notificationsList.appendChild(listItem);
                 });
             } else {
                 console.error('No notifications found or data structure is invalid');
-            }58
+            }
         } catch (error) {
             console.error('Error fetching notifications:', error);
         }
     }
 
-    apiRequest('/api/verify', 'GET')
-        .then(data => {
-            if (data.success) {
-                const adminButton = document.getElementById('adminPanelButton');
-                if (adminButton) {
-                    adminButton.style.display = 'block'; // Set display to block if authorized
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error verifying admin access:', error);
-        });
+    // apiRequest('/api/verify', 'GET')
+    //     .then(data => {
+    //         if (data.success) {
+    //             const adminButton = document.getElementById('adminPanelButton');
+    //             if (adminButton) {
+    //                 adminButton.style.display = 'block'; // Set display to block if authorized
+    //             }
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.error('Error verifying admin access:', error);
+    //     });
 
     apiRequest('/api/getUserInfo', 'GET')
         .then(data => {

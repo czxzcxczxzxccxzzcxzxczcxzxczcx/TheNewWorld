@@ -35,6 +35,10 @@ export function changeEdit(edit, pfpDisplay, profileText, pfpText, bioBorder, us
     username.style.border = userBorder;
 }
 
+function makeMentionsClickable(content) {
+    return content.replace(/@([a-zA-Z0-9_]+)/g, '<a href="/profile/$1">@$1</a>');
+}
+
 export function renderPost(post, username, pfp, accountNumber, from, fromAccountNumber) {
     const postDiv = createElementWithClass('div', 'post');
     const postDetailsDiv = createElementWithClass('div', 'postDetails');
@@ -75,6 +79,10 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         displayUsername,
         displayPfp
     );
+
+    // Process post content to make mentions clickable
+    const processedContent = makeMentionsClickable(post.content || 'test');
+    contentP.innerHTML = processedContent; // Use innerHTML to allow anchor tags
 
     // Add delete button if the post belongs to the logged-in user
     if (post.accountNumber === fromAccountNumber) {

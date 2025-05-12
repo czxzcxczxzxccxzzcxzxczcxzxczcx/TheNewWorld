@@ -259,4 +259,22 @@ router.get('/getNotifications', async (req, res) => {
     }
 });
 
+// Route to get accountNumber using username from req.body
+router.post('/getAccountNumber', async (req, res) => {
+    const { username } = req.body;
+
+    try {
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        res.json({ success: true, accountNumber: user.accountNumber });
+    } catch (error) {
+        console.error('Error fetching accountNumber by username:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 module.exports = router;
