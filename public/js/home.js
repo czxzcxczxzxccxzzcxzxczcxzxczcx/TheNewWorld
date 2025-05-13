@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 const notificationsList = document.getElementById('notificationsList');
                 notificationsList.innerHTML = ''; // Clear existing notifications
                 console.log(data)
-                 console.log(datra)
                 data.notifications.forEach(notification => {
                      console.log(2)
                     const listItem = document.createElement('li');

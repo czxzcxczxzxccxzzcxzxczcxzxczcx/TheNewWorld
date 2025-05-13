@@ -49,7 +49,7 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     const postBodyDiv = createElementWithClass('div', 'postBody');
     const contentP = createElementWithClass('p');
     const dividerDiv = createElementWithClass('div', 'divider');
-    const viewsH2 = createElementWithClass('h2');
+    const viewsH2 = createElementWithClass('h2','postViews');
     const likeButton = createElementWithClass('button', 'postButton likeButton');
     const likeCounter = createElementWithClass('h2', 'likeCounter');
     const repostButton = createElementWithClass('button', 'postButton');
@@ -57,11 +57,14 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     const dateE = createElementWithClass('h2', 'date');
     const footerDiv = createElementWithClass('div', 'footer');
     const spaceDiv2 = createElementWithClass('div', 'spaceDiv');
+     const buttonsDiv = createElementWithClass('div', 'buttonsDiv');
+
+        
 
     const displayUsername = username || post.username || 'Anonymous';
     const displayPfp = pfp || post.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
 
-    setPostAttributes(
+    setPostAttributes(postDiv,
         postDetailsDiv,
         postImage,
         usernameTitle,
@@ -74,6 +77,7 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         likeCounter,
         repostButton,
         repostCounter,
+        buttonsDiv,
         dateE,
         post,
         displayUsername,
@@ -111,7 +115,7 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         postDetailsDiv.appendChild(deleteButton);
     }
 
-    postDiv.append(postDetailsDiv, postBodyDiv, dividerDiv, footerDiv);
+    postDiv.append(postDetailsDiv, postBodyDiv, dividerDiv,buttonsDiv, footerDiv);
 
     const commentDiv = createElementWithClass('div', 'commentSection');
     commentDiv.style.display = 'none';
@@ -173,20 +177,28 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
 
     footerDiv.append(dateE);
 
+    
+
     const toggleCommentsButton = createElementWithClass('button', 'postButton postEditButton');
-    toggleCommentsButton.textContent = 'Show Comments';
+    toggleCommentsButton.textContent = 'Comments';
+    toggleCommentsButton.style.backgroundColor = "#ffffff"; // Initial white background
 
     toggleCommentsButton.addEventListener('click', () => {
         if (commentDiv.style.display === 'none' || !commentDiv.style.display) {
             commentDiv.style.display = 'block';
-            toggleCommentsButton.textContent = 'Hide Comments';
+            toggleCommentsButton.style.backgroundColor = "#A0A09E"; // Slightly darker white when active
         } else {
             commentDiv.style.display = 'none';
-            toggleCommentsButton.textContent = 'Show Comments';
+            toggleCommentsButton.style.backgroundColor = "#ffffff"; // Reset to white when inactive
         }
     });
 
-    footerDiv.appendChild(toggleCommentsButton);
+    buttonsDiv.appendChild(toggleCommentsButton); // Move toggleCommentsButton to buttonsDiv
+
+    // Add edit button if the post belongs to the logged-in user
+    if (post.accountNumber === fromAccountNumber) {
+        setupEditButton(buttonsDiv, post, titleH1, contentP); // Move edit button to buttonsDiv
+    }
 
     if (from == 'home') {
         homePanel.appendChild(postDiv);
@@ -210,7 +222,7 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     setupReposts(repostButton, repostCounter, post, fromAccountNumber);
 }
 
-function setPostAttributes(postDetailsDiv, postImage, usernameTitle, titleH1, postBodyDiv, contentP, dividerDiv, viewsH2, likeButton, likeCounter, repostButton, repostCounter, dateE, post, username, pfp) {
+function setPostAttributes(postDiv,postDetailsDiv, postImage, usernameTitle, titleH1, postBodyDiv, contentP, dividerDiv, viewsH2, likeButton, likeCounter, repostButton, repostCounter,buttonsDiv, dateE, post, username, pfp) {
     postImage.src = pfp || post.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
     usernameTitle.textContent = `@${username || post.username || ''}`;
     titleH1.textContent = post.title || 'test';
@@ -218,15 +230,24 @@ function setPostAttributes(postDetailsDiv, postImage, usernameTitle, titleH1, po
     viewsH2.textContent = `${post.views || 0} Views`;
     likeCounter.textContent = `${post.likes?.length || 0} likes`;
     repostCounter.textContent = `${post.reposts?.length || 0} reposts`;
-    likeButton.textContent = 'Like';
+
+    // Update buttons to only show icons
+    likeButton.innerHTML = '<img src="https://www.freeiconspng.com/uploads/youtube-like-button-png-11.png" alt="Like" style="width:25px; height:25px;">';
     likeButton.type = 'submit';
-    repostButton.textContent = 'Repost';
+
+    repostButton.innerHTML = '<img src="https://www.shareicon.net/data/512x512/2015/08/31/93872_repost_512x512.png" alt="Repost" style="width:25px; height:25px;">';
     repostButton.type = 'submit';
+
     dateE.textContent = post.createdAt ? formatDate(post.createdAt) : '19:18 - April 20 2025';
 
     postDetailsDiv.append(postImage, usernameTitle, titleH1);
-    dividerDiv.append(viewsH2, likeButton, likeCounter, repostButton, repostCounter);
-    postBodyDiv.append(contentP, dividerDiv);
+    dividerDiv.append(viewsH2, likeCounter, repostCounter);
+
+    // Create a new buttonsDiv and move the buttons into it
+
+    postBodyDiv.append(contentP);
+    postBodyDiv.append(dividerDiv);
+    buttonsDiv.append(likeButton, repostButton);
 }
 
 export function createElementWithClass(tag, className = '') {
@@ -285,11 +306,12 @@ function renderComment(comment, commentDiv, loggedInAccountNumber) {
 export function setupLikes(likeButton, likeCounter, post, accountNumber) {
     const postId = post.postId;
 
+    // Set initial state of the like button
+
     apiRequest('/api/checkLike', 'POST', { postId, accountNumber })
         .then(data => {
             if (data.liked) {
-                likeButton.textContent = 'Liked';
-                likeButton.style.backgroundColor = "#777777";
+                likeButton.style.backgroundColor = "#A0A09E"; // Slightly darker white for liked state
             }
         })
         .catch(error => { console.error('Error checking like status:', error); });
@@ -299,11 +321,9 @@ export function setupLikes(likeButton, likeCounter, post, accountNumber) {
             .then(data => {
                 if (data.success) {
                     if (data.removed) {
-                        likeButton.textContent = 'Like';
-                        likeButton.style.backgroundColor = "white";
+                        likeButton.style.backgroundColor = "#ffffff"; // Reset to white for unliked state
                     } else {
-                        likeButton.textContent = 'Liked';
-                        likeButton.style.backgroundColor = "#777777";
+                likeButton.style.backgroundColor = "#A0A09E"; // Slightly darker white for liked state
                     }
                     return apiRequest('/api/getPost', 'POST', { postId });
                 }
@@ -320,11 +340,13 @@ export function setupLikes(likeButton, likeCounter, post, accountNumber) {
 export function setupReposts(repostButton, repostCounter, post, accountNumber) {
     const postId = post.postId;
 
+    // Set initial state of the repost button
+    repostButton.style.backgroundColor = "#ffffff"; // White background for unreposted state
+
     apiRequest('/api/checkRepost', 'POST', { postId, accountNumber })
         .then(data => {
             if (data.reposted) {
-                repostButton.textContent = 'Reposted';
-                repostButton.style.backgroundColor = "#777777";
+                repostButton.style.backgroundColor = "#A0A09E"; // Slightly darker white for reposted state
             }
         })
         .catch(error => { console.error('Error checking repost status:', error); });
@@ -334,11 +356,9 @@ export function setupReposts(repostButton, repostCounter, post, accountNumber) {
             .then(data => {
                 if (data.success) {
                     if (data.removed) {
-                        repostButton.textContent = 'Repost';
-                        repostButton.style.backgroundColor = "white";
+                        repostButton.style.backgroundColor = "#ffffff"; // Reset to white for unreposted state
                     } else {
-                        repostButton.textContent = 'Reposted';
-                        repostButton.style.backgroundColor = "#777777";
+                        repostButton.style.backgroundColor = "#A0A09E"; // Slightly darker white for reposted state
                     }
                     return apiRequest('/api/getPost', 'POST', { postId });
                 }
@@ -350,4 +370,47 @@ export function setupReposts(repostButton, repostCounter, post, accountNumber) {
             })
             .catch(error => { console.error('Error reposting post or fetching updated data:', error); });
     });
+}
+
+export async function updatePost(postId, title, content) {
+    try {
+        const data = await apiRequest('/api/changePostData', 'POST', { postId, title, content });
+        if (data.success) {
+            console.log('Post updated successfully');
+            alert('Post updated successfully');
+        } else {
+            console.error('Failed to update post');
+            alert('Failed to update post');
+        }
+    } catch (error) {
+        console.error('Error updating post:', error);
+        alert(error);
+    }
+}
+
+export function changeProfileEdit(edit, text, border, cE, tE, eE) {
+    cE.contentEditable = edit;
+    tE.contentEditable = edit;
+    eE.textContent = text;
+    cE.style.border = border;
+    tE.style.border = border;
+}
+
+export function setupEditButton(parent, post, titleElement, contentElement) {
+    const editButton = createElementWithClass('button', 'postButton postEditButton');
+    editButton.textContent = 'Edit Post';
+    editButton.setAttribute('data-id', post.postId);
+
+    editButton.addEventListener('click', () => {
+        const isEditable = contentElement.isContentEditable;
+
+        if (isEditable) {
+            changeProfileEdit(false, 'Edit Post', '', contentElement, titleElement, editButton);
+            updatePost(post.postId, titleElement.textContent, contentElement.textContent);
+        } else {
+            changeProfileEdit(true, 'Save Post', '1px dashed #ccc', contentElement, titleElement, editButton);
+        }
+    });
+
+    parent.appendChild(editButton);
 }
