@@ -1,7 +1,6 @@
 const express = require('express');
 const { Post, User, Notification } = require('../utils/database');
-const { createNotification } = require('../utils/genNotification');
-
+const { createNotification } = require('../utils/database/genNotification');
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 
 

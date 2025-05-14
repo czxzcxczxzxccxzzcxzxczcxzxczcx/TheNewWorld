@@ -1,3 +1,5 @@
+import { apiRequest } from './apiRequest.js';
+
 function formatDate(dateString) {
     const date = new Date(dateString);
 
@@ -8,20 +10,6 @@ function formatDate(dateString) {
     const year = date.getFullYear();
 
     return `${hours}:${minutes} - ${month} ${day} ${year}`;
-}
-
-async function apiRequest(url, method = 'GET', body = null) {
-    const options = {method,headers: { 'Content-Type': 'application/json' },};
-
-    if (body) {options.body = JSON.stringify(body);}
-
-    try {
-        const response = await fetch(url, options);
-        return await response.json();
-    } catch (error) {
-        console.error(`Error during API request to ${url}:`, error);
-        throw error;
-    }
 }
 
 export function changeEdit(edit, pfpDisplay, profileText, pfpText, bioBorder, userBorder) {
@@ -39,12 +27,22 @@ function makeMentionsClickable(content) {
     return content.replace(/@([a-zA-Z0-9_]+)/g, '<a href="/profile/$1">@$1</a>');
 }
 
+function processContent(content) {
+    // Make mentions clickable
+    let processedContent = makeMentionsClickable(content);
+
+    // Check for image URLs and render them as images
+    const imageRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif))/gi;
+    processedContent = processedContent.replace(imageRegex, '<img src="$1" alt="User Image" style="max-width: 100%; height: auto;">');
+
+    return processedContent;
+}
+
 export function renderPost(post, username, pfp, accountNumber, from, fromAccountNumber) {
     const postDiv = createElementWithClass('div', 'post');
     const postDetailsDiv = createElementWithClass('div', 'postDetails');
     const postImage = createElementWithClass('img', 'pfp');
     const usernameTitle = createElementWithClass('h1', 'usernameTitle');
-
     const titleH1 = createElementWithClass('h1');
     const postBodyDiv = createElementWithClass('div', 'postBody');
     const contentP = createElementWithClass('p');
@@ -56,10 +54,13 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     const repostCounter = createElementWithClass('h2', 'likeCounter');
     const dateE = createElementWithClass('h2', 'date');
     const footerDiv = createElementWithClass('div', 'footer');
-    const spaceDiv2 = createElementWithClass('div', 'spaceDiv');
-     const buttonsDiv = createElementWithClass('div', 'buttonsDiv');
+    const buttonsDiv = createElementWithClass('div', 'buttonsDiv');
+    const commentDiv = createElementWithClass('div', 'commentSection');
+    const commentInputDiv = createElementWithClass('div', 'commentInputDiv');
+    const commentTextBox = createElementWithClass('textarea', 'commentTextBox');
+    const commentButton = createElementWithClass('button', 'commentButton');
+    const toggleCommentsButton = createElementWithClass('button', 'postButton postEditButton');
 
-        
 
     const displayUsername = username || post.username || 'Anonymous';
     const displayPfp = pfp || post.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
@@ -84,9 +85,37 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         displayPfp
     );
 
-    // Process post content to make mentions clickable
-    const processedContent = makeMentionsClickable(post.content || 'test');
-    contentP.innerHTML = processedContent; // Use innerHTML to allow anchor tags
+    postDiv.append(postDetailsDiv, postBodyDiv, dividerDiv,buttonsDiv, footerDiv);
+    footerDiv.append(dateE);
+
+    commentDiv.style.display = 'none';
+    commentButton.textContent = 'Post Comment';
+    toggleCommentsButton.textContent = 'Comments';
+    toggleCommentsButton.style.backgroundColor = "#ffffff"; // Initial white background
+
+    commentInputDiv.appendChild(commentTextBox);
+    commentInputDiv.appendChild(commentButton);
+    commentDiv.appendChild(commentInputDiv);
+    postDiv.appendChild(commentDiv);
+    buttonsDiv.appendChild(toggleCommentsButton); 
+
+    // Process post content to make mentions clickable and render images
+    const processedContent = processContent(post.content || 'test');
+    contentP.innerHTML = processedContent; // Use innerHTML to allow anchor tags and images
+
+     apiRequest('/api/getComments', 'POST', { postId: post.postId })
+        .then((response) => {
+            if (response.success) {
+                response.comments.forEach(({ comment, username, pfp }) => {
+                    renderComment({ ...comment, username, pfp }, commentDiv, fromAccountNumber);
+                });
+            } else {
+                console.error('Failed to fetch comments:', response.message);
+            }
+        })
+        .catch((error) => {
+            console.error('Error fetching comments:', error);
+        });
 
     // Add delete button if the post belongs to the logged-in user
     if (post.accountNumber === fromAccountNumber) {
@@ -109,21 +138,8 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
                 }
             }
         });
-
-        // Add the delete button to the left of the profile picture
-        // postDetailsDiv.insertBefore(deleteButton, postImage);
         postDetailsDiv.appendChild(deleteButton);
     }
-
-    postDiv.append(postDetailsDiv, postBodyDiv, dividerDiv,buttonsDiv, footerDiv);
-
-    const commentDiv = createElementWithClass('div', 'commentSection');
-    commentDiv.style.display = 'none';
-
-    const commentInputDiv = createElementWithClass('div', 'commentInputDiv');
-    const commentTextBox = createElementWithClass('textarea', 'commentTextBox');
-    const commentButton = createElementWithClass('button', 'commentButton');
-    commentButton.textContent = 'Post Comment';
 
     commentButton.addEventListener('click', async () => {
         const commentContent = commentTextBox.value.trim();
@@ -131,7 +147,6 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
             alert('Comment cannot be empty.');
             return;
         }
-
         try {
             const response = await apiRequest('/api/createComment', 'POST', {
                 accountNumber: fromAccountNumber,
@@ -155,34 +170,6 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         }
     });
 
-    commentInputDiv.appendChild(commentTextBox);
-    commentInputDiv.appendChild(commentButton);
-    commentDiv.appendChild(commentInputDiv);
-
-    apiRequest('/api/getComments', 'POST', { postId: post.postId })
-        .then((response) => {
-            if (response.success) {
-                response.comments.forEach(({ comment, username, pfp }) => {
-                    renderComment({ ...comment, username, pfp }, commentDiv, fromAccountNumber);
-                });
-            } else {
-                console.error('Failed to fetch comments:', response.message);
-            }
-        })
-        .catch((error) => {
-            console.error('Error fetching comments:', error);
-        });
-
-    postDiv.appendChild(commentDiv);
-
-    footerDiv.append(dateE);
-
-    
-
-    const toggleCommentsButton = createElementWithClass('button', 'postButton postEditButton');
-    toggleCommentsButton.textContent = 'Comments';
-    toggleCommentsButton.style.backgroundColor = "#ffffff"; // Initial white background
-
     toggleCommentsButton.addEventListener('click', () => {
         if (commentDiv.style.display === 'none' || !commentDiv.style.display) {
             commentDiv.style.display = 'block';
@@ -193,7 +180,6 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         }
     });
 
-    buttonsDiv.appendChild(toggleCommentsButton); // Move toggleCommentsButton to buttonsDiv
 
     // Add edit button if the post belongs to the logged-in user
     if (post.accountNumber === fromAccountNumber) {
@@ -202,6 +188,10 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
 
     if (from == 'home') {
         homePanel.appendChild(postDiv);
+         postImage.addEventListener("click", function (event) {
+            window.location.href = `/profile/${post.accountNumber}`;  
+        });
+        postImage.classList.add("homeHover");
     } else if (from == 'profile') {
         const profilePosts = document.getElementById('profilePosts');
         profilePosts.appendChild(postDiv);
@@ -212,12 +202,8 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         const profileReposts = document.getElementById('searchpanel');
         profileReposts.appendChild(postDiv);
     }
-    if (from == 'home') {
-        postImage.addEventListener("click", function (event) {
-            window.location.href = `/profile/${post.accountNumber}`;  
-        });
-        postImage.classList.add("homeHover");
-    }
+
+
     setupLikes(likeButton, likeCounter, post, fromAccountNumber);
     setupReposts(repostButton, repostCounter, post, fromAccountNumber);
 }

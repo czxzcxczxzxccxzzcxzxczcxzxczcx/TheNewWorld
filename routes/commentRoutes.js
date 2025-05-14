@@ -1,7 +1,7 @@
 const express = require('express');
 const { Comment, Post, User } = require('../utils/database');
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
-const { createNotification } = require('../utils/genNotification'); // Import the notification utility
+const { createNotification } = require('../utils/database/genNotification');
 const router = express.Router();
 
 const generateUniqueCommentId = async () => {

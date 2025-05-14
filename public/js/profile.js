@@ -5,10 +5,26 @@ import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
 
 renderBar();
 
-document.addEventListener("DOMContentLoaded", function () {
-    const profileAccountNumber = window.location.pathname.split('/')[2];
+document.addEventListener("DOMContentLoaded", async function () {
+    let profileAccountNumber = window.location.pathname.split('/')[2];
     var gebid = document.getElementById.bind(document);
     let userAccountNumber;
+
+    // Check if profileAccountNumber is a username and fetch the account number if needed
+    if (isNaN(profileAccountNumber)) { // If it's not a number, assume it's a username
+        try {
+            const response = await apiRequest('/api/getAccountNumber', 'POST', { username: profileAccountNumber });
+            if (response.success) {
+                profileAccountNumber = response.accountNumber; // Update to the fetched account number
+            } else {
+                console.error('Failed to fetch account number:', response.message);
+                window.location.href = '/'; // Redirect to home if the username is invalid
+            }
+        } catch (error) {
+            console.error('Error fetching account number:', error);
+            window.location.href = '/'; // Redirect to home on error
+        }
+    }
 
     // Fetch user info and then set up the page
     async function fetchUserInfoAndSetupPage() {
@@ -29,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function setupPage() {
+   async function setupPage() {
         apiRequest('/api/verify', 'GET')
             .then(data => {
                 if (data.success) {
@@ -102,12 +118,16 @@ document.addEventListener("DOMContentLoaded", function () {
                         console.error('Error fetching reposts:', error);
                     });
 
-                gebid('username').textContent = `${data.username}`;
+                gebid('profileUsername').textContent = `${data.username}`;
+
+
+
                 gebid('pfp').src = pfp;
                 gebid('accountnumber').textContent = ` (${data.accountNumber})`;
                 gebid('bio').textContent = `${data.bio}`;
                 gebid('following').textContent = `${Array.isArray(data.following) ? data.following.length : 0} Following`; // Ensure array
                 gebid('followers').textContent = `${Array.isArray(data.followers) ? data.followers.length : 0} Followers`; // Ensure array
+                
                 gebid('changePfp').textContent = `${data.pfp}`;
             })
             .catch(error => console.error('Error fetching profile data:', error));
@@ -135,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
     gebid('profileEdit').addEventListener("click", async function (event) {
         event.preventDefault();
         const pfp = gebid("changePfp").textContent;
-        const username = gebid("username").textContent;
+        const username = gebid("profileUsername").textContent;
         const bio = gebid("bio").textContent.trim(); // Trim unnecessary whitespace
         const isEditable = gebid("bio").isContentEditable;
 
@@ -252,4 +272,5 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => {
             console.error("Error fetching user info:", error);
         });
+
 });

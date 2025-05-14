@@ -2,7 +2,7 @@ const express = require('express');
 const { Message, User } = require('../utils/database');
 const router = express.Router();
 const sessionStore = require('../utils/database/sessionStore'); 
-const { createNotification } = require('../utils/genNotification');
+const { createNotification } = require('../utils/database/genNotification');
 
 // Generate a unique message ID
 const generateUniqueMessageId = async () => {
