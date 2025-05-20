@@ -31,10 +31,12 @@ function processContent(content) {
     // Make mentions clickable
     let processedContent = makeMentionsClickable(content);
 
-    // Check for image URLs and render them as images
-    const imageRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif))/gi;
-    processedContent = processedContent.replace(imageRegex, '<img src="$1" alt="User Image" style="max-width: 100%; height: auto;">');
+    // Only replace image URLs that are inside < > or &lt; &gt; with <img> tags
+    // Replace <url> and &lt;url&gt; with <img>
+    processedContent = processedContent.replace(/<\s*(https?:\/\/[^>\s]+\.(?:png|jpg|jpeg|gif))\s*>/gi, '<img src="$1" alt="User Image" class="post-image-natural">');
+    processedContent = processedContent.replace(/&lt;\s*(https?:\/\/[^&\s]+\.(?:png|jpg|jpeg|gif))\s*&gt;/gi, '<img src="$1" alt="User Image" class="post-image-natural">');
 
+    
     return processedContent;
 }
 
@@ -91,7 +93,8 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     commentDiv.style.display = 'none';
     commentButton.textContent = 'Post Comment';
     toggleCommentsButton.textContent = 'Comments';
-    toggleCommentsButton.style.backgroundColor = "#ffffff"; // Initial white background
+    // toggleCommentsButton.style.backgroundColor = "#ffffff"; // Initial white background
+    toggleCommentsButton.style.color = '#ffffff'
 
     commentInputDiv.appendChild(commentTextBox);
     commentInputDiv.appendChild(commentButton);
@@ -173,10 +176,12 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     toggleCommentsButton.addEventListener('click', () => {
         if (commentDiv.style.display === 'none' || !commentDiv.style.display) {
             commentDiv.style.display = 'block';
-            toggleCommentsButton.style.backgroundColor = "#A0A09E"; // Slightly darker white when active
+            // toggleCommentsButton.style.backgroundColor = "#A0A09E"; // Slightly darker white when active
+            toggleCommentsButton.style.color = '#007bff'
         } else {
             commentDiv.style.display = 'none';
-            toggleCommentsButton.style.backgroundColor = "#ffffff"; // Reset to white when inactive
+            // toggleCommentsButton.style.backgroundColor = "#ffffff"; // Reset to white when inactive
+            toggleCommentsButton.style.color = '#ffffff'
         }
     });
 
@@ -218,10 +223,12 @@ function setPostAttributes(postDiv,postDetailsDiv, postImage, usernameTitle, tit
     repostCounter.textContent = `${post.reposts?.length || 0} reposts`;
 
     // Update buttons to only show icons
-    likeButton.innerHTML = '<img src="https://www.freeiconspng.com/uploads/youtube-like-button-png-11.png" alt="Like" style="width:25px; height:25px;">';
+    // likeButton.innerHTML = '<img class="post-image-natural" src="https://www.freeiconspng.com/uploads/youtube-like-button-png-11.png" alt="Like" style="width:25px; height:25px;">';
+    likeButton.textContent = 'Like';
     likeButton.type = 'submit';
 
-    repostButton.innerHTML = '<img src="https://www.shareicon.net/data/512x512/2015/08/31/93872_repost_512x512.png" alt="Repost" style="width:25px; height:25px;">';
+    // repostButton.innerHTML = '<img src="https://www.shareicon.net/data/512x512/2015/08/31/93872_repost_512x512.png" alt="Repost" style="width:25px; height:25px;">';
+    repostButton.textContent = 'Repost';
     repostButton.type = 'submit';
 
     dateE.textContent = post.createdAt ? formatDate(post.createdAt) : '19:18 - April 20 2025';
@@ -248,6 +255,24 @@ function renderComment(comment, commentDiv, loggedInAccountNumber) {
     const postImage = createElementWithClass('img', 'pfp');
     const usernameTitle = createElementWithClass('h1', 'usernameTitle');
 
+    
+
+    const postBodyDiv = createElementWithClass('div', 'postCommentBody');
+    const contentP = createElementWithClass('p');
+    const dateE = createElementWithClass('h2', 'date');
+    const footerDiv = createElementWithClass('div', 'commentFooter');
+    const spaceDiv = createElementWithClass('div', 'spaceDiv');
+
+    postImage.src = comment.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
+    usernameTitle.textContent = `@${comment.username || 'Anonymous'}`;
+    contentP.textContent = comment.content || 'No content';
+    dateE.textContent = comment.createdAt ? formatDate(comment.createdAt) : 'Unknown date';
+
+    postDetailsDiv.append(postImage, usernameTitle);
+    postBodyDiv.append(contentP);
+    footerDiv.append(dateE);
+    commentElement.append(postDetailsDiv, postBodyDiv, footerDiv);
+
     if (comment.accountNumber === loggedInAccountNumber) {
         const deleteButton = createElementWithClass('button', 'deleteButton');
         deleteButton.textContent = 'X';
@@ -270,22 +295,6 @@ function renderComment(comment, commentDiv, loggedInAccountNumber) {
         postDetailsDiv.append(deleteButton);
     }
 
-    const postBodyDiv = createElementWithClass('div', 'postCommentBody');
-    const contentP = createElementWithClass('p');
-    const dateE = createElementWithClass('h2', 'date');
-    const footerDiv = createElementWithClass('div', 'commentFooter');
-    const spaceDiv = createElementWithClass('div', 'spaceDiv');
-
-    postImage.src = comment.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
-    usernameTitle.textContent = `@${comment.username || 'Anonymous'}`;
-    contentP.textContent = comment.content || 'No content';
-    dateE.textContent = comment.createdAt ? formatDate(comment.createdAt) : 'Unknown date';
-
-    postDetailsDiv.append(postImage, usernameTitle);
-    postBodyDiv.append(contentP);
-    footerDiv.append(dateE);
-    commentElement.append(postDetailsDiv, postBodyDiv, footerDiv, spaceDiv);
-
     commentDiv.appendChild(commentElement);
 }
 
@@ -297,7 +306,8 @@ export function setupLikes(likeButton, likeCounter, post, accountNumber) {
     apiRequest('/api/checkLike', 'POST', { postId, accountNumber })
         .then(data => {
             if (data.liked) {
-                likeButton.style.backgroundColor = "#A0A09E"; // Slightly darker white for liked state
+                // likeButton.style.backgroundColor = "#A0A09E"; 
+                likeButton.style.color = '#007bff'
             }
         })
         .catch(error => { console.error('Error checking like status:', error); });
@@ -307,9 +317,11 @@ export function setupLikes(likeButton, likeCounter, post, accountNumber) {
             .then(data => {
                 if (data.success) {
                     if (data.removed) {
-                        likeButton.style.backgroundColor = "#ffffff"; // Reset to white for unliked state
+                        // likeButton.style.backgroundColor = "#ffffff"; // Reset to white for unliked state
+                        likeButton.style.color = '#ffffff'
                     } else {
-                likeButton.style.backgroundColor = "#A0A09E"; // Slightly darker white for liked state
+                // likeButton.style.backgroundColor = "#A0A09E"; // Slightly darker white for liked state
+                        likeButton.style.color = '#007bff'
                     }
                     return apiRequest('/api/getPost', 'POST', { postId });
                 }
@@ -327,12 +339,12 @@ export function setupReposts(repostButton, repostCounter, post, accountNumber) {
     const postId = post.postId;
 
     // Set initial state of the repost button
-    repostButton.style.backgroundColor = "#ffffff"; // White background for unreposted state
+    repostButton.style.color = '#ffffff'
 
     apiRequest('/api/checkRepost', 'POST', { postId, accountNumber })
         .then(data => {
             if (data.reposted) {
-                repostButton.style.backgroundColor = "#A0A09E"; // Slightly darker white for reposted state
+                repostButton.style.color = '#007bff'
             }
         })
         .catch(error => { console.error('Error checking repost status:', error); });
@@ -342,9 +354,9 @@ export function setupReposts(repostButton, repostCounter, post, accountNumber) {
             .then(data => {
                 if (data.success) {
                     if (data.removed) {
-                        repostButton.style.backgroundColor = "#ffffff"; // Reset to white for unreposted state
+                        repostButton.style.color = '#ffffff'
                     } else {
-                        repostButton.style.backgroundColor = "#A0A09E"; // Slightly darker white for reposted state
+                        repostButton.style.color = '#007bff'
                     }
                     return apiRequest('/api/getPost', 'POST', { postId });
                 }
@@ -369,7 +381,7 @@ export async function updatePost(postId, title, content) {
             alert('Failed to update post');
         }
     } catch (error) {
-        console.error('Error updating post:', error);
+        // console.error('Error updating post:', error);
         alert(error);
     }
 }
@@ -393,8 +405,17 @@ export function setupEditButton(parent, post, titleElement, contentElement) {
         if (isEditable) {
             changeProfileEdit(false, 'Edit Post', '', contentElement, titleElement, editButton);
             updatePost(post.postId, titleElement.textContent, contentElement.textContent);
+
+            const processedContent = processContent(contentElement.textContent);
+            contentElement.innerHTML = processedContent;
         } else {
+            // When entering edit mode, convert images back to <url> format for editing
+            let html = contentElement.innerHTML;
+            html = html.replace(/<img[^>]*src=["']([^"']+)["'][^>]*>/gi, function(match, p1) { return `&lt;${p1}&gt;`; });
+
+            contentElement.innerHTML = html;
             changeProfileEdit(true, 'Save Post', '1px dashed #ccc', contentElement, titleElement, editButton);
+
         }
     });
 

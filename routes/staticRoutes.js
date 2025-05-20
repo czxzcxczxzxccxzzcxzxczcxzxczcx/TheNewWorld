@@ -112,4 +112,10 @@ router.get('/dm/:userId', async (req, res) => {
     }
 });
 
+// Catch-all route for undefined pages (404)
+router.use((req, res) => {
+    const notFoundPath = path.join(__dirname, '../public/html/notFound.html');
+    res.status(404).sendFile(notFoundPath);
+});
+
 module.exports = router;

@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 
-    gebid("postsButton").style.backgroundColor = "#777777";
+    gebid("postsButton").style.color = '#007bff'
 
     gebid("repostsButton").addEventListener("click", function () {
         const profilePosts = document.getElementById("profilePosts");
@@ -212,8 +212,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         profilePosts.style.display = "none";
         profileReposts.style.display = "flex";
-        gebid("postsButton").style.backgroundColor = "white";
-        gebid("repostsButton").style.backgroundColor = "#777777";
+        gebid("postsButton").style.color = '#ffffff'
+
+    gebid("repostsButton").style.color = '#007bff'
 
     });
 
@@ -224,8 +225,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         profilePosts.style.display = "flex";
         profileReposts.style.display = "none";
-        gebid("postsButton").style.backgroundColor = "#777777";
-        gebid("repostsButton").style.backgroundColor = "white";
+        gebid("repostsButton").style.color = '#ffffff'
+        gebid("postsButton").style.color = '#007bff'
     });
 
     // Add Open DM button functionality

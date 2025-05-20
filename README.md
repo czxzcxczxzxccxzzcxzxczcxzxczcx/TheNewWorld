@@ -38,4 +38,4 @@ How to get started:
   - Next, open the terminal and type npm install, this should install all neccesary dependencies
   - Next, inside the project create a file named ".env". 
     - Inside of this file type "URI=". Following the equals sign paste your MongoDB key.
-  - After that you should be set. Start the project by typing "node server.js"s
+  - After that you should be set. Start the project by typing "node server.js".
