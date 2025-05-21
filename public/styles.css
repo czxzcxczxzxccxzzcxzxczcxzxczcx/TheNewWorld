@@ -1,15 +1,11 @@
 @import url('https://db.onlinewebfonts.com/c/2953ad0d3b303180f9aa9edbe3bacf33?family=GT+America+Extended+Light');
 
-
 /* BODY CSS  BODY CSS  BODY CSS  BODY CSS  BODY CSS  
 BODY CSS  BODY CSS  BODY CSS  BODY CSS  BODY CSS   */
 
 body {
     position: relative;
-    /* background-image: url('https://wallpapersok.com/images/hd/cloudy-solid-grey-background-vdmz42yyw3kak60k.jpg'); */
-    /* background-color: rgba(1,4,9,255); */
     background-color:  rgb(0, 0, 0);
-    /* background-color:rgba(18,18,21,255); */
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
@@ -23,11 +19,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
-  /* font-family: 'GT America Extended Light', sans-serif; */
-
-    /* font-family: Arial, Helvetica, sans-serif; */
     justify-content: center;    
-    
 }
 
 
@@ -43,13 +35,8 @@ body {
 NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
 
 .bar {
-    /* background-color: rgb(18, 24, 33); */
     background-color: rgb(13, 17, 23);
-
     box-shadow: 0 4px 2px rgb(25, 33, 44); 
-
-    /* background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59);  */
     position: absolute;
     top: 0vh;
     width: 100%;
@@ -126,9 +113,6 @@ LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
     display: none;
     flex-direction: column;    
     align-self: center;
-    /* background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59);  */
-
     background-color: rgb(18, 24, 33);
     box-shadow: 0 4px 2px rgb(31, 41,56); 
 }
@@ -166,14 +150,13 @@ LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
 /* LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS
 LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS */
 
-.inputText
-{
+.inputText {
     width: 250px;
     height: 30px;
     margin-bottom: 5px;
 }
-.inputSubmit
-{
+
+.inputSubmit {
     width: 250px;
     height: 30px;
     align-self: center;
@@ -211,9 +194,7 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
     width: 100%;
     z-index: 1000; /* High z-index to ensure it is in front of everything */
     max-width: min-content; 
-    /* border-color:white; */
     border-width: 2px;
-    /* border-style: solid; */
     height: min-content; 
     border-radius: 10px;
     display: none;
@@ -303,7 +284,6 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
 /* POST CSS POST CSS POST CSS 
 POST CSS POST CSS POST CSS */
 
-
 .post {
     height: 200px;
     border-radius: 5px;
@@ -318,8 +298,6 @@ POST CSS POST CSS POST CSS */
     border-color:  rgb(29, 36, 48);
     border-width:5px;
     border-style: solid;
-    /* margin-bottom: 30px; */
-
     background-color: rgb(7, 9, 12);
     box-shadow: 0 4px 2px rgb(25, 33, 44); 
     color: white;
@@ -333,8 +311,8 @@ POST CSS POST CSS POST CSS */
     font-size: 20px;
     margin-left:auto;
     font-weight: bold;
-    height: 30px; /* Ensure height matches width for proper centering */
-    display: flex; /* Use flexbox for centering */
+    height: 30px; 
+    display: flex;
     justify-content: center; /* Horizontally center the text */
     align-items: center; /* Vertically center the text */
     font-weight: bold;
@@ -350,7 +328,23 @@ POST CSS POST CSS POST CSS */
     text-decoration: underline; 
 }
 
+.post .postDetails .usernameTitle {
+    font-size: 20px;
+    font-weight: lighter;
+}
 
+.post .postDetails .usernameTitle:hover {
+    cursor: pointer; 
+    color: #007bff;
+    text-decoration: underline; 
+}
+
+.post .postDetails .postTitle {
+        border-left: white 2px solid;
+        padding-left: 10px;
+        text-align: left;
+
+}
 .post .postDetails, .post .postCommentDetails  {
     display: flex;
     align-items: center;
@@ -361,22 +355,22 @@ POST CSS POST CSS POST CSS */
     width:95%;
     padding-bottom: 10px;
 
-    text-align: left;
+    text-align: center;
     margin-right: 10px;
     border-bottom: 2px solid white;
     border-left: none;
     border-right: none;
 }
 
-.post   .postDetails h1  {
+.post  .postDetails h1  {
     margin-right: 20px;
 }
 
 .post .postCommentDetails  {
     font-size: 10px;
     margin-right: 20px;
+    border: none;
 }
-
 
 .post   .postDetails .pfp, .post .postCommentDetails .pfp {
     height: 60px;
@@ -386,10 +380,9 @@ POST CSS POST CSS POST CSS */
     border-radius: 100%;
 }
 
-
 .post   .postDetails  .homeHover:hover {
     border-color: white;
-    border-width: 3px;
+    border-width: 1px;
     border-style: solid;
 }
 
@@ -421,9 +414,7 @@ POST CSS POST CSS POST CSS */
 
 .post .postBody img {
     display: block;
-
     width: auto;
-    /* width: 90%; */
     height: 30vh;
     width: 30vh
 }
@@ -474,8 +465,6 @@ POST CSS POST CSS POST CSS */
     margin-left: 15px;
     background: none;
     margin-right: 10px;
-    /* border-radius: 5px; */
-    /* box-shadow: 0px 2px 0px 0px #d6d6d6 */
 }
 
 .post .buttonsDiv .postButton:hover {
@@ -484,9 +473,6 @@ POST CSS POST CSS POST CSS */
     color: #007bff;
     text-decoration: underline; 
 }
-
-
-
 
 .post .footer .postEditButton {
     margin-left: auto;
@@ -512,7 +498,6 @@ POST CSS POST CSS POST CSS */
     justify-content: flex-start;
     justify-self: center;
     align-items: center;
-
     margin-top: 10px;
     margin-bottom: 20px;
 }
@@ -524,8 +509,6 @@ POST CSS POST CSS POST CSS */
     margin-left: 11px;
 }
 
-
-
 .post .spaceDiv, .spaceDiv {
     display: flex;
     align-self: center;
@@ -535,7 +518,6 @@ POST CSS POST CSS POST CSS */
     border-radius: 10px;
     height: 2px;
     margin-top: 25px;
-
     margin-bottom: 20px;
 }
 
@@ -561,9 +543,8 @@ POST CSS POST CSS POST CSS */
 
 
 
-
-
-
+/* USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES
+USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES */
 
 .dmUser {
     display: flex;
@@ -578,7 +559,6 @@ POST CSS POST CSS POST CSS */
     color: white;
     font-size: 20px;
     border-radius: 5px;
-    /* justify-content: center; */
 }
 
 .dmUser h2 {
@@ -596,6 +576,8 @@ POST CSS POST CSS POST CSS */
 
 
 
+
+
 /* COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  
 COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
 
@@ -604,8 +586,6 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
     flex-direction: column; 
     width: 100%;
     align-self: center; 
-    /* justify-items: flex-start; 
-    align-items: flex-start; */
 }
 
 .commentSection .comment {
@@ -619,8 +599,6 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
     align-items: flex-start;
     border-radius: 5px;
     background-color:  rgb(17, 20, 29);
-    
-
 }
 
 .commentSection .postCommentDetails .pfp {
@@ -631,28 +609,26 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
     margin-left: 39px;
 }
 
-
 .commentSection .commentFooter {
-      border-top: 2px solid white;
+    border-top: 2px solid white;
     border-bottom: 2px solid white;
     border-left: none;
     border-right: none;
 }
-.commentSection .commentFooter {
-    /* margin-left: 32.5px;
-    width:90%; */
 
-    font-size: 15px; 
+.commentSection .commentFooter {
     justify-self: center;
     align-self: center;
-    padding-top: 15px;
+    padding-top: 20px;
     padding-bottom: 15px;
-    margin-bottom: 50px
+    margin-bottom: 20px
 }
 
 .commentSection .commentFooter .date {
-    margin-left: 20px
+    margin-left: 25px;
+    font-size: 17.5px; 
 }
+
 .commentSection .commentInputDiv {
     display: flex;
     flex-direction: row;
@@ -667,11 +643,9 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
 }
 
 .commentSection .commentTextBox {
-
-     width: 95%;
+    width: 95%;
     border-radius: 5px;
 }
-
 
 .post .commentButton {
     margin-left:5px;
@@ -684,21 +658,19 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
 
 
 
+
 /* PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  
 PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 
 .profilePanel {
-    /* background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); */
     background-color: rgb(18, 24, 33);
     box-shadow: 0 4px 2px rgb(31, 41,56); 
-        border-color:  rgb(22, 28, 37);
+    border-color:  rgb(22, 28, 37);
     border-width:5px;
     border-style: solid;
     border-radius: 10px;
     height:auto;
     width:96%;
-    /* margin-bottom: 15px; */
     flex-direction: column;
     display:flex;
     color:white;
@@ -736,7 +708,6 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     font-size: 15px;
     margin-left: 90px;
     margin-right: 10px;
-    /* margin-bottom: 10px; */
     margin-top: 25px;
     border-radius: 5px;
     border-radius:5px;
@@ -843,7 +814,6 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     width: 100%;
     height: 30px;
     font-size: 15px;
-    /* background-color: white; */
     background:none;
     border:none;
     color:white;
@@ -852,16 +822,13 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     margin-bottom: 10px;
     margin-right: 5px;
     margin-left: 5px;
-
 }
 
 .profilePanel .profileButton:hover {
-
     cursor: pointer; 
     color: #007bff;
     text-decoration: underline; 
 }
-
 
 .profilePanel .spaceDiv {
     display: flex;
@@ -872,7 +839,6 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     border-radius: 10px;
     height: 2.5px;
 }
-
 
 
 
@@ -959,82 +925,6 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     height: 93vh; /* Full height of the viewport */
     padding-bottom: 70px; /* Add padding to prevent overlap with the input box */
     position: relative;
-}
-
-
-#messagePanel {
-    position: absolute;
-    top: calc(6.5vh + 68px); /* Dynamically align with the bottom of .dmTop */
-    width: 510px;
-    min-width: 510px;
-    height: calc(100vh - (6.5vh + 80px + 90px)); /* Adjust height to leave space for .dmTop and .inputContainer */
-    border-radius: 5px;
-    overflow-y: scroll;
-    box-sizing: border-box;
-    background-color: rgb(13, 17, 23); /* Ensure visibility */
-    z-index: 5; /* Ensure it stays below the input container */
-}
-
-
-.inputContainer {
-    position: fixed; /* Ensure it stays at the bottom of the viewport */
-    bottom: 0; /* Align it to the bottom of the viewport */
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Adjust for centering */
-    width: 500px; /* Match the width of the message panel */
-    height: 70px; /* Fixed height for the input container */
-    background-color: rgb(13, 17, 23);
-    box-shadow: 0 -4px 2px rgb(25, 33, 44); /* Add shadow above the input container */
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10; /* Ensure it stays above the message panel */
-}
-
-.dmTop {
-    position: fixed; /* Ensure it stays at the bottom of the viewport */
-    top: 6.5vh;
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Adjust for centering */
-    width: 500px; /* Match the width of the message panel */
-    height: 40px; /* Fixed height for the input container */
-    background-color: rgb(13, 17, 23);
-    box-shadow: 0 -4px 2px rgb(25, 33, 44); /* Add shadow above the input container */
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    justify-items:center;
-    color:white;
-    justify-content: flex-start;
-    z-index: 10; /* Ensure it stays above the message panel */
-}
-
-
-.dmTop #profileImage {
-    height: 40px;
-    width: 40px;
-    margin-right: 10px;
-    border-radius: 100%;
-}
-#messageInput {
-    flex: 1;
-    resize: none;
-    padding: 10px;
-    color: black;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: white; /* Ensure visibility */
-}
-
-#sendButton {
-    margin-left: 10px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
 
@@ -1162,18 +1052,6 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     background-color: #C6C7C7;
 }
 
-.message {
-    /* margin: 10px; */
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 10px;
-    max-width: 60%;
-    font-size: 20px;
-    word-wrap: break-word;
-    text-shadow: none; /* Remove text shadow for better readability */
-    display: inline-block; /* Ensure the message bubbles are inline */
-}
-
 @media (max-width: 767px) {
     .homePanel {
         width: 100vw;  
@@ -1189,6 +1067,104 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     }
 }
 
+
+
+
+
+
+/* MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS
+MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
+
+#messagePanel {
+    position: absolute;
+    top: calc(6.5vh + 68px); /* Dynamically align with the bottom of .dmTop */
+    width: 510px;
+    min-width: 510px;
+    height: calc(100vh - (6.5vh + 80px + 90px)); /* Adjust height to leave space for .dmTop and .inputContainer */
+    border-radius: 5px;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    background-color: rgb(13, 17, 23); /* Ensure visibility */
+    z-index: 5; /* Ensure it stays below the input container */
+}
+
+
+.inputContainer {
+    position: fixed; /* Ensure it stays at the bottom of the viewport */
+    bottom: 0; /* Align it to the bottom of the viewport */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust for centering */
+    width: 500px; /* Match the width of the message panel */
+    height: 70px; /* Fixed height for the input container */
+    background-color: rgb(13, 17, 23);
+    box-shadow: 0 -4px 2px rgb(25, 33, 44); /* Add shadow above the input container */
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10; /* Ensure it stays above the message panel */
+}
+
+.dmTop {
+    position: fixed; /* Ensure it stays at the bottom of the viewport */
+    top: 6.5vh;
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust for centering */
+    width: 500px; /* Match the width of the message panel */
+    height: 40px; /* Fixed height for the input container */
+    background-color: rgb(13, 17, 23);
+    box-shadow: 0 -4px 2px rgb(25, 33, 44); /* Add shadow above the input container */
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-items:center;
+    color:white;
+    justify-content: flex-start;
+    z-index: 10; /* Ensure it stays above the message panel */
+}
+
+
+.dmTop #profileImage {
+    height: 40px;
+    width: 40px;
+    margin-right: 10px;
+    border-radius: 100%;
+}
+#messageInput {
+    flex: 1;
+    resize: none;
+    padding: 10px;
+    color: black;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white; /* Ensure visibility */
+}
+
+#sendButton {
+    margin-left: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+
+.message {
+    /* margin: 10px; */
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+    max-width: 60%;
+    font-size: 20px;
+    word-wrap: break-word;
+    text-shadow: none; /* Remove text shadow for better readability */
+    display: inline-block; /* Ensure the message bubbles are inline */
+}
+
+
 .message.sent {
     background-color: #007bff; /* Blue for sent messages */
     color: white;
@@ -1203,7 +1179,6 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     text-align: left; /* Align text inside the bubble */
 }
 
-/* Ensure the message panel displays messages in a column layout */
 #messagePanel {
     display: flex;
     flex-direction: column;
@@ -1211,6 +1186,13 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     padding: 10px; /* Add padding for spacing */
     overflow-y: scroll; /* Allow scrolling for overflow */
 }
+
+
+
+
+
+/* SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS
+SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS */
 
 .searchBar {
     position: relative;
@@ -1231,7 +1213,7 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 
 .searchBar input {
     width: 100%;
-    height: 30px;
+    height: 20px;
     border-radius: 5px;
     padding: 10px;
     font-size: 20px;
@@ -1246,6 +1228,10 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     background-color: #007bff;
     color: white;
     border: none;
+    height: 40px;
+    align-self: center;
+    justify-self: center;
+    text-align: center;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px; /* Adjust font size for better readability */

@@ -45,7 +45,7 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     const postDetailsDiv = createElementWithClass('div', 'postDetails');
     const postImage = createElementWithClass('img', 'pfp');
     const usernameTitle = createElementWithClass('h1', 'usernameTitle');
-    const titleH1 = createElementWithClass('h1');
+    const titleH1 = createElementWithClass('h1', 'postTitle');
     const postBodyDiv = createElementWithClass('div', 'postBody');
     const contentP = createElementWithClass('p');
     const dividerDiv = createElementWithClass('div', 'divider');
@@ -144,6 +144,10 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         postDetailsDiv.appendChild(deleteButton);
     }
 
+    usernameTitle.addEventListener("click", function (event) {
+            window.location.href = `/profile/${post.accountNumber}`;  
+        });
+
     commentButton.addEventListener('click', async () => {
         const commentContent = commentTextBox.value.trim();
         if (!commentContent) {
@@ -196,6 +200,8 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
          postImage.addEventListener("click", function (event) {
             window.location.href = `/profile/${post.accountNumber}`;  
         });
+
+        
         postImage.classList.add("homeHover");
     } else if (from == 'profile') {
         const profilePosts = document.getElementById('profilePosts');

@@ -3,7 +3,6 @@ import { renderPost,  changeEdit } from './utils/renderPost.js';
 import { initializeCreatePost } from './utils/createPostHandler.js';
 import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
 
-
 renderBar();
 
 document.addEventListener("DOMContentLoaded", function () {
