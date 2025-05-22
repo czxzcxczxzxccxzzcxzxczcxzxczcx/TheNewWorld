@@ -21,7 +21,8 @@ Features In The Project:
   - Notifications: Recieve notifications from other users.
   - Commenting: Comment on others posts
   - Mentioning: Mention users inside of posts.
-  - Embed Images: Embed images into your pot.
+  - Embed Images: Embed images into your post.
+  - Validation: Proper username and password validation.
 
 Technologies Used:
   - bcrypt - Used to encrypt passwords
