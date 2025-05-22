@@ -295,12 +295,16 @@ POST CSS POST CSS POST CSS */
     align-self: center; 
     justify-items: flex-start; 
     align-items: flex-start;
-    border-color:  rgb(29, 36, 48);
+    border-color:  rgb(16, 21, 27);
     border-width:5px;
+    margin-bottom: 15px;
     border-style: solid;
-    background-color: rgb(7, 9, 12);
+    /* background-color: rgb(7, 9, 12); */
+        background-color: rgb(15, 18, 26);
+
     box-shadow: 0 4px 2px rgb(25, 33, 44); 
     color: white;
+    border: none;
 }
 
 
@@ -330,7 +334,8 @@ POST CSS POST CSS POST CSS */
 
 .post .postDetails .usernameTitle {
     font-size: 20px;
-    font-weight: lighter;
+    font-weight:400;
+    
 }
 
 .post .postDetails .usernameTitle:hover {
@@ -340,8 +345,8 @@ POST CSS POST CSS POST CSS */
 }
 
 .post .postDetails .postTitle {
-        border-left: white 2px solid;
-        padding-left: 10px;
+        border-left: rgb(41, 51, 68) 3px solid;
+        padding-left: 15px;
         text-align: left;
 
 }
@@ -357,7 +362,7 @@ POST CSS POST CSS POST CSS */
 
     text-align: center;
     margin-right: 10px;
-    border-bottom: 2px solid white;
+    border-bottom: 3px solid rgb(41, 51, 68);
     border-left: none;
     border-right: none;
 }
@@ -403,6 +408,7 @@ POST CSS POST CSS POST CSS */
     overflow: wrap;
     width: 95%;
     word-wrap:break-word;
+    font-weight: 400;
     font-size: 20px;
     white-space: pre-wrap;
     word-break: break-all;
@@ -443,8 +449,8 @@ POST CSS POST CSS POST CSS */
     margin-top: 10px;
     margin-bottom: 10px;
     flex-direction: row;
-    border-top: 2px solid white;
-    border-bottom: 2px solid white;
+    border-top: 3px solid rgb(41, 51, 68);
+    border-bottom: 3px solid rgb(41, 51, 68);
     border-left: none;
     border-right: none;
     align-self: center;
@@ -583,22 +589,25 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
 
 .commentSection {
     display: flex;
-    flex-direction: column; 
+    flex-direction: column; /* stack comments vertically */
     width: 100%;
-    align-self: center; 
+    align-self: center;
+    align-items: center;    /* center children horizontally */
+    justify-content: center; /* center children vertically if needed */
 }
 
-.commentSection .comment {
+.comment {
+    flex-direction: column;
+    width: auto; /* Let the width fit content */
     display: flex;
-    flex-direction: column; 
-    width: 97.5%;
-    align-self: center; 
-    justify-self: center;
-    margin-bottom: 10px;
-    justify-items: flex-start; 
-    align-items: flex-start;
+    align-self: center;
+    margin: 10px auto; /* Center horizontally */
+    justify-items: flex-start;
+    align-items: center;
     border-radius: 5px;
-    background-color:  rgb(17, 20, 29);
+    /* background-color:  rgb(17, 20, 29); */
+        background-color:  rgb(25, 29, 43);
+
 }
 
 .commentSection .postCommentDetails .pfp {
@@ -610,8 +619,8 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
 }
 
 .commentSection .commentFooter {
-    border-top: 2px solid white;
-    border-bottom: 2px solid white;
+    border-top: 2px solid rgb(41, 51, 68);
+    border-bottom: 2px solid rgb(41, 51, 68);
     border-left: none;
     border-right: none;
 }
@@ -647,7 +656,7 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
     border-radius: 5px;
 }
 
-.post .commentButton {
+.commentSection .commentButton {
     margin-left:5px;
     border-radius: 5px;
 
@@ -663,16 +672,18 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
 PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 
 .profilePanel {
-    background-color: rgb(18, 24, 33);
+    background-color: rgb(25, 29, 43);
     box-shadow: 0 4px 2px rgb(31, 41,56); 
-    border-color:  rgb(22, 28, 37);
+    border-color:  rgb(16, 21, 27);
     border-width:5px;
     border-style: solid;
     border-radius: 10px;
+    margin-bottom: 15px;
     height:auto;
     width:96%;
     flex-direction: column;
     display:flex;
+    border: none;
     color:white;
 }
 
@@ -738,9 +749,11 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 .profilePanel .profileInfo {
     display:flex;
     flex-direction: row;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     height: min-content; 
     max-width: 500px;
+        margin-left: 5px;
+    margin-top: 5px;
     box-sizing: border-box; 
     font-size: 15px;
 }
@@ -805,21 +818,20 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     align-self: center;
     align-items: center;
     justify-content: space-between;
-    margin-top: 5px;
+    margin-bottom: 10px;
     border-radius: 10px;
     height: min-content;
 }
 
 .profilePanel .profileButton {
     width: 100%;
-    height: 30px;
+    height: 70px;
     font-size: 15px;
-    background:none;
+    background: none;
     border:none;
     color:white;
-    font-size: 20px;
+    font-size: 25px;
     font-weight: bold;
-    margin-bottom: 10px;
     margin-right: 5px;
     margin-left: 5px;
 }
