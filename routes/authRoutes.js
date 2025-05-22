@@ -4,7 +4,6 @@ const { Post, User } = require('../utils/database');
 const sessionStore = require('../utils/database/sessionStore'); 
 const { hashPassword, comparePassword } = require('../utils/hashing');
 const crypto = require('crypto');
-
 const router = express.Router();
 
 const generateAccountNumber = async () => {
