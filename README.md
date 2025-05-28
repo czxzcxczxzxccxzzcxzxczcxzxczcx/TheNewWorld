@@ -26,6 +26,7 @@ Features In The Project:
   - Account Login & Creation: Create an account or login.
   - Google Auth: Login through google.
   - Admin System: Customized admin panel.
+  - Site Donations: Donation to the site using Stripe.
 
 Technologies Used:
   - bcrypt - Used to encrypt passwords
@@ -36,6 +37,7 @@ Technologies Used:
   - mongoose - Used for the database
   - passport - Used for Google auth 
   - socket.io - Used for websockets 
+  - stripe - Used for donation system
 
 How to get started:
   - Begin by downloading the repository.
