@@ -155,9 +155,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     gebid("profileButton").addEventListener("click", function (event) {
         event.preventDefault();
-        if (userAccountNumber) {
-            window.location.href = `/profile/${userAccountNumber}`; // Redirect to user's profile page
-        }
+        if (userAccountNumber) {window.location.href = `/profile/${userAccountNumber}`;}
     });
 
     gebid('profileEdit').addEventListener("click", async function (event) {

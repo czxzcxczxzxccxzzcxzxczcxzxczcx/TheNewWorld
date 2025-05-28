@@ -1322,3 +1322,78 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
    color:white;
    justify-self: center;
 }
+
+.donationPanel {
+    position: absolute;
+    /* top: 6.25vh;
+    width: 540px;
+    min-width: 540px; 
+    height: 92vh;  */
+    width: 50vh;
+    height: 40vh;
+    top: 20vh;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;    
+    align-self: center;
+    align-items: center;
+    align-content:  center;
+    justify-content:  center;
+    background-color: rgb(18, 24, 33);
+    box-shadow: 0 4px 2px rgb(25, 33, 44); 
+
+        color:white;
+
+
+}
+
+.donationPanel form {
+    display: flex;
+    flex-direction: column;    
+    align-items: center;
+    width: 100%;
+    height: min-content;
+}
+
+
+.donationPanel .inputs {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.donationPanel .inputs input {
+    display: flex;
+    flex-direction: column;    
+    align-items: center;
+    width: 80px;
+    height: 30px;
+    font-size: 20px;
+    margin-right:5px;
+}
+
+.donationPanel .inputs button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+    justify-content: center; /* Center vertically */
+    width: 80px;
+    border-radius: 3px;
+    border:none;
+    height: 35px;
+    text-align: center;
+}
+
+
+
+.donate {
+    position: absolute;
+    display: flex;
+    top:30vh;
+   align-self: center;
+   color:white;
+   justify-self: center;
+}

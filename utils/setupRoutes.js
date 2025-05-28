@@ -6,6 +6,7 @@ const adminRoutes = require('../routes/adminRoutes');
 const commentRoutes = require('../routes/commentRoutes');
 const messageRoutes = require('../routes/messageRoutes');
 const searchRoutes = require('../routes/searchRoutes');
+const paymentRoutes = require('../routes/paymentRoutes');
 
 const setupRoutes = (app) => {
     app.use('/api', postRoutes);
@@ -15,6 +16,7 @@ const setupRoutes = (app) => {
     app.use('/api', commentRoutes);
     app.use('/api', searchRoutes);
     app.use('/api', messageRoutes);
+    app.use('/api', paymentRoutes);
     app.use('/', staticRoutes);
 };
 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<html lang='en'>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" type="text/css" href="styles.css">
+        <script type="module" src="/js/donate.js" defer></script>
+
+        <title>The New World</title>
+    </head>
+
+    <body>
+        <div class="donationPanel">
+            <h1 class="donationTitle">Support The New World</h1>
+            <p class="donationDescription">Your contributions help us maintain and improve the platform. Thank you for your support!</p>
+            <form id="donationForm">
+                <label for="amount">Donation Amount:</label>
+                <div class="inputs">
+                    <input type="number" id="amount" name="amount" min="1" required>
+                    <button id="donate" type="submit" class="donateButton">Donate</button>
+                </div>
+            </form>
+
+        </div>
+    </body>
+
+</html>
