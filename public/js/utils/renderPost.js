@@ -32,12 +32,19 @@ function processContent(content) {
     // Make mentions clickable
     let processedContent = makeMentionsClickable(content);
 
-    // Only replace image URLs that are inside < > or &lt; &gt; with <img> tags
-    // Replace <url> and &lt;url&gt; with <img>
+    // First, replace image URLs that are inside < > or &lt; &gt; with <img> tags
     processedContent = processedContent.replace(/<\s*(https?:\/\/[^>\s]+\.(?:png|jpg|jpeg|gif))\s*>/gi, '<img src="$1" alt="User Image" class="post-image-natural">');
     processedContent = processedContent.replace(/&lt;\s*(https?:\/\/[^&\s]+\.(?:png|jpg|jpeg|gif))\s*&gt;/gi, '<img src="$1" alt="User Image" class="post-image-natural">');
 
-    
+    // Then, make plain URLs clickable, but skip those already inside an <img> tag
+    processedContent = processedContent.replace(/(https?:\/\/[^\s<>'"()\[\]{}]+)/gi, function(url) {
+        // If this URL is already part of an <img ... src="url" ...>, skip linking
+        if (processedContent.includes(`<img src=\"${url}\"`)) return url;
+        // Don't double-link if already inside an <a>
+        if (/^<a [^>]+>/.test(url)) return url;
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    });
+
     return processedContent;
 }
 
