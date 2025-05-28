@@ -29,6 +29,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.success) {
                 const user = data.user;
                 accountNumber = user.accountNumber;
+                initializeGlobalButtons(accountNumber); // Initialize global buttons
+                initializeCreatePost(user.accountNumber);
             } else {
                 window.location.href = '/';
             }

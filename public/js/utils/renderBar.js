@@ -4,6 +4,7 @@ export function renderBar() {
     const barHTML = `
         <div class="bar">
             <ul>
+                <img class="logoImg" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvisenya.xyz%2F_next%2Fimage%3Furl%3D%252Ficon.png%26w%3D384%26q%3D65&f=1&nofb=1&ipt=e4d071ccd8d0fa8f57ec7d34e3c76775538fd8ab94aa2a8d045c47f13ed0069c" alt="Logo" />
                 <h1 class="logo" id="checkPost">The New World</h1>
                 <div class="buttons">
                     <a href="/home">

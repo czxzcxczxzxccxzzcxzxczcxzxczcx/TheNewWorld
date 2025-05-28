@@ -73,16 +73,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.success) {
                     window.location.href = '/home';
                 } else {
-                    status.textContent = "Invalid username or password";
-                    console.log(1);
+                    alert("Invalid username or password");
                 }
             } catch (error) {
-                console.error('Error during login:', error);
-                status.textContent = "Something went wrong";
+               alert("There was an error processing your request. Please try again later.");
             }
         } else {
-            status.textContent = "invalid input";
-
+            alert("Please fill in all fields.");
         }
     };
 });

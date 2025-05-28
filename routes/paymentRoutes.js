@@ -31,8 +31,8 @@ router.post('/create-stripe-session', async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: `${DEPLOYED_URL}/donate?success=true`,
-            cancel_url: `${DEPLOYED_URL}/donate?canceled=true`,
+            success_url: `${DEPLOYED_URL}/support?success=true`,
+            cancel_url: `${DEPLOYED_URL}/support?canceled=true`,
         });
         res.json({ id: session.id });
     } catch (err) {

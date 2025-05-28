@@ -16,7 +16,7 @@ function formatDate(dateString) {
 export function changeEdit(edit, pfpDisplay, profileText, pfpText, bioBorder, userBorder) {
     bio.contentEditable = edit;
     changePfp.contentEditable = edit;
-    username.contentEditable = edit;
+    profileUsername.contentEditable = edit;
     changePfp.style.display = pfpDisplay;
     profileEdit.textContent = profileText;
     changePfp.style.border = pfpText;
@@ -202,6 +202,7 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     } else if (from == 'profile') {
         const profilePosts = document.getElementById('profilePosts');
         profilePosts.appendChild(postDiv);
+        postImage.classList.add("homeHover");
     } else if (from == 'profilePosts') {
         const profileReposts = document.getElementById('profileReposts');
         profileReposts.appendChild(postDiv);

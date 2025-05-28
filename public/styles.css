@@ -74,10 +74,18 @@ NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
     right: 0;
 }
 
+.bar .logoImg {
+    height: 35px;
+    width: 35px;
+    margin-right: 10px;
+    margin-top: 5px;
+    display:none;
+}
 .bar .buttons  a h1 {
     margin: 10px;
     font-size: 20px;
 }
+
 
 .bar .buttons a {
     text-decoration: none; 
@@ -104,21 +112,22 @@ NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
 LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
 
 .panel {
-    position: absolute;
+    position: fixed;
     justify-items: center;
-    height: min-content;
-    width: 300px;
-    top: 4vh;
-    margin-top: 120px;
+    height:  300px;
+    width: 280px;
+    top: 25vh;
+    /* margin-top: 120px; */
     border-radius: 5px;
     display: none;
     flex-direction: column;    
     align-self: center;
-    background-color: rgb(18, 24, 33);
+    background-color: rgb(19, 25, 34);
     box-shadow: 0 4px 2px rgb(31, 41,56); 
 }
 
 .panel form {
+    
     display: flex;
     flex-direction: column;    
     align-items: center;
@@ -156,12 +165,12 @@ LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
 .google-login-container a {
    margin-top: 20px;
    margin-bottom: 15px;
-   width:32vh;
+   width:250px;
    display:flex;
     text-decoration:none;
     height:35px;
    flex-direction: row;
-   justify-content: center;
+   justify-items: center;
    align-items: center;
    background-color: white;
    border-radius: 5px;
@@ -172,17 +181,21 @@ LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
 }
 
 
+.google-login-container a:active {
+    background-color: #b5b6b6;
+}
+
+
 .google-login-container h1 {
     color: black;
     font-size: 20px;
     font-weight: 400;
     text-shadow: none;
-    text-align: center;
-    width: 200px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+    width: 50vh;
+    height: 5px;
+    margin-bottom: 20px;
+
 }
 
 .google-login-container img {
@@ -244,6 +257,10 @@ LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS */
 
 .inputSubmit:hover {
     background-color: #C6C7C7;
+}
+
+.inputSubmit:active {
+    background-color: #adadad;
 }
 
 
@@ -456,7 +473,7 @@ POST CSS POST CSS POST CSS */
 
 .post   .postDetails  .homeHover:hover {
     border-color: white;
-    border-width: 1px;
+    border-width: 0.05px;
     border-style: solid;
 }
 
@@ -484,7 +501,7 @@ POST CSS POST CSS POST CSS */
 }
 
 .post .postBody a {
-    color: blue
+    color: rgb(90, 120, 255)
 }
 
 .post .postBody img {
@@ -587,6 +604,7 @@ POST CSS POST CSS POST CSS */
     margin-bottom: 25px;
     margin-left: 11px;
 }
+
 
 .post .spaceDiv, .spaceDiv {
     display: flex;
@@ -801,10 +819,13 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 }
 
 .profilePanel .profileStats .profileEditButton:active, .profileFollowButton:active {
-    margin-top:25px;
-    margin-bottom: 0px;
-    box-shadow: 0px 0px 0px 0px #d6d6d6;
+    background-color: #afafaf;
 }
+
+.profilePanel .profileStats .profileEditButton:active, .profileFollowButton:hover {
+    background-color: #C6C7C7;
+}
+
 
 
 
@@ -1149,6 +1170,9 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
         width: 100%;
         text-align: center;
     }
+    #notificationsPanel {
+       display: none;
+    }
 }
 
 
@@ -1358,14 +1382,14 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
 }
 
 .donationPanel {
-    position: absolute;
+    position: fixed;
     /* top: 6.25vh;
     width: 540px;
     min-width: 540px; 
     height: 92vh;  */
-    width: 50vh;
-    height: 40vh;
-    top: 20vh;
+    width: 500px;
+    height: 300px;
+    top: 25vh;
     border-radius: 5px;
     display: flex;
     flex-direction: column;    
@@ -1374,7 +1398,7 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     align-content:  center;
     justify-content:  center;
     background-color: rgb(18, 24, 33);
-    box-shadow: 0 4px 2px rgb(25, 33, 44); 
+    box-shadow: 0 4px 2px rgb(18, 24, 32); 
 
         color:white;
 
@@ -1390,6 +1414,10 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
 }
 
 
+.donationPanel p {
+    font-size: 20px;
+}
+
 .donationPanel .inputs {
     display: flex;
     flex-direction: row;
@@ -1398,12 +1426,17 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     margin-bottom: 20px;
 }
 
+.donationPanel .inputs label {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
 .donationPanel .inputs input {
     display: flex;
     flex-direction: column;    
     align-items: center;
     width: 80px;
-    height: 30px;
+    height: 25px;
     font-size: 20px;
     margin-right:5px;
 }
@@ -1414,11 +1447,21 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     align-items: center;
     align-self: center;
     justify-content: center; /* Center vertically */
-    width: 80px;
+    width: 110px;
     border-radius: 3px;
+    font-size: 15px;
+    margin-left:10px;
     border:none;
-    height: 35px;
+    height: 30px;
     text-align: center;
+}
+
+.donationPanel .inputs button:hover {
+    background-color: #C6C7C7;
+}
+
+.donationPanel .inputs button:active {
+    background-color: #b4b4b4;
 }
 
 

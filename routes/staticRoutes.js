@@ -14,7 +14,7 @@ const staticPages = [
     '/following', 
     '/admin',
     '/search',
-    '/donate',
+    '/support',
 ];
 
 // Set up routes for static pages
@@ -23,11 +23,6 @@ staticPages.forEach((route) => {
         const pageName = route === '/' ? 'index' : route.substring(1);
         res.sendFile(path.join(__dirname, '../public', 'html', `${pageName}.html`));
     });
-});
-
-// Route for donate page
-router.get('/donate', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/html/donate.html'));
 });
 
 // Unified route for profile page by account number or username
