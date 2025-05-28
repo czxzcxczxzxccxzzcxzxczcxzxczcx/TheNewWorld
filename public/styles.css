@@ -491,7 +491,8 @@ POST CSS POST CSS POST CSS */
     display: block;
     width: auto;
     height: 30vh;
-    width: 30vh
+    width: 30vh;
+    border-radius: 5px;
 }
 
 .post .divider {

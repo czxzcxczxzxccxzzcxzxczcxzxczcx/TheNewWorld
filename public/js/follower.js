@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
+    // Fetch and render the list of users who follow the specified user
     async function fetchAndRenderFollowers() {
         try {
             // Get the user ID from the URL
@@ -67,6 +68,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.error('Error verifying admin access:', error);
             });
 
+    // Fetch followers and user info when the page loads
     fetchAndRenderFollowers();
     fetchUserInfo();
 });

@@ -8,6 +8,7 @@ renderBar();
 document.addEventListener("DOMContentLoaded", function () {
     let accountNumber;
 
+    // Function to fetch a single post by ID and render it
     async function fetchPost(postId) {
         try {
             const data = await apiRequest('/api/getPost', 'POST', { postId });
@@ -21,8 +22,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Function to render all posts
     async function renderPosts() {
         try {
+            // Fetch all posts from the server
             const data = await apiRequest('/api/getAllPosts', 'POST');
             if (data.success && Array.isArray(data.posts)) {
                 // Sort posts by 'createdAt' in descending order
@@ -40,12 +43,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Function to render notifications
     async function renderNotifications() {
         try {
             const data = await apiRequest('/api/getNotifications', 'GET');
             console.log(data)
             if (data.success && Array.isArray(data.notifications)) {
-               
+               // Sort notifications by 'createdAt' in descending order
                 const notificationsList = document.getElementById('notificationsList');
                 notificationsList.innerHTML = ''; // Clear existing notifications
                 console.log(data)
@@ -74,8 +78,9 @@ document.addEventListener("DOMContentLoaded", function () {
     //     })
     //     .catch(error => {
     //         console.error('Error verifying admin access:', error);
-    //     });
-
+    //     })
+    
+    // Fetch user info and initialize global buttons
     apiRequest('/api/getUserInfo', 'GET')
         .then(data => {
             if (data.success) {
@@ -91,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error fetching user info:", error);
         });
 
+    // Fetch and render posts and notifications
     renderPosts();
     renderNotifications();
 });

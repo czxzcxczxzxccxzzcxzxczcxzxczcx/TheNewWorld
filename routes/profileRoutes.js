@@ -22,6 +22,7 @@ router.get('/get/profile/:accountNumber', async (req, res) => {
     }
 });
 
+// Returns the profile page
 router.post('/viewAllUsers', async (req, res) => {
     try {
         if (User) {
@@ -39,6 +40,7 @@ router.post('/viewAllUsers', async (req, res) => {
     }
 });
 
+// Route to follow or unfollow a user
 router.post('/follow', async (req, res) => {
     const { recipientAccountNumber } = req.body; // The account number of the user to be followed/unfollowed
     const sessionId = req.cookies.TNWID; // Get session ID from cookies
@@ -116,6 +118,7 @@ router.post('/follow', async (req, res) => {
     }
 });
 
+// Route to update user settings
 router.post('/updateSettings', async (req, res) => {
     const { bio,pfp,username } = req.body;
     const sessionId = req.cookies.TNWID;  
@@ -140,6 +143,7 @@ router.post('/updateSettings', async (req, res) => {
     }
 });
 
+// Route to check if a user is followed by the current user
 router.get('/isFollowed/:recipientAccountNumber', async (req, res) => {
     const { recipientAccountNumber } = req.params;
     const sessionId = req.cookies.TNWID; // Get session ID from cookies
@@ -170,6 +174,7 @@ router.get('/isFollowed/:recipientAccountNumber', async (req, res) => {
     }
 });
 
+// Route to get the list of users the current user is following
 router.get('/getFollowing/:userId', async (req, res) => {
     const { userId } = req.params;
 
@@ -191,6 +196,8 @@ router.get('/getFollowing/:userId', async (req, res) => {
     }
 });
 
+
+// Route to get the list of users who follow the current user
 router.get('/getFollowers/:userId', async (req, res) => {
     const { userId } = req.params;
 
@@ -212,6 +219,7 @@ router.get('/getFollowers/:userId', async (req, res) => {
     }
 });
 
+// Route to get user data by account number
 router.post('/getUser', async (req, res) => {
     const { accountNumber } = req.body;
 
@@ -236,6 +244,7 @@ router.post('/getUser', async (req, res) => {
     }
 });
 
+// Route to get notifications for the current user
 router.get('/getNotifications', async (req, res) => {
     const sessionId = req.cookies.TNWID; // Get session ID from cookies
 

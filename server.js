@@ -7,6 +7,7 @@ const { initDatabase } = require('./utils/database/initDatabase');
 const setupRoutes = require('./utils/setupRoutes');
 const http = require('http');
 const { Server } = require('socket.io');
+const setupSocket = require('./utils/socket');
 
 const app = express();
 const PORT = 1111;
@@ -22,24 +23,10 @@ app.use(session({secret: process.env.SESSION_SECRET || 'secret', resave: false, 
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Initialize DB and routes
+// Initialize DB, routes, and websockets
 initDatabase();
 setupRoutes(app);
-
-// Socket.io logic for DMs
-io.on('connection', (socket) => {
-  // Join a room for a DM between two users
-  socket.on('joinDM', ({ user1, user2 }) => {
-    const room = [user1, user2].sort().join('-');
-    socket.join(room);
-  });
-
-  // Relay a new message to the DM room
-  socket.on('dmMessage', ({ from, to, message }) => {
-    const room = [from, to].sort().join('-');
-    io.to(room).emit('dmMessage', { from, to, message });
-  });
-});
+setupSocket(io);
 
 // Start the server
 server.listen(PORT, () => {
