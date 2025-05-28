@@ -105,6 +105,7 @@ LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
 
 .panel {
     position: absolute;
+    justify-items: center;
     height: min-content;
     width: 300px;
     top: 4vh;
@@ -133,9 +134,49 @@ LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
 .panel .status {
     color:white;
     font-size: 20px;
-    margin-bottom: 10px;
     margin: top -10px;
     height: 1px;
+}
+
+.google-login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+
+}
+
+
+.google-login-container a {
+   margin-top: 15px;
+   margin-bottom: 15px;
+   width:32vh;
+   display:flex;
+    text-decoration:none;
+   flex-direction: row;
+   justify-content: center;
+   align-items: center;
+   background-color: white;
+   border-radius: 5px;
+}
+
+.google-login-container a:hover {
+    background-color: #C6C7C7;
+}
+
+
+.google-login-container h1 {
+    color: black;
+    font-size: 20px;
+    margin-bottom: 10px;
+    text-shadow: none;
+}
+
+.google-login-container img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    margin-left: 10px;
 }
 
 
@@ -161,17 +202,14 @@ LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS */
     height: 30px;
     align-self: center;
     font-size: 20px;
-    margin-bottom: 50px;
+    /* margin-bottom: 50px; */
     margin-top: 5px;
+    border: none;
     border-radius:5px;
-    box-shadow: 0px 2px 0px 0px #d6d6d6
+    /* box-shadow: 0px 2px 0px 0px #d6d6d6 */
 }
 
-.inputSubmit:active {
-    margin-top:2px;
-    margin-bottom: 48px;
-    box-shadow: 0px 0px 0px 0px #d6d6d6
-}
+
 
 .inputSubmit:hover {
     background-color: #C6C7C7;
@@ -672,7 +710,7 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
 PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 
 .profilePanel {
-    background-color: rgb(25, 29, 43);
+    background-color: rgb(21, 25, 36);
     box-shadow: 0 4px 2px rgb(31, 41,56); 
     border-color:  rgb(16, 21, 27);
     border-width:5px;
@@ -1274,4 +1312,13 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
 
 .searchPanel::-webkit-scrollbar {
     display: none; /* Hide scrollbar for cleaner UI */
+}
+
+.notFound {
+    position: absolute;
+    display: flex;
+    top:30vh;
+   align-self: center;
+   color:white;
+   justify-self: center;
 }

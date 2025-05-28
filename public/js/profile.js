@@ -10,6 +10,21 @@ document.addEventListener("DOMContentLoaded", async function () {
     var gebid = document.getElementById.bind(document);
     let userAccountNumber;
 
+    apiRequest('/api/getUserInfo', 'GET')
+        .then(data => {
+            if (data.success) {
+                const user = data.user;
+                initializeCreatePost(user.accountNumber);
+                initializeGlobalButtons(user.accountNumber); // Initialize global buttons
+            } else {
+                window.location.href = '/';
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching user info:", error);
+        });
+
+
     // Check if profileAccountNumber is a username and fetch the account number if needed
     if (isNaN(profileAccountNumber)) { // If it's not a number, assume it's a username
         try {
@@ -119,28 +134,21 @@ document.addEventListener("DOMContentLoaded", async function () {
                     });
 
                 gebid('profileUsername').textContent = `${data.username}`;
-
-
-
                 gebid('pfp').src = pfp;
                 gebid('accountnumber').textContent = ` (${data.accountNumber})`;
                 gebid('bio').textContent = `${data.bio}`;
                 gebid('following').textContent = `${Array.isArray(data.following) ? data.following.length : 0} Following`; // Ensure array
                 gebid('followers').textContent = `${Array.isArray(data.followers) ? data.followers.length : 0} Followers`; // Ensure array
-                
                 gebid('changePfp').textContent = `${data.pfp}`;
             })
             .catch(error => console.error('Error fetching profile data:', error));
     }
 
-    // Call fetchUserInfoAndSetupPage to ensure userAccountNumber is set before setupPage
-    fetchUserInfoAndSetupPage();
-
-    document.getElementById("followingLink").addEventListener("click", function (event) {
+    gebid("followingLink").addEventListener("click", function (event) {
         event.preventDefault();
         if (profileAccountNumber) {window.location.href = `/following/${profileAccountNumber}`;}
     });
-    document.getElementById("followerLink").addEventListener("click", function (event) {
+    gebid("followerLink").addEventListener("click", function (event) {
         event.preventDefault();
         if (profileAccountNumber) {window.location.href = `/followers/${profileAccountNumber}`;}
     });
@@ -207,24 +215,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     gebid("postsButton").style.color = '#007bff'
 
     gebid("repostsButton").addEventListener("click", function () {
-        const profilePosts = document.getElementById("profilePosts");
-        const profileReposts = document.getElementById("profileReposts");
-
-        profilePosts.style.display = "none";
-        profileReposts.style.display = "flex";
+        gebid("profilePosts").style.display = "none";
+        gebid("profileReposts").style.display = "flex";
         gebid("postsButton").style.color = '#ffffff'
-
-    gebid("repostsButton").style.color = '#007bff'
-
+        gebid("repostsButton").style.color = '#007bff'
     });
 
     gebid("postsButton").addEventListener("click", function () {
-        const profilePosts = document.getElementById("profilePosts");
-        const profileReposts = document.getElementById("profileReposts");
-
-
-        profilePosts.style.display = "flex";
-        profileReposts.style.display = "none";
+        gebid("profilePosts").style.display = "flex";
+        gebid("profileReposts").style.display = "none";
         gebid("repostsButton").style.color = '#ffffff'
         gebid("postsButton").style.color = '#007bff'
     });
@@ -260,18 +259,5 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     }
 
-    apiRequest('/api/getUserInfo', 'GET')
-        .then(data => {
-            if (data.success) {
-                const user = data.user;
-                initializeCreatePost(user.accountNumber);
-                initializeGlobalButtons(user.accountNumber); // Initialize global buttons
-            } else {
-                window.location.href = '/';
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching user info:", error);
-        });
-
+    fetchUserInfoAndSetupPage();
 });

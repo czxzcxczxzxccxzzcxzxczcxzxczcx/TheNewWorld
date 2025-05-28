@@ -59,6 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
+
     document.getElementById('loginForm').onsubmit = async function (event) {
         event.preventDefault();
 

@@ -1,6 +1,7 @@
 import { renderPost } from './utils/renderPost.js';
 import { apiRequest } from './utils/apiRequest.js'; // Import apiRequest for AJAX requests
 import { initializeCreatePost } from './utils/createPostHandler.js';
+import { renderUsers } from './utils/renderUser.js';
 import { renderBar } from './utils/renderBar.js';
 
 renderBar();
@@ -8,6 +9,7 @@ renderBar();
 document.addEventListener("DOMContentLoaded", () => {
     const searchInput = document.getElementById("searchInput"); // Input field for search
     const searchButton = document.getElementById("searchButton"); // Button to trigger search
+    const searchUsers = document.getElementById("searchUsers"); // Button to trigger search
     const searchPanel = document.getElementById("searchpanel"); // Container to display results
 
     // Ensure all required elements exist
@@ -30,17 +32,32 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
     // Function to perform search
-    async function performSearch(query) {
-        // alert(`Performing search for query: ${query}`);
+    async function performSearch(query,type) {
+
+        if (type === 'users') {
+            try {
+                const response = await apiRequest('/api/searchUsers', 'POST', { data: query }); // Use POST and send query in body
+                // alert(`Response from search API: ${JSON.stringify(response)}`);
+                if (response.success) {
+                    console.log(response.users)
+                    renderUsers(response.users, searchPanel); // Render the returned users
+                } else {
+                    searchPanel.innerHTML = `<p>No users found.</p>`;
+                }
+            } catch (error) {
+                alert(`Error performing user search: ${error.message}`);
+                searchPanel.innerHTML = `<p>Error fetching user search results. Please try again later.</p>`;
+            }
+            return;
+        } else {
+
+        
         try {
             const response = await apiRequest('/api/searchPosts', 'POST', { data: query }); // Use POST and send query in body
-            // alert(`Response from search API: ${JSON.stringify(response)}`);
             if (response.success) {
                 const postsWithUserData = await Promise.all(
                     response.posts.map(async (post) => {
-                        // alert(`Fetching user data for accountNumber: ${post.accountNumber}`);
                         const userResponse = await apiRequest('/api/getUser', 'POST', { accountNumber: post.accountNumber });
-                        // alert(`User data: ${JSON.stringify(userResponse)}`);
                         return {
                             ...post,
                             username: userResponse?.user?.username || 'Anonymous',
@@ -56,11 +73,11 @@ document.addEventListener("DOMContentLoaded", () => {
             alert(`Error performing search: ${error.message}`);
             searchPanel.innerHTML = `<p>Error fetching search results. Please try again later.</p>`;
         }
+        }
     }
 
     // Function to display search results
     function displaySearchResults(posts) {
-        // alert(`Displaying ${posts.length} search results.`);
         searchPanel.innerHTML = ""; // Clear previous results
         if (posts.length === 0) {
             searchPanel.innerHTML = "<p>No posts found.</p>";
@@ -68,7 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         posts.forEach(post => {
-            // alert(`Rendering post: ${JSON.stringify(post)}`);
             try {
                 renderPost(
                     post,
@@ -89,6 +105,16 @@ document.addEventListener("DOMContentLoaded", () => {
         // alert(`Search button clicked with query: ${query}`);
         if (query) {
             performSearch(query);
+        } else {
+            searchPanel.innerHTML = `<p>Please enter a search query.</p>`;
+        }
+    });
+
+    searchUsers.addEventListener("click", () => {
+        const query = searchInput.value.trim();
+        // alert(`Search users button clicked with query: ${query}`);
+        if (query) {
+            performSearch(query,'users');
         } else {
             searchPanel.innerHTML = `<p>Please enter a search query.</p>`;
         }

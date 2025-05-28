@@ -18,7 +18,7 @@ Features In The Project:
   - User Following: Stay connected by following others
   - Post Liking: Interact with posts by liking.
   - Reposting: Share posts on your profile.
-  - Notifications: Recieve notifications from other users.
+  - Notifications: Recieve notifications from othe44444444444444444444444444444444444r users.
   - Commenting: Comment on others posts
   - Mentioning: Mention users inside of posts.
   - Embed Images: Embed images into your post.

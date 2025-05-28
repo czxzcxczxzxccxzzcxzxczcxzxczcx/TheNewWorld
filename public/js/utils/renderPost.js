@@ -1,4 +1,5 @@
 import { apiRequest } from './apiRequest.js';
+import { createElementWithClass } from './createElement.js';
 
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -93,7 +94,6 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     commentDiv.style.display = 'none';
     commentButton.textContent = 'Post Comment';
     toggleCommentsButton.textContent = 'Comments';
-    // toggleCommentsButton.style.backgroundColor = "#ffffff"; // Initial white background
     toggleCommentsButton.style.color = '#ffffff'
 
     commentInputDiv.appendChild(commentTextBox);
@@ -144,9 +144,7 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         postDetailsDiv.appendChild(deleteButton);
     }
 
-    usernameTitle.addEventListener("click", function (event) {
-            window.location.href = `/profile/${post.accountNumber}`;  
-        });
+    usernameTitle.addEventListener("click", function (event) {window.location.href = `/profile/${post.accountNumber}`;  });
 
     commentButton.addEventListener('click', async () => {
         const commentContent = commentTextBox.value.trim();
@@ -180,28 +178,19 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     toggleCommentsButton.addEventListener('click', () => {
         if (commentDiv.style.display === 'none' || !commentDiv.style.display) {
             commentDiv.style.display = 'block';
-            // toggleCommentsButton.style.backgroundColor = "#A0A09E"; // Slightly darker white when active
             toggleCommentsButton.style.color = '#007bff'
         } else {
             commentDiv.style.display = 'none';
-            // toggleCommentsButton.style.backgroundColor = "#ffffff"; // Reset to white when inactive
             toggleCommentsButton.style.color = '#ffffff'
         }
     });
 
-
     // Add edit button if the post belongs to the logged-in user
-    if (post.accountNumber === fromAccountNumber) {
-        setupEditButton(buttonsDiv, post, titleH1, contentP); // Move edit button to buttonsDiv
-    }
+    if (post.accountNumber === fromAccountNumber) {setupEditButton(buttonsDiv, post, titleH1, contentP); }
 
     if (from == 'home') {
         homePanel.appendChild(postDiv);
-         postImage.addEventListener("click", function (event) {
-            window.location.href = `/profile/${post.accountNumber}`;  
-        });
-
-        
+        postImage.addEventListener("click", function (event) { window.location.href = `/profile/${post.accountNumber}`;  });
         postImage.classList.add("homeHover");
     } else if (from == 'profile') {
         const profilePosts = document.getElementById('profilePosts');
@@ -213,7 +202,6 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         const profileReposts = document.getElementById('searchpanel');
         profileReposts.appendChild(postDiv);
     }
-
 
     setupLikes(likeButton, likeCounter, post, fromAccountNumber);
     setupReposts(repostButton, repostCounter, post, fromAccountNumber);
@@ -241,18 +229,9 @@ function setPostAttributes(postDiv,postDetailsDiv, postImage, usernameTitle, tit
 
     postDetailsDiv.append(postImage, usernameTitle, titleH1);
     dividerDiv.append(viewsH2, likeCounter, repostCounter);
-
-    // Create a new buttonsDiv and move the buttons into it
-
     postBodyDiv.append(contentP);
     postBodyDiv.append(dividerDiv);
     buttonsDiv.append(likeButton, repostButton);
-}
-
-export function createElementWithClass(tag, className = '') {
-    const element = document.createElement(tag);
-    if (className) element.className = className;
-    return element;
 }
 
 function renderComment(comment, commentDiv, loggedInAccountNumber) {
@@ -260,14 +239,10 @@ function renderComment(comment, commentDiv, loggedInAccountNumber) {
     const postDetailsDiv = createElementWithClass('div', 'postCommentDetails');
     const postImage = createElementWithClass('img', 'pfp');
     const usernameTitle = createElementWithClass('h1', 'usernameTitle');
-
-    
-
     const postBodyDiv = createElementWithClass('div', 'postCommentBody');
     const contentP = createElementWithClass('p');
     const dateE = createElementWithClass('h2', 'date');
     const footerDiv = createElementWithClass('div', 'commentFooter');
-    const spaceDiv = createElementWithClass('div', 'spaceDiv');
 
     postImage.src = comment.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
     usernameTitle.textContent = `@${comment.username || 'Anonymous'}`;
@@ -312,7 +287,6 @@ export function setupLikes(likeButton, likeCounter, post, accountNumber) {
     apiRequest('/api/checkLike', 'POST', { postId, accountNumber })
         .then(data => {
             if (data.liked) {
-                // likeButton.style.backgroundColor = "#A0A09E"; 
                 likeButton.style.color = '#007bff'
             }
         })
@@ -323,10 +297,8 @@ export function setupLikes(likeButton, likeCounter, post, accountNumber) {
             .then(data => {
                 if (data.success) {
                     if (data.removed) {
-                        // likeButton.style.backgroundColor = "#ffffff"; // Reset to white for unliked state
                         likeButton.style.color = '#ffffff'
                     } else {
-                // likeButton.style.backgroundColor = "#A0A09E"; // Slightly darker white for liked state
                         likeButton.style.color = '#007bff'
                     }
                     return apiRequest('/api/getPost', 'POST', { postId });
@@ -387,7 +359,6 @@ export async function updatePost(postId, title, content) {
             alert('Failed to update post');
         }
     } catch (error) {
-        // console.error('Error updating post:', error);
         alert(error);
     }
 }
@@ -421,9 +392,7 @@ export function setupEditButton(parent, post, titleElement, contentElement) {
 
             contentElement.innerHTML = html;
             changeProfileEdit(true, 'Save Post', '1px dashed #ccc', contentElement, titleElement, editButton);
-
         }
     });
-
     parent.appendChild(editButton);
 }

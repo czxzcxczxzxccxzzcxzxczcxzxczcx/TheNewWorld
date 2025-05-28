@@ -4,6 +4,8 @@ const { Post, User } = require('../utils/database');
 const sessionStore = require('../utils/database/sessionStore'); 
 const { hashPassword, comparePassword } = require('../utils/hashing');
 const crypto = require('crypto');
+const passport = require('../utils/passport');
+
 const router = express.Router();
 
 const generateAccountNumber = async () => {
@@ -111,5 +113,27 @@ router.post('/logout', (req, res) => {
     res.json({ success: true, message: 'Logged out successfully' });
 });
 
+// Google OAuth login route
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// Google OAuth callback route
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    // Set up session and cookie as with local login
+    const sessionId = crypto.randomBytes(16).toString('hex');
+    sessionStore[sessionId] = {
+      userId: req.user._id,
+      username: req.user.username,
+      accountNumber: req.user.accountNumber,
+    };
+    res.cookie('TNWID', sessionId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: 'Strict',
+    });
+    res.redirect('/home');
+  }
+);
 
 module.exports = router;

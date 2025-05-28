@@ -2,31 +2,20 @@ import { apiRequest } from './utils/apiRequest.js';
 
 document.addEventListener("DOMContentLoaded", async function () {
     const homePanel = document.getElementById("messagePanel");
+    const recipientAccountNumber = window.location.pathname.split('/')[2];
+    const data = await apiRequest('/api/getUserInfo', 'GET');
     var gebid = document.getElementById.bind(document);
-
     let accountNumber;
-    const recipientAccountNumber = window.location.pathname.split('/')[2]; // Extract recipient's account number from URL
 
-    async function fetchUserInfo() {
-        try {
-            const data = await apiRequest('/api/getUserInfo', 'GET');
-            if (data.success) {
-                const user = data.user;
-                accountNumber = user.accountNumber;
+    if (data.success) {
+        const user = data.user;
+        accountNumber = user.accountNumber;
 
-                // Fetch recipient's profile data and populate dmTop
-                fetchRecipientInfo(recipientAccountNumber);
-
-                // Fetch and render messages
-                fetchAndRenderMessages(accountNumber, recipientAccountNumber);
-                setupRealTimeUpdates(accountNumber, recipientAccountNumber);
-            } else {
-                window.location.href = '/';
-            }
-        } catch (error) {
-            console.error("Error fetching user info:", error);
-            window.location.href = '/';
-        }
+        fetchRecipientInfo(recipientAccountNumber);
+        fetchAndRenderMessages(accountNumber, recipientAccountNumber);
+        setupRealTimeUpdates(accountNumber, recipientAccountNumber);
+    } else {
+        window.location.href = '/';
     }
 
     async function fetchRecipientInfo(recipientAccountNumber) {
@@ -36,9 +25,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (data.success) {
                 const recipient = data.user;
 
-                // Populate the profile image and name in the dmTop div
-                const profileImage = document.getElementById("profileImage");
-                const profileName = document.getElementById("profileName");
+                const profileImage = gebid("profileImage");
+                const profileName = gebid("profileName");
 
                 profileImage.src = recipient.pfp || "/src/default.png"; // Use default if no image
                 profileName.textContent = recipient.username || "Unknown User";
@@ -50,9 +38,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    document.getElementById("profileButton").addEventListener("click", function (event) {
+    gebid("profileButton").addEventListener("click", function (event) {
         event.preventDefault();
-        if (accountNumber) {window.location.href = `/profile/${accountNumber}`;}
+        if (accountNumber) { window.location.href = `/profile/${accountNumber}`; }
     });
 
     async function fetchAndRenderMessages(senderAccountNumber, recipientAccountNumber) {
@@ -69,13 +57,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     function renderMessages(messages, senderAccountNumber) {
-        homePanel.innerHTML = ''; // Clear the panel before rendering
+        homePanel.innerHTML = '';
 
-        messages.forEach(message => {
-            appendMessage(message, senderAccountNumber);
-        });
+        messages.forEach(message => {appendMessage(message, senderAccountNumber);});
 
-        scrollToBottom(); // Ensure the panel scrolls to the bottom
+        scrollToBottom();
     }
 
     function appendMessage(message, senderAccountNumber) {
@@ -85,12 +71,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         homePanel.appendChild(messageDiv);
 
-        scrollToBottom(); // Scroll to the bottom after appending a new message
+        scrollToBottom();
     }
 
-    function scrollToBottom() {
-        homePanel.scrollTop = homePanel.scrollHeight; // Scroll to the bottom of the panel
-    }
+    function scrollToBottom() {homePanel.scrollTop = homePanel.scrollHeight;}
 
     async function sendMessage(content) {
         try {
@@ -116,7 +100,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             } catch (error) {
                 console.error('Error fetching real-time messages:', error);
             }
-        }, 1000); // Poll every 3 seconds
+        }, 1000); 
     }
 
     // Create the send message box outside the homePanel
@@ -150,6 +134,5 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Ensure the input box is set up after the DOM is loaded
     setupInputBox();
-
     fetchUserInfo();
 });

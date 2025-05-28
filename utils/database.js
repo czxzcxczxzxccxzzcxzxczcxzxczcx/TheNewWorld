@@ -5,8 +5,9 @@ const dbURI = process.env.DB_URI;
 
 const userSchema = new mongoose.Schema({
     accountNumber: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String }, // Not required for Google users
     username: { type: String, required: true },
+    googleId: { type: String, unique: true, sparse: true }, // Add googleId for Google OAuth
     followers: { type: [Number], default: [] },
     following: { type: [Number], default: [] },
     posts: {type: Number, default: 0 },

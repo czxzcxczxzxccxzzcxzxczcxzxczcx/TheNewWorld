@@ -6,7 +6,6 @@ import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
 renderBar();
 
 document.addEventListener("DOMContentLoaded", function () {
-    
     let accountNumber;
 
     async function fetchPost(postId) {
