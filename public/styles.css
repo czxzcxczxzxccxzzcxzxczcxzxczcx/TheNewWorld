@@ -369,7 +369,7 @@ POST CSS POST CSS POST CSS */
     margin-bottom: 15px;
     border-style: solid;
     /* background-color: rgb(7, 9, 12); */
-        background-color: rgb(15, 18, 26);
+        background-color: rgb(14, 16, 23);
 
     box-shadow: 0 4px 2px rgb(25, 33, 44); 
     color: white;
@@ -497,7 +497,8 @@ POST CSS POST CSS POST CSS */
 
 .post .divider {
     display:flex;
-    border-color: white;
+    border-top: 3px solid rgb(32, 40, 54);
+
     flex-direction: row;
     margin-bottom: 10px;
     margin-left: 15px;
@@ -519,8 +520,8 @@ POST CSS POST CSS POST CSS */
     margin-top: 10px;
     margin-bottom: 10px;
     flex-direction: row;
-    border-top: 3px solid rgb(41, 51, 68);
-    border-bottom: 3px solid rgb(41, 51, 68);
+    /* border-top: 3px solid rgb(41, 51, 68);
+    border-bottom: 3px solid rgb(41, 51, 68); */
     border-left: none;
     border-right: none;
     align-self: center;
@@ -533,10 +534,12 @@ POST CSS POST CSS POST CSS */
      border: none;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    width: 300px;
     height: 30px;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 18px;
+    border-left: 3px solid rgb(41, 51, 68);
+    border-right: 3px solid rgb(41, 51, 68);
     color:white;
     margin-left: 15px;
     background: none;
@@ -793,6 +796,7 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     border-radius: 5px;
     border-radius:5px;
     display: none;
+    border:none;
     box-shadow: 0px 2px 0px 0px #d6d6d6;
 }
 
@@ -802,9 +806,7 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     box-shadow: 0px 0px 0px 0px #d6d6d6;
 }
 
-.profilePanel .profileStats .profileEditButton:hover, .profileFollowButton:hover {
-   background-color: #C6C7C7;
-}
+
 
 .profilePanel .profileStats a {
     text-decoration: none;
@@ -938,8 +940,8 @@ FOLLOWING PANEL CSS  FOLLOWING PANEL CSS  FOLLOWING PANEL CSS   */
     display: flex;
     flex-direction: row;
     margin-bottom: 15px;
-    background-color: rgb(36, 37, 44);
-    box-shadow: 0 4px 2px rgb(49, 50, 59); 
+    background-color: rgb(14, 16, 23);
+    box-shadow: 0 4px 2px rgb(22, 25, 35);
 }
 
 .followingPanel .pfp {

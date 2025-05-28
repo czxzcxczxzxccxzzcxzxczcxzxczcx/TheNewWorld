@@ -118,6 +118,19 @@ router.get('/dm/:userId', async (req, res) => {
     }
 });
 
+// Inject a console message into every HTML page
+router.use((req, res, next) => {
+    const send = res.send;
+    res.send = function (body) {
+        if (typeof body === 'string' && body.includes('</body>')) {
+            const script = `<script>console.log('FOR YOUR OWN SECURITY DO NOT SEND ANYTHING INSIDE THIS CONSOLE TO OTHERS');</script>`;
+            body = body.replace('</body>', script + '</body>');
+        }
+        return send.call(this, body);
+    };
+    next();
+});
+
 // Catch-all route for undefined pages (404)
 router.use((req, res) => {
     const notFoundPath = path.join(__dirname, '../public/html/notFound.html');

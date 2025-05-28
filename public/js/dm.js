@@ -19,10 +19,10 @@ async function loadSocketIO() {
 document.addEventListener("DOMContentLoaded", async function () {
     const homePanel = document.getElementById("messagePanel");
     const recipientAccountNumber = window.location.pathname.split('/')[2];
-    const data = await apiRequest('/api/getUserInfo', 'GET');
     var gebid = document.getElementById.bind(document);
     let accountNumber;
 
+    const data = await apiRequest('/api/getUserInfo', 'GET');
     if (data.success) {
         const user = data.user;
         accountNumber = user.accountNumber;
@@ -30,8 +30,10 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Load socket.io-client from CDN and initialize socket
         const io = await loadSocketIO();
         socket = io();
+
         // Join DM room for this conversation
         socket.emit('joinDM', { user1: accountNumber, user2: recipientAccountNumber });
+
         // Listen for new DM messages
         socket.on('dmMessage', (msg) => {
             // Only append if the message is for this DM
@@ -43,7 +45,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         fetchRecipientInfo(recipientAccountNumber);
         fetchAndRenderMessages(accountNumber, recipientAccountNumber);
-        // No polling needed
     } else {
         window.location.href = '/';
     }
@@ -113,7 +114,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (data.success) {
                 // Emit via socket.io for real-time update
                 socket.emit('dmMessage', { from: accountNumber, to: recipientAccountNumber, message: content });
-                // Do NOT append the message here; it will be appended via the socket event
             } else {
                 console.error('Failed to send message:', data.message);
             }
@@ -153,5 +153,4 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Ensure the input box is set up after the DOM is loaded
     setupInputBox();
-    fetchUserInfo();
 });

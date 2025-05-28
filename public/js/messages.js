@@ -11,23 +11,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let accountNumber;
 
-    async function fetchUserInfo() {
-        try {
-            const data = await apiRequest('/api/getUserInfo', 'GET');
-            if (data.success) {
-                const user = data.user;
-                accountNumber = user.accountNumber;
+    const data = await apiRequest('/api/getUserInfo', 'GET');
+    if (data.success) {
+        const user = data.user;
+        accountNumber = user.accountNumber;
 
-                fetchAndRenderOpenDMs(accountNumber);
-                initializeCreatePost(user.accountNumber);
-                initializeGlobalButtons(accountNumber);
-            } else {
-                window.location.href = '/';
-            }
-        } catch (error) {
-            console.error("Error fetching user info:", error);
-            window.location.href = '/';
-        }
+        fetchAndRenderOpenDMs(accountNumber);
+        initializeCreatePost(user.accountNumber);
+        initializeGlobalButtons(accountNumber);
+    } else {
+        window.location.href = '/';
     }
 
     async function fetchAndRenderOpenDMs(accountNumber) {
@@ -56,5 +49,4 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.error('Error verifying admin access:', error);
         });
 
-    fetchUserInfo();
 });
