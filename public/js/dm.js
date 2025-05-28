@@ -1,5 +1,21 @@
 import { apiRequest } from './utils/apiRequest.js';
 
+let socket;
+
+async function loadSocketIO() {
+    // Dynamically import socket.io-client from CDN for browser compatibility
+    if (!window.io) {
+        await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.socket.io/4.7.5/socket.io.min.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+    return window.io;
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
     const homePanel = document.getElementById("messagePanel");
     const recipientAccountNumber = window.location.pathname.split('/')[2];
@@ -11,9 +27,23 @@ document.addEventListener("DOMContentLoaded", async function () {
         const user = data.user;
         accountNumber = user.accountNumber;
 
+        // Load socket.io-client from CDN and initialize socket
+        const io = await loadSocketIO();
+        socket = io();
+        // Join DM room for this conversation
+        socket.emit('joinDM', { user1: accountNumber, user2: recipientAccountNumber });
+        // Listen for new DM messages
+        socket.on('dmMessage', (msg) => {
+            // Only append if the message is for this DM
+            if ((msg.from === accountNumber && msg.to === recipientAccountNumber) ||
+                (msg.from === recipientAccountNumber && msg.to === accountNumber)) {
+                appendMessage({ from: msg.from, content: msg.message }, accountNumber);
+            }
+        });
+
         fetchRecipientInfo(recipientAccountNumber);
         fetchAndRenderMessages(accountNumber, recipientAccountNumber);
-        setupRealTimeUpdates(accountNumber, recipientAccountNumber);
+        // No polling needed
     } else {
         window.location.href = '/';
     }
@@ -78,29 +108,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     async function sendMessage(content) {
         try {
+            // Send to backend for DB storage
             const data = await apiRequest('/api/sendMessage', 'POST', { to: recipientAccountNumber, content });
             if (data.success) {
-                // Append the new message to the panel
-                appendMessage(data.messageData, accountNumber);
+                // Emit via socket.io for real-time update
+                socket.emit('dmMessage', { from: accountNumber, to: recipientAccountNumber, message: content });
+                // Do NOT append the message here; it will be appended via the socket event
             } else {
                 console.error('Failed to send message:', data.message);
             }
         } catch (error) {
             console.error('Error sending message:', error);
         }
-    }
-
-    function setupRealTimeUpdates(senderAccountNumber, recipientAccountNumber) {
-        setInterval(async () => {
-            try {
-                const data = await apiRequest('/api/getMessages', 'POST', { from: senderAccountNumber, to: recipientAccountNumber });
-                if (data.success) {
-                    renderMessages(data.messages, senderAccountNumber);
-                }
-            } catch (error) {
-                console.error('Error fetching real-time messages:', error);
-            }
-        }, 1000); 
     }
 
     // Create the send message box outside the homePanel

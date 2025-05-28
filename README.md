@@ -18,11 +18,14 @@ Features In The Project:
   - User Following: Stay connected by following others
   - Post Liking: Interact with posts by liking.
   - Reposting: Share posts on your profile.
-  - Notifications: Recieve notifications from othe44444444444444444444444444444444444r users.
+  - Notifications: Recieve notifications from other users.
   - Commenting: Comment on others posts
   - Mentioning: Mention users inside of posts.
   - Embed Images: Embed images into your post.
   - Validation: Proper username and password validation.
+  - Account Login & Creation: Create an account or login.
+  - Google Auth: Login through google.
+  - Admin System: Customized admin panel.
 
 Technologies Used:
   - bcrypt - Used to encrypt passwords
@@ -33,6 +36,8 @@ Technologies Used:
   - mongoose - Used for the database
   - react - Used for client UI framework
   - react-dom - Used for client DOM manipulation
+  - passport - Used for Google auth 
+  - passport-google-oauth20 - Used for Google auth
 
 How to get started:
   - Begin by downloading the repository.
