@@ -11,7 +11,7 @@ Key Skills Which Are Demonstrated:
   - Responsive UI: The UI offers a nice user navigation and is responsive on different devices.
 
 Features In The Project:
-  - Real-Time Direct Messaging: Instantly send real-time updating messages to users.
+  - Real-Time Direct Messaging: Real-time updating messages to users with websockets.
   - Post Creation & Editting: Create posts, and update if need be.
   - Post Deletion: Remove any post you have created.
   - Searching: Search any user or post.
@@ -34,10 +34,8 @@ Technologies Used:
   - express - Used for backend framework
   - express-validator - Used for validating inputs
   - mongoose - Used for the database
-  - react - Used for client UI framework
-  - react-dom - Used for client DOM manipulation
   - passport - Used for Google auth 
-  - passport-google-oauth20 - Used for Google auth
+  - socket.io - Used for websockets 
 
 How to get started:
   - Begin by downloading the repository.
