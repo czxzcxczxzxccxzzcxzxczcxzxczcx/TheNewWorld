@@ -11,7 +11,7 @@ const setupSocket = require('./utils/socket');
 
 const app = express();
 // const PORT = 1111;
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 1111;
 
 const server = http.createServer(app);
 const io = new Server(server, {cors: {origin: '*',methods: ['GET', 'POST']}});
