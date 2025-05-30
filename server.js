@@ -32,6 +32,5 @@ setupSocket(io);
 
 // Start the server
 server.listen(PORT, () => {
-  console.log(`Hoste connection:\tSuccessful`);
-  console.log(process.env.DB_URI);
+  console.log(`Host connection:\tSuccessful`);
 });
