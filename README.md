@@ -45,11 +45,10 @@ Getting Started:
     - "npm install"
     to install dependencies.
   - Create a .env file in the root directory with the following content:
-
-    DB_URI=your mongoDB database key
-    GOOGLE_CLIENT_ID=your google client id
-    GOOGLE_CLIENT_SECRET=your google secret key
-    STRIPE_SECRET_KEY=your stripe secret key
+    - DB_URI=your mongoDB database key
+    - GOOGLE_CLIENT_ID=your google client id
+    - GOOGLE_CLIENT_SECRET=your google secret key
+    - STRIPE_SECRET_KEY=your stripe secret key
 
   - Lastly in the console run the command "node server.js"
     - Open your browser and navigate to http://localhost:1111 (or the configured port).
