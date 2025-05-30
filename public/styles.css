@@ -1099,20 +1099,34 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     justify-items: flex-start; 
     align-items:center;
     margin-bottom: 15px;
-    background-color: rgb(13, 17, 23);
+    background-color: rgb(19, 24, 32);
     box-shadow: 0 4px 2px rgb(25, 33, 44); 
     color: white;
 }
 
 .adminDiv .textAndButton {
     display:flex;
-    width: 100%;
-    margin-top: 10px;
-    margin-bottom: 10px;
-
+    width: 95%;
+    height: min-content;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+    margin-left:20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+
+.adminDiv .buttons {
+    display:flex;
+    width: 100%;
+    height: min-content;
+    flex-direction: row;
+    align-items: center;
+    justify-self:center;
+    justify-content:space-around;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .adminDiv .spaceDiv {
@@ -1128,22 +1142,23 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 
 .adminDiv .textAndButton .adminTextBox {
     width: 110px;
-    height: 20px;
-    border-radius:5px;
+    height: 25px;
+    border-radius:2px;
     border:none;
 
 
     margin-right:10px
 }
 
-.adminDiv .textAndButton .adminButton
+.adminDiv .textAndButton .adminButton, .adminDiv .buttons .adminButton
 {
     width: auto;
     height: 30px;
 
-    font-size: 18px;
+    font-size: 16px;
     border-radius:5px;
     border: none;
+    font-weight:500;
     color: white;
     background:none;
 }
