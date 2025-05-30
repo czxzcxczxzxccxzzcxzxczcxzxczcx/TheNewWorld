@@ -166,4 +166,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('An error occurred while fetching users.');
             });
     });
+
+     document.getElementById("viewMessages").addEventListener("click", async function () {
+        apiRequest('/api/getAllMessages', 'GET')
+            .then(data => {
+                if (data.success) {
+                    console.log(data); // Log the users to the console
+                    alert('Users fetched successfully! Check console for details.');
+                } else {
+                    console.error('Error fetching users:', data.message);
+                    alert('Failed to fetch users.');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching users:', error);
+                alert('An error occurred while fetching users.');
+            });
+    });
 });

@@ -22,23 +22,6 @@ router.get('/get/profile/:accountNumber', async (req, res) => {
     }
 });
 
-// Returns the profile page
-router.post('/viewAllUsers', async (req, res) => {
-    try {
-        if (User) {
-            const users = await User.find();
-            console.log(users);
-            res.json({success: true,message: 'Successfully retrieved all users',});
-        }
-
-    } catch (err) {
-        console.error("Error fetching users:", err);
-        res.json({
-            success: false,
-            message: 'Error fetching users from the database'
-        });
-    }
-});
 
 // Route to follow or unfollow a user
 router.post('/follow', async (req, res) => {
@@ -105,7 +88,6 @@ router.post('/follow', async (req, res) => {
                     content: `${sender.username} started following you.`,
                 });
 
-                console.log('Notification created:', notification); // Print the notification data
             }
 
             // console.log('After follow:', { senderUser, recipientUser });

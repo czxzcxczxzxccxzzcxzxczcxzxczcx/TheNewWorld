@@ -39,7 +39,7 @@ Technologies Used:
   - socket.io – Real-time bidirectional communication
   - stripe – Payment processing
 
-Getting Started:
+Getting Started Locally:
   - Clone or download this repository.
   - Open your terminal and run: 
     - "npm install"
@@ -52,3 +52,10 @@ Getting Started:
 
   - Lastly in the console run the command "node server.js"
     - Open your browser and navigate to http://localhost:1111 (or the configured port).
+
+Getting Started With Microsoft Azure:
+  - Clone this as your own repository. 
+    - Next, open the repository in VS Code or similar enviorment to have git control.
+    - Then, create the .env file and put the code above inside of it.
+  - Next inside of an Azure Web App link the repository as a deployment. 
+  - Lastly, start the server, in the console it should load the server

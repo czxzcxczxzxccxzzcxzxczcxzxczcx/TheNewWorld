@@ -107,12 +107,10 @@ export function renderUserSearchResults(users, containerElementId) {
 // Utility to attach enter key search to an input for user search
 export function setupUserSearchOnEnter(inputId, containerElementId) {
     const input = document.getElementById(inputId);
-        console.log("ran")
 
     if (!input) return;
    input.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
-            alert('enter')
             const query = input.value.trim();
             if (!query) return;
             const container = document.getElementById(containerElementId);

@@ -128,7 +128,6 @@ router.post('/likePost', async (req, res) => {
                 content: `${user.username} liked your post.`,
             });
 
-            console.log('Notification created:', notification); // Print the notification data
         }
 
         return res.status(200).json({ success: true, message: 'Post liked successfully', post: existingPost,  removed: false});
@@ -231,7 +230,6 @@ router.post('/repost', async (req, res) => {
                 content: `${user.username} reposted your post.`,
             });
 
-            console.log('Notification created:', notification); // Print the notification data
         }
 
         return res.status(200).json({ success: true, message: 'Post reposted successfully', user, post, removed: false });

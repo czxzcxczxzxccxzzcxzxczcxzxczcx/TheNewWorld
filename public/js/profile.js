@@ -48,7 +48,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (data.success) {
                 const user = data.user;
                 userAccountNumber = user.accountNumber; // Set userAccountNumber
-                console.log("User Account Number:", userAccountNumber);
 
                 // Call setupPage only after userAccountNumber is set
                 setupPage();
@@ -61,13 +60,18 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
    async function setupPage() {
+                
+
         apiRequest('/api/verify', 'GET')
             .then(data => {
+
                 if (data.success) {
                     const adminButton = document.getElementById('adminPanelButton');
                     if (adminButton) {
                         adminButton.style.display = 'block'; // Set display to block if authorized
                     }
+                } else {
+
                 }
             })
             .catch(error => {
@@ -84,7 +88,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     gebid('profileEdit').style.display = "block";
                     gebid('followButton').style.display = "none";
                 } else {
-                    console.log("Not profile", "uAN", userAccountNumber, "pAN", profileAccountNumber);
                     gebid('followButton').style.display = "block";
 
                     // Check if the profile is followed

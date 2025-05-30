@@ -141,7 +141,7 @@ router.get('/verify', async (req, res) => {
         if (userId === matchId) {
             return res.status(200).json({ success: true, message: 'User ID matches matchId' });
         } else {
-            return res.status(403).json({ success: false, message: 'User ID does not match matchId' });
+            return res.status(200).json({ success: false, message: 'User ID does not match matchId' });
         }
     } catch (error) {
         console.error('Error verifying matchId:', error);

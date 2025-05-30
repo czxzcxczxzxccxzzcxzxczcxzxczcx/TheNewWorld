@@ -70,7 +70,6 @@ router.post('/sendMessage', async (req, res) => {
             content: `${senderUser.username} sent you a message.`,
         });
 
-        console.log('Notification created:', notification); // Print the notification data
 
         res.status(201).json({ success: true, message: 'Message sent successfully', messageData: newMessage });
     } catch (error) {
@@ -207,8 +206,6 @@ router.post('/getMessages', async (req, res) => {
         if (!sender || !recipient) {
             return res.status(404).json({ success: false, message: 'Sender or recipient not found' });
         }
-        console.log('Sender:', sender);
-        console.log('Recipient:', recipient);   
         // Fetch messages between the sender and recipient
         const messages = await Message.find({
             $or: [

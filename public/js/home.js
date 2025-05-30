@@ -80,18 +80,18 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // apiRequest('/api/verify', 'GET')
-    //     .then(data => {
-    //         if (data.success) {
-    //             const adminButton = document.getElementById('adminPanelButton');
-    //             if (adminButton) {
-    //                 adminButton.style.display = 'block'; // Set display to block if authorized
-    //             }
-    //         }
-    //     })
-    //     .catch(error => {
-    //         console.error('Error verifying admin access:', error);
-    //     })
+    apiRequest('/api/verify', 'GET')
+        .then(data => {
+            if (data.success) {
+                const adminButton = document.getElementById('adminPanelButton');
+                if (adminButton) {
+                    adminButton.style.display = 'block'; // Set display to block if authorized
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error verifying admin access:', error);
+        })
     
     // Fetch user info and initialize global buttons
     apiRequest('/api/getUserInfo', 'GET')
