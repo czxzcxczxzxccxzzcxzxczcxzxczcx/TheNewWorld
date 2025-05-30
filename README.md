@@ -1,47 +1,87 @@
-The New World - A Full-Stack Social Media Platform
+The New World — Full-Stack Social Media Platform
+Overview:
+  - The New World is a Twitter-inspired social media platform demonstrating practical front-end and back-end skills.
+  - Built with Node.js, Express, MongoDB, and JavaScript, it features real-time communication, user authentication, dynamic data handling, and API integration.
 
-What is The New World? The New World is a social media platform based upon Twitter, which demonstrates a pragmatic front-end and back-end skillset. Built using Node.js, Express, MongoDB, and JavaScript, the project showcases real-time user communication features, user authentication, dynamic handling, API integration.
+About This Project:
+This project was initially developed as a personal learning project during my high school years. It helped me build foundational full-stack development skills and explore real-time web technologies. Since then, I have continued to improve and maintain it to reflect my growth as a developer.
 
-Key Skills Which Are Demonstrated:
-  - Full Stack Development: Front-end and back-end integration.
-  - Database Design: MongoDB for efficent data storage.
-  - Auth & Security: Session Handling using cookies, Password Encryption using bcrypt.
-  - Real-Time Functionality: Websockets used for real-time updates.
-  - REST API Design: API endpoints to manage CRUD tasks and much more.
-  - Responsive UI: The UI offers a nice user navigation and is responsive on different devices.
+Key Skills Demonstrated
+Full Stack Development: Seamless front-end and back-end integration
 
-Features In The Project:
-  - Real-Time Direct Messaging: Real-time updating messages to users with websockets.
-  - Post Creation & Editting: Create posts, and update if need be.
-  - Post Deletion: Remove any post you have created.
-  - Searching: Search any user or post.
-  - User Following: Stay connected by following others
-  - Post Liking: Interact with posts by liking.
-  - Reposting: Share posts on your profile.
-  - Notifications: Recieve notifications from other users.
-  - Commenting: Comment on others posts
-  - Mentioning: Mention users inside of posts.
-  - Embed Images: Embed images into your post.
-  - Validation: Proper username and password validation.
-  - Account Login & Creation: Create an account or login.
-  - Google Auth: Login through google.
-  - Admin System: Customized admin panel.
-  - Site Donations: Donation to the site using Stripe.
+Database Design: Efficient data modeling using MongoDB
 
-Technologies Used:
-  - bcrypt - Used to encrypt passwords
-  - cookie-parser - Used to parse server cookies
-  - dotenv - Used to contain API keys
-  - express - Used for backend framework
-  - express-validator - Used for validating inputs
-  - mongoose - Used for the database
-  - passport - Used for Google auth 
-  - socket.io - Used for websockets 
-  - stripe - Used for donation system
+Authentication & Security: Session management with cookies, password hashing with bcrypt
 
-How to get started:
-  - Begin by downloading the repository.
-  - Next, open the terminal and type npm install, this should install all neccesary dependencies
-  - Next, inside the project create a file named ".env". 
-    - Inside of this file type "URI=". Following the equals sign paste your MongoDB key.
-  - After that you should be set. Start the project by typing "node server.js".
+Real-Time Functionality: WebSockets for instant user updates
+
+REST API Design: Well-structured endpoints to manage CRUD operations
+
+Responsive UI: Intuitive user interface optimized for various devices
+
+Features
+Real-Time Direct Messaging with WebSockets
+
+Post Creation, Editing & Deletion
+
+User & Post Search
+
+Follow System: Connect and follow users
+
+Post Interactions: Likes, reposts, comments, and mentions
+
+Notifications: Alerts for user activity
+
+Image Embedding in posts
+
+Form Validation for usernames and passwords
+
+Account Management: Signup, login, and Google OAuth
+
+Admin Panel: Customized dashboard for site admins
+
+Donation System: Payments via Stripe
+
+Technologies Used
+bcrypt – Password encryption
+
+cookie-parser – Cookie handling
+
+dotenv – Environment variable management
+
+express – Backend web framework
+
+express-validator – Input validation
+
+mongoose – MongoDB object modeling
+
+passport – Authentication middleware (Google OAuth)
+
+socket.io – Real-time bidirectional communication
+
+stripe – Payment processing
+
+Getting Started
+Clone or download this repository.
+
+Open your terminal and run:
+
+bash
+Copy
+Edit
+npm install
+to install dependencies.
+
+Create a .env file in the root directory with the following content:
+
+env
+Copy
+Edit
+URI=<your MongoDB connection string>
+Start the server:
+
+bash
+Copy
+Edit
+node server.js
+Open your browser and navigate to http://localhost:3000 (or the configured port).

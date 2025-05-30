@@ -7,7 +7,7 @@ const router = express.Router();
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Properly initialize Stripe
 
-const DEPLOYED_URL = 'https://special-succotash-4rqg7qxj5qr3jprg-1111.app.github.dev';
+const DEPLOYED_URL = 'https://tnw-axbycee9gmd6htb0.canadacentral-01.azurewebsites.net/';
 
 // Create Stripe Checkout session
 router.post('/create-stripe-session', async (req, res) => {
