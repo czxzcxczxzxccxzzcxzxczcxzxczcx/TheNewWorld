@@ -6,7 +6,7 @@ const crypto = require('crypto');
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'https://special-succotash-4rqg7qxj5qr3jprg-1111.app.github.dev/api/auth/google/callback'
+    callbackURL: 'https://tnw-axbycee9gmd6htb0.canadacentral-01.azurewebsites.net/api/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         let user = await User.findOne({ googleId: profile.id });
