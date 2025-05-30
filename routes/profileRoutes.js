@@ -120,26 +120,37 @@ router.post('/follow', async (req, res) => {
 
 // Route to update user settings
 router.post('/updateSettings', async (req, res) => {
-    const { bio,pfp,username } = req.body;
-    const sessionId = req.cookies.TNWID;  
+    const { bio, pfp, username } = req.body;
+    const sessionId = req.cookies.TNWID;
     try {
         if (sessionId && sessionStore[sessionId]) {
-            const user = sessionStore[sessionId];  
+            // Username validation (same as /newAccount in authRoutes.js)
+            if (!username || typeof username !== 'string' || username.trim().length < 3 || username.trim().length > 20) {
+                return res.status(400).json({ success: false, message: 'Username must be 3-20 characters' });
+            }
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                return res.status(400).json({ success: false, message: 'Username must be alphanumeric or underscores' });
+            }
+            // Check if username is taken by another user
+            const user = sessionStore[sessionId];
             const accountNumber = user.accountNumber;
+            const existingUser = await User.findOne({ username });
+            if (existingUser && existingUser.accountNumber !== accountNumber) {
+                return res.status(400).json({ success: false, message: 'Username is already taken' });
+            }
 
             await User.findOneAndUpdate(
                 { accountNumber },
                 { $set: { bio: bio, pfp: pfp, username: username } },
                 { new: true }
             );
-            
             return res.json({ success: true, message: 'done' });
         } else {
-        res.status(401).json({ success: false, message: 'Not authenticated' });
-        } 
-
+            res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
     } catch (error) {
-        console.error("Error updating password:", error);
+        console.error("Error updating settings:", error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -263,24 +274,6 @@ router.get('/getNotifications', async (req, res) => {
         res.json({ success: true, notifications });
     } catch (error) {
         console.error('Error fetching notifications:', error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
-    }
-});
-
-// Route to get accountNumber using username from req.body
-router.post('/getAccountNumber', async (req, res) => {
-    const { username } = req.body;
-
-    try {
-        const user = await User.findOne({ username });
-
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
-
-        res.json({ success: true, accountNumber: user.accountNumber });
-    } catch (error) {
-        console.error('Error fetching accountNumber by username:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });

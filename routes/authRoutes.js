@@ -42,6 +42,11 @@ router.post(
         const { fullName, password } = req.body;
 
         try {
+            // Check if username already exists
+            const existingUser = await User.findOne({ username: fullName });
+            if (existingUser) {
+                return res.json({ success: false, message: 'Username is already taken' });
+            }
             const hashed = await hashPassword(password);
             const accountNumber = await generateAccountNumber();
             const newUser = new User({accountNumber: accountNumber, password: hashed, username: fullName,});
