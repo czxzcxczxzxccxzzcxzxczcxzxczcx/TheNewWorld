@@ -278,4 +278,31 @@ router.get('/getNotifications', async (req, res) => {
     }
 });
 
+// Route to set a notification as not shown (hidden)
+router.post('/setNotificationShown', async (req, res) => {
+    const { notificationId } = req.body;
+    const sessionId = req.cookies.TNWID;
+    try {
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+        const user = sessionStore[sessionId];
+        const accountNumber = user.accountNumber;
+        // Find the notification and ensure it belongs to this user
+        const notification = await Notification.findOne({ notificationId });
+        if (!notification) {
+            return res.status(404).json({ success: false, message: 'Notification not found' });
+        }
+        if (notification.to !== accountNumber) {
+            return res.status(403).json({ success: false, message: 'Not authorized to modify this notification' });
+        }
+        notification.shown = false;
+        await notification.save();
+        return res.json({ success: true, message: 'Notification set as not shown' });
+    } catch (error) {
+        console.error('Error setting notification as not shown:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 module.exports = router;

@@ -48,13 +48,29 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const data = await apiRequest('/api/getNotifications', 'GET');
             if (data.success && Array.isArray(data.notifications)) {
-               // Sort notifications by 'createdAt' in descending order
                 const notificationsList = document.getElementById('notificationsList');
-                notificationsList.innerHTML = ''; // Clear existing notifications
+                notificationsList.innerHTML = '';
                 data.notifications.forEach(notification => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `${notification.content} (From: ${notification.from})`;
-                    notificationsList.appendChild(listItem);
+                    // Only show notifications that are currently shown (shown === true)
+                    if (notification.shown === true) {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${notification.content} (From: ${notification.from})`;
+                        // Add X button
+                        const closeButton = document.createElement('button');
+                        closeButton.textContent = '✕';
+                        closeButton.style.marginLeft = '10px';
+                        closeButton.style.cursor = 'pointer';
+                        closeButton.onclick = async () => {
+                            try {
+                                await apiRequest('/api/setNotificationShown', 'POST', { notificationId: notification.notificationId });
+                                listItem.remove();
+                            } catch (err) {
+                                console.error('Error hiding notification:', err);
+                            }
+                        };
+                        listItem.appendChild(closeButton);
+                        notificationsList.appendChild(listItem);
+                    }
                 });
             } else {
                 console.error('No notifications found or data structure is invalid');

@@ -201,5 +201,32 @@ router.get('/getAllPosts', async (req, res) => {
     }
 });
 
+router.get('/getAllMessages', async (req, res) => {
+    const sessionId = req.cookies.TNWID; // Retrieve session ID from cookies
+
+    try {
+        // Verify if the session ID exists in the session store
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const user = sessionStore[sessionId]; // Get user from session store
+        const userId = Number(user.accountNumber); // Ensure userId is a number
+
+        // Verify if the userId matches matchId
+        if (userId !== matchId) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: User ID does not match' });
+        }
+
+        // Fetch all messages
+        const { Message } = require('../utils/database');
+        const messages = await Message.find();
+        return res.status(200).json({ success: true, messages });
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 module.exports = router;
 
