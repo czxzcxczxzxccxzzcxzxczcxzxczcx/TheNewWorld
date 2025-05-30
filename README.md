@@ -4,20 +4,15 @@ Overview:
   - Built with Node.js, Express, MongoDB, and JavaScript, it features real-time communication, user authentication, dynamic data handling, and API integration.
 
 About This Project:
-This project was initially developed as a personal learning project during my high school years. It helped me build foundational full-stack development skills and explore real-time web technologies. Since then, I have continued to improve and maintain it to reflect my growth as a developer.
+  - This project was initially developed as a personal learning project during my high school years. It helped me build foundational full-stack development skills and explore - real-time web technologies. Since then, I have continued to improve and maintain it to reflect my growth as a developer.
 
-Key Skills Demonstrated
-Full Stack Development: Seamless front-end and back-end integration
-
-Database Design: Efficient data modeling using MongoDB
-
-Authentication & Security: Session management with cookies, password hashing with bcrypt
-
-Real-Time Functionality: WebSockets for instant user updates
-
-REST API Design: Well-structured endpoints to manage CRUD operations
-
-Responsive UI: Intuitive user interface optimized for various devices
+Key Skills Demonstrated:
+  - Full Stack Development: Seamless front-end and back-end integration
+  - Database Design: Efficient data modeling using MongoDB
+  - Authentication & Security: Session management with cookies, password hashing with bcrypt
+  - Real-Time Functionality: WebSockets for instant user updates
+  - REST API Design: Well-structured endpoints to manage CRUD operations
+  - Responsive UI: Intuitive user interface optimized for various devices
 
 Features
 Real-Time Direct Messaging with WebSockets
