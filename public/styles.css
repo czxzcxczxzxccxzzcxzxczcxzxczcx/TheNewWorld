@@ -5,7 +5,7 @@ BODY CSS  BODY CSS  BODY CSS  BODY CSS  BODY CSS   */
 
 body {
     position: relative;
-    background-color:  rgb(0, 0, 0);
+    background-color:  rgb(5, 5, 5);
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
@@ -383,12 +383,12 @@ POST CSS POST CSS POST CSS */
     align-items: flex-start;
     border-color:  rgb(16, 21, 27);
     border-width:5px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     border-style: solid;
     /* background-color: rgb(7, 9, 12); */
         background-color: rgb(14, 16, 23);
 
-    box-shadow: 0 4px 2px rgb(25, 33, 44); 
+    box-shadow: 0 3px 2px rgb(25, 33, 44); 
     color: white;
     border: none;
 }
@@ -448,7 +448,7 @@ POST CSS POST CSS POST CSS */
 
     text-align: center;
     margin-right: 10px;
-    border-bottom: 3px solid rgb(41, 51, 68);
+    border-bottom: 3px solid rgb(32, 40, 54);
     border-left: none;
     border-right: none;
 }
@@ -479,11 +479,11 @@ POST CSS POST CSS POST CSS */
 
 .post   .postBody, .postCommentBody {
     display: flex;
-    
+    text-shadow:none;
     text-align: left;
     margin-left: 15px;
-    margin-top:  10px;
-    margin-bottom: 10px;
+    margin-top:  15px;
+    margin-bottom: 25px;
     margin-right: 10px;   
     flex-direction: column;
     display: flex;
@@ -697,7 +697,7 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
     align-items: center;
     border-radius: 5px;
     /* background-color:  rgb(17, 20, 29); */
-        background-color:  rgb(25, 29, 43);
+        background-color:  rgb(18, 21, 31);
 
 }
 
@@ -763,12 +763,12 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
 PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 
 .profilePanel {
-    background-color: rgb(21, 25, 36);
-    box-shadow: 0 4px 2px rgb(31, 41,56); 
+    background-color: rgb(15, 18, 26);
+    box-shadow: 0 3px 2px rgb(31, 41,56); 
     border-color:  rgb(16, 21, 27);
     border-width:5px;
     border-style: solid;
-    border-radius: 10px;
+    border-radius: 5px;
     margin-bottom: 15px;
     height:auto;
     width:96%;
@@ -796,6 +796,7 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     flex-direction: row;
     align-content: flex-start;
     align-items: center;
+    overflow-wrap: break-word;
     box-sizing: border-box;  
 }
 
@@ -1157,6 +1158,20 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     background-color: #C6C7C7;
 }
 
+.openDMButton {
+    margin-left: 20px;
+    padding: 6px 16px;
+    border-radius: 5px;
+    border: none;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+.openDMButton:hover {
+    background: #0056b3;
+}
+
 @media (max-width: 767px) {
     .homePanel {
         width: 100vw;  
@@ -1195,7 +1210,9 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
     background-color: rgb(13, 17, 23); /* Ensure visibility */
     z-index: 5; /* Ensure it stays below the input container */
 }
-
+.messagePanel {
+    top:10vh;
+}
 
 .inputContainer {
     position: fixed; /* Ensure it stays at the bottom of the viewport */
@@ -1381,6 +1398,59 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
    justify-self: center;
 }
 
+.settingsPanel {
+    position: fixed;
+    /* top: 6.25vh;
+    width: 540px;
+    min-width: 540px; 
+    height: 92vh;  */
+    width: 500px;
+    height: 300px;
+    top: 25vh;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;    
+    align-self: center;
+    align-items: center;
+    align-content:  center;
+    justify-content:  flex-start;
+    background-color: rgb(18, 24, 33);
+    box-shadow: 0 4px 2px rgb(18, 24, 32); 
+
+        color:white;
+}
+
+
+.settingsPanel form {
+    display: flex;
+    flex-direction: column;    
+    align-items: center;
+    width: 100%;
+    height: min-content;
+}
+
+.settingsPanel .settingsInputs {
+    display:flex;
+    margin-bottom: 10px;
+}
+.settingsTitle {
+    align-self: flex-start;
+    text-align: left;
+    margin-left: 0;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 28px;
+    font-weight: bold;
+}
+.settingsPanel .settingsInputs button {
+    margin-left: 10px;
+}
+
+.settingsPanel .settingsInputs label {
+    font-size: 20px;
+    width:200px;
+    text-align: left;
+}
 .donationPanel {
     position: fixed;
     /* top: 6.25vh;
@@ -1436,9 +1506,9 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     flex-direction: column;    
     align-items: center;
     width: 80px;
-    height: 25px;
+    height: 20px;
     font-size: 20px;
-    margin-right:5px;
+    margin-left: 10px;
 }
 
 .donationPanel .inputs button {
@@ -1453,6 +1523,7 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     margin-left:10px;
     border:none;
     height: 30px;
+    font-weight: 600;
     text-align: center;
 }
 
@@ -1464,7 +1535,13 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     background-color: #b4b4b4;
 }
 
-
+.donationPanel .stripeLogo {
+    width: 60px;
+    height: 25px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
 
 .donate {
     position: absolute;

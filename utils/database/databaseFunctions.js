@@ -354,6 +354,42 @@ const getAllComments = async () => {
     }
 };
 
+const deleteUserAndData = async (accountNumber) => {
+    try {
+        // Find user by accountNumber
+        const user = await User.findOne({ accountNumber });
+        if (!user) {
+            console.log(`User with accountNumber ${accountNumber} not found.`);
+            return false;
+        }
+
+        // Delete all posts by this user
+        await Post.deleteMany({ accountNumber: user.accountNumber });
+
+        // Delete all comments by this user
+        await Comment.deleteMany({ accountNumber: user.accountNumber });
+
+        // Optionally, remove this user from followers/following of other users
+        await User.updateMany(
+            { followers: user.accountNumber },
+            { $pull: { followers: user.accountNumber } }
+        );
+        await User.updateMany(
+            { following: user.accountNumber },
+            { $pull: { following: user.accountNumber } }
+        );
+
+        // Delete the user
+        await User.deleteOne({ accountNumber: user.accountNumber });
+
+        console.log(`User with accountNumber ${accountNumber} and associated data deleted.`);
+        return true;
+    } catch (error) {
+        console.error('Error deleting user and associated data:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     fixProfile,
     fixPosts,
@@ -366,4 +402,5 @@ module.exports = {
     getPostByPostId,
     getCommentsByPostId,
     getAllComments,
+    deleteUserAndData,
 };

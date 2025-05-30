@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=0.5"> -->
+        <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" type="text/css" href="/styles.css">
+        <script type="module" src="/js/profile.js" defer></script>
+
+        <title>The New World</title>
+    </head>
+
+    <body>
+        <div id="homePanel" class="homePanel"> 
+            <div class="profilePanel">
+                <div class="profileInfo">
+                    <img id="pfp" src=""/>
+                    <div class="profileUser">
+
+                        <h1>@</h1>
+                        <h1 id="profileUsername"></h1>
+                        <h1 id="accountnumber"></h1>
+                    </div>
+                </div>
+                <div class="profileBio">
+                    <p id="bio"></p>
+                </div>
+                <div class="profileBio">
+                    <p id="changePfp"></p>
+                </div>
+                <div class="profileStats">
+                    <h1 id="posts">0 Posts</h1>
+                    <a href="" id="followerLink">
+                        <h1 id="followers">0 Followers</h1>
+                    </a>
+                    <a href="" id="followingLink">
+                        <h1 id="following">0 Following</h1>
+                    </a>
+                    <button id="profileEdit" class="profileEditButton">Edit Profile</button>
+                    <button id="followButton" class="profileFollowButton">Follow</button>
+                </div>
+                <div class="spaceDiv"></div>
+
+                <div class="selectionDiv">
+                    <button id="postsButton" class="profileButton">Posts</button>
+                    <button id="repostsButton" class="profileButton">Reposts</button>
+                </div>
+            </div>
+
+            <div id="profilePosts" class="profilePosts">
+
+            </div>
+
+            <div id="profileReposts" class="profilePosts">
+
+            </div>
+        </div>
+    </body>
+</html>

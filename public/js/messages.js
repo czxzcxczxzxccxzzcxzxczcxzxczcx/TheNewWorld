@@ -1,5 +1,5 @@
 import { apiRequest } from './utils/apiRequest.js';
-import { renderOpenDMUsers } from './utils/renderMessage.js';
+import { renderOpenDMUsers, renderUserSearchResults, setupUserSearchOnEnter } from './utils/renderMessage.js';
 import { initializeCreatePost } from './utils/createPostHandler.js';
 import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
 
@@ -48,5 +48,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         .catch(error => {
             console.error('Error verifying admin access:', error);
         });
+
+    const searchInput = document.getElementById('userSearchInput');
+    // Use the utility function for enter key search
+    setupUserSearchOnEnter('searchInput', 'messagePanel');
 
 });

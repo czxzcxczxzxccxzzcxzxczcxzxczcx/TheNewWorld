@@ -14,7 +14,10 @@ router.post('/create-stripe-session', async (req, res) => {
     try {
         // Accept amount from request body (in dollars), default to 5 if not provided or invalid
         let amount = Number(req.body.amount);
-        if (isNaN(amount) || amount < 1) amount = 5; // Minimum $1
+        if (isNaN(amount) || amount < 1) {
+            amount = 5; // Minimum $1
+            console.log('Invalid amount provided, defaulting to $5');
+        }
         const amountInCents = Math.round(amount * 100);
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],

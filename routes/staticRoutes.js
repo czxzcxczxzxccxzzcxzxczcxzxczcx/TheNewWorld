@@ -15,6 +15,7 @@ const staticPages = [
     '/admin',
     '/search',
     '/support',
+    '/settings',
 ];
 
 // Set up routes for static pages

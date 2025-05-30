@@ -19,9 +19,22 @@ passport.use(new GoogleStrategy({
                 const existingUser = await User.findOne({ accountNumber });
                 if (!existingUser) userExists = false;
             }
+
+            // Validate username: only allow alphanumeric and underscores
+            let baseUsername = (profile.displayName || 'user').replace(/[^\w]/g, '');
+            if (!baseUsername) baseUsername = 'user';
+
+            // Ensure username is unique
+            let finalUsername = baseUsername;
+            let suffix = 1;
+            while (await User.findOne({ username: finalUsername })) {
+                finalUsername = `${baseUsername}${suffix}`;
+                suffix++;
+            }
+
             user = new User({
                 googleId: profile.id,
-                username: profile.displayName,
+                username: finalUsername,
                 accountNumber,
                 pfp: profile.photos && profile.photos[0] ? profile.photos[0].value : undefined,
             });

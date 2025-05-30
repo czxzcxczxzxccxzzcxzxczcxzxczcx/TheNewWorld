@@ -224,4 +224,38 @@ router.post('/getMessages', async (req, res) => {
     }
 });
 
+// Route to remove an open DM
+router.post('/removeOpenDM', async (req, res) => {
+    const { recipientAccountNumber } = req.body;
+    const sessionId = req.cookies.TNWID;
+
+    try {
+        // Verify the sender's session
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const sender = sessionStore[sessionId];
+        const senderAccountNumber = sender.accountNumber;
+
+        // Validate recipient
+        const senderUser = await User.findOne({ accountNumber: senderAccountNumber });
+        if (!senderUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Remove the recipient from the sender's openDM array if present
+        const index = senderUser.openDM.indexOf(recipientAccountNumber);
+        if (index !== -1) {
+            senderUser.openDM.splice(index, 1);
+            await senderUser.save();
+        }
+
+        res.status(200).json({ success: true, message: 'Open DM removed successfully' });
+    } catch (error) {
+        console.error('Error removing open DM:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 module.exports = router;
