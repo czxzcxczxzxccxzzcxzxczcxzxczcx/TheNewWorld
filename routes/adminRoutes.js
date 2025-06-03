@@ -1,5 +1,5 @@
 const express = require('express');
-const { Post, User, fixPosts, fixProfile } = require('../utils/database');
+const { Post, User, fixPosts, fixProfile } = require('../utils/database/database');
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 const router = express.Router();
 
@@ -219,7 +219,7 @@ router.get('/getAllMessages', async (req, res) => {
         }
 
         // Fetch all messages
-        const { Message } = require('../utils/database');
+        const { Message } = require('../utils/database/database');
         const messages = await Message.find();
         return res.status(200).json({ success: true, messages });
     } catch (error) {

@@ -1,11 +1,11 @@
 require('dotenv').config();
 
 const mongoose = require('mongoose');
-const userSchema = require('./database/schemas/userSchema');
-const postSchema = require('./database/schemas/postSchema');
-const commentSchema = require('./database/schemas/commentSchema');
-const messageSchema = require('./database/schemas/messageSchema');
-const notificationSchema = require('./database/schemas/notificationSchema');
+const userSchema = require('./schemas/userSchema');
+const postSchema = require('./schemas/postSchema');
+const commentSchema = require('./schemas/commentSchema');
+const messageSchema = require('./schemas/messageSchema');
+const notificationSchema = require('./schemas/notificationSchema');
 
 const dbURI = process.env.DB_URI;
 

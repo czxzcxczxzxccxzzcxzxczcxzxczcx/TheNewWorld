@@ -1,6 +1,6 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
-const { Post, User } = require('../utils/database');
+const { Post, User } = require('../utils/database/database');
 const sessionStore = require('../utils/database/sessionStore'); 
 const { hashPassword, comparePassword } = require('../utils/hashing');
 const crypto = require('crypto');

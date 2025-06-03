@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const { User } = require('../utils/database'); // Import User model if needed
+const { User } = require('../utils/database/database'); // Import User model if needed
 
 const router = express.Router();
 

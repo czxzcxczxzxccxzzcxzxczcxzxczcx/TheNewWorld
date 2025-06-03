@@ -1,5 +1,5 @@
 const express = require('express');
-const { Message, User } = require('../utils/database');
+const { Message, User } = require('../utils/database/database');
 const router = express.Router();
 const sessionStore = require('../utils/database/sessionStore'); 
 const { createNotification } = require('../utils/database/genNotification');

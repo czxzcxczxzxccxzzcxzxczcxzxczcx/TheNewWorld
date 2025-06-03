@@ -5,11 +5,15 @@ import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
 
 renderBar();
 
+
+
+
 document.addEventListener("DOMContentLoaded", async function () {
     let profileAccountNumber = window.location.pathname.split('/')[2];
     var gebid = document.getElementById.bind(document);
     let userAccountNumber;
 
+    // Fetch user info to initialize create post and global buttons
     apiRequest('/api/getUserInfo', 'GET')
         .then(data => {
             if (data.success) {
@@ -60,8 +64,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
    async function setupPage() {
-                
-
         apiRequest('/api/verify', 'GET')
             .then(data => {
 

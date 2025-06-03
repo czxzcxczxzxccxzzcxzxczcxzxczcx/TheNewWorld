@@ -1,5 +1,5 @@
 const express = require('express');
-const { Comment, Post, User } = require('../utils/database');
+const { Comment, Post, User } = require('../utils/database/database');
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 const { createNotification } = require('../utils/database/genNotification');
 const router = express.Router();

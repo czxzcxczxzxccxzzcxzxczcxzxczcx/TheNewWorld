@@ -1,4 +1,4 @@
-const { Notification } = require('../database');
+const { Notification } = require('./database');
 
 const generateUniqueNotificationId = async () => {
     let notificationId;

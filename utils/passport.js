@@ -1,6 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const { User } = require('./database');
+const { User } = require('./database/database');
 const crypto = require('crypto');
 
 passport.use(new GoogleStrategy({

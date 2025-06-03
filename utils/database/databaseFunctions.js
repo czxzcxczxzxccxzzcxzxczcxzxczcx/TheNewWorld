@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { User, Post, Comment } = require('../database');
+const { User, Post, Comment } = require('./database');
 
 const fixProfile = async () => {
     try {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Post, User } = require('../utils/database');
+const { Post, User } = require('../utils/database/database');
 
 // Ensure the app uses JSON middleware in the main server file (not shown here)
 

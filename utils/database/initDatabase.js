@@ -1,4 +1,4 @@
-const { connectToDB, User, Post } = require('../database');
+const { connectToDB, User, Post } = require('./database');
 const { deleteUserAndData,updateUserPassword, updateData, fixProfile, fixPosts, fixUserLikedAndReposts, getAllComments} = require('./databaseFunctions');
 
 const initDatabase = async () => {
