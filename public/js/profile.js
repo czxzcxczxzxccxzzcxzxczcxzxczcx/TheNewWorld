@@ -5,12 +5,9 @@ import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
 
 renderBar();
 
-
-
-
 document.addEventListener("DOMContentLoaded", async function () {
     let profileAccountNumber = window.location.pathname.split('/')[2];
-    var gebid = document.getElementById.bind(document);
+    const gebid = id => document.getElementById(id);
     let userAccountNumber;
 
     // Fetch user info to initialize create post and global buttons
@@ -29,21 +26,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
 
 
-    // Check if profileAccountNumber is a username and fetch the account number if needed
-    if (isNaN(profileAccountNumber)) { // If it's not a number, assume it's a username
-        try {
-            const response = await apiRequest('/api/getAccountNumber', 'POST', { username: profileAccountNumber });
-            if (response.success) {
-                profileAccountNumber = response.accountNumber; // Update to the fetched account number
-            } else {
-                console.error('Failed to fetch account number:', response.message);
-                window.location.href = '/'; // Redirect to home if the username is invalid
-            }
-        } catch (error) {
-            console.error('Error fetching account number:', error);
-            window.location.href = '/'; // Redirect to home on error
-        }
-    }
+
 
     // Fetch user info and then set up the page
     async function fetchUserInfoAndSetupPage() {
@@ -149,89 +132,41 @@ document.addEventListener("DOMContentLoaded", async function () {
             .catch(error => console.error('Error fetching profile data:', error));
     }
 
-    gebid("followingLink").addEventListener("click", function (event) {
-        event.preventDefault();
-        if (profileAccountNumber) {window.location.href = `/following/${profileAccountNumber}`;}
-    });
-    gebid("followerLink").addEventListener("click", function (event) {
-        event.preventDefault();
-        if (profileAccountNumber) {window.location.href = `/followers/${profileAccountNumber}`;}
-    });
+    function setProfileSectionStyles(postsDisplay, repostsDisplay, postsBtnColor, repostsBtnColor) {
+        gebid("profilePosts").style.display = postsDisplay;
+        gebid("profileReposts").style.display = repostsDisplay;
+        gebid("postsButton").style.color = postsBtnColor;
+        gebid("repostsButton").style.color = repostsBtnColor;
+    }
 
-    gebid("profileButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        if (userAccountNumber) {window.location.href = `/profile/${userAccountNumber}`;}
-    });
-
-    gebid('profileEdit').addEventListener("click", async function (event) {
-        event.preventDefault();
-        const pfp = gebid("changePfp").textContent;
-        const username = gebid("profileUsername").textContent;
-        const bio = gebid("bio").textContent.trim(); // Trim unnecessary whitespace
-        const isEditable = gebid("bio").isContentEditable;
-
-        if (isEditable) {
-            changeEdit(false, "none", "Edit Profile", "", "", "");
-            try {
-                await apiRequest('/api/updateSettings', 'POST', { bio, pfp, username });
-            } catch (error) {
-                console.error('Error updating profile settings:', error);
-            }
+    function updateFollowButtonAndCount(isFollowed, followersCount) {
+        const followButton = gebid('followButton');
+        if (isFollowed) {
+            followButton.textContent = 'Followed';
+            followButton.style.backgroundColor = '#777777';
+            gebid('followers').textContent = ` ${followersCount + 1} Followers`;
         } else {
-            changeEdit(true, "block", "Save Profile", '1px dashed #ccc', '1px dashed #ccc', '1px dashed #ccc');
+            followButton.textContent = 'Follow';
+            followButton.style.backgroundColor = '';
+            gebid('followers').textContent = ` ${followersCount - 1} Followers`;
         }
-    });
+    }
 
-    gebid('followButton').addEventListener("click", async function (event) {
-        event.preventDefault();
+    if (isNaN(profileAccountNumber)) { // If it's not a number, assume it's a username
         try {
-            const followButton = gebid('followButton');
-            const isCurrentlyFollowed = followButton.textContent === 'Followed';
-
-            const data = await apiRequest('/api/follow', 'POST', { recipientAccountNumber: profileAccountNumber });
-
-            if (data.success) {
-                if (isCurrentlyFollowed) {
-                    // Reverse follow action (unfollow)
-                    followButton.textContent = 'Follow';
-                    followButton.style.backgroundColor = '';
-                    const followersText = gebid('followers').textContent.trim();
-                    const followersCount = parseInt(followersText.split(' ')[0]) || 0;
-                    gebid('followers').textContent = ` ${followersCount - 1} Followers`;
-                } else {
-                    // Perform follow action
-                    followButton.textContent = 'Followed';
-                    followButton.style.backgroundColor = '#777777';
-                    const followersText = gebid('followers').textContent.trim();
-                    const followersCount = parseInt(followersText.split(' ')[0]) || 0;
-                    gebid('followers').textContent = ` ${followersCount + 1} Followers`;
-                }
+            const response = await apiRequest('/api/getAccountNumber', 'POST', { username: profileAccountNumber });
+            if (response.success) {
+                profileAccountNumber = response.accountNumber; // Update to the fetched account number
             } else {
-                alert(data.message || 'Failed to update follow status. Please try again.');
+                console.error('Failed to fetch account number:', response.message);
+                window.location.href = '/'; // Redirect to home if the username is invalid
             }
         } catch (error) {
-            console.error('Error updating follow status:', error);
-            alert('Something went wrong. Please try again later.');
+            console.error('Error fetching account number:', error);
+            window.location.href = '/'; // Redirect to home on error
         }
-    });
+    }
 
-    gebid("postsButton").style.color = '#007bff'
-
-    gebid("repostsButton").addEventListener("click", function () {
-        gebid("profilePosts").style.display = "none";
-        gebid("profileReposts").style.display = "flex";
-        gebid("postsButton").style.color = '#ffffff'
-        gebid("repostsButton").style.color = '#007bff'
-    });
-
-    gebid("postsButton").addEventListener("click", function () {
-        gebid("profilePosts").style.display = "flex";
-        gebid("profileReposts").style.display = "none";
-        gebid("repostsButton").style.color = '#ffffff'
-        gebid("postsButton").style.color = '#007bff'
-    });
-
-    // Add Open DM button functionality
     if (userAccountNumber !== profileAccountNumber) {
         const openDMButton = document.createElement('button');
         openDMButton.className = 'profileButton';
@@ -261,6 +196,69 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         });
     }
+
+    gebid('profileEdit').addEventListener("click", async function (event) {
+        event.preventDefault();
+        const pfp = gebid("changePfp").textContent;
+        const username = gebid("profileUsername").textContent;
+        const bio = gebid("bio").textContent.trim(); // Trim unnecessary whitespace
+        const isEditable = gebid("bio").isContentEditable;
+
+        if (isEditable) {
+            changeEdit(false, "none", "Edit Profile", "", "", "");
+            try {
+                await apiRequest('/api/updateSettings', 'POST', { bio, pfp, username });
+            } catch (error) {
+                console.error('Error updating profile settings:', error);
+            }
+        } else {
+            changeEdit(true, "block", "Save Profile", '1px dashed #ccc', '1px dashed #ccc', '1px dashed #ccc');
+        }
+    });
+
+    gebid('followButton').addEventListener("click", async function (event) {
+        event.preventDefault();
+        try {
+            const followButton = gebid('followButton');
+            const isCurrentlyFollowed = followButton.textContent === 'Followed';
+
+            const data = await apiRequest('/api/follow', 'POST', { recipientAccountNumber: profileAccountNumber });
+
+            if (data.success) {
+                const followersText = gebid('followers').textContent.trim();
+                const followersCount = parseInt(followersText.split(' ')[0]) || 0;
+                updateFollowButtonAndCount(!isCurrentlyFollowed, followersCount);
+            } else {
+                alert(data.message || 'Failed to update follow status. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error updating follow status:', error);
+            alert('Something went wrong. Please try again later.');
+        }
+    });
+
+    gebid("followingLink").addEventListener("click", function (event) {
+        event.preventDefault();
+        if (profileAccountNumber) {window.location.href = `/following/${profileAccountNumber}`;}
+    });
+    
+    gebid("followerLink").addEventListener("click", function (event) {
+        event.preventDefault();
+        if (profileAccountNumber) {window.location.href = `/followers/${profileAccountNumber}`;}
+    });
+
+    gebid("profileButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        if (userAccountNumber) {window.location.href = `/profile/${userAccountNumber}`;}
+    });
+
+    gebid("repostsButton").addEventListener("click", function () {
+        setProfileSectionStyles("none", "flex", "#ffffff", "#007bff");
+    });
+
+    gebid("postsButton").addEventListener("click", function () {
+        setProfileSectionStyles("flex", "none", "#007bff", "#ffffff");
+    });
 
     fetchUserInfoAndSetupPage();
 });
