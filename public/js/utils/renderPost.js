@@ -322,7 +322,7 @@ export function setupLikes(likeButton, likeCounter, post, accountNumber) {
             })
             .then(data => {
                 if (data && data.success) {
-                    likeButton.textContent = `L (${data.post.likes.length})`;
+                    likeButton.textContent = `Likes (${data.post.likes.length})`;
                 }
             })
             .catch(error => { console.error('Error liking post or fetching updated data:', error); });
@@ -357,7 +357,7 @@ export function setupReposts(repostButton, repostCounter, post, accountNumber) {
             })
             .then(data => {
                 if (data && data.success) {
-                    repostButton.textContent = `R (${data.post.reposts.length})`;
+                    repostButton.textContent = `Reposts (${data.post.reposts.length})`;
                 }
             })
             .catch(error => { console.error('Error reposting post or fetching updated data:', error); });

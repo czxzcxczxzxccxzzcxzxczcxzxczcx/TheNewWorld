@@ -1,6 +1,8 @@
 import { apiRequest } from './apiRequest.js';
 
 export function renderBar() {
+    console.log("DO NOT SEND ANYONE INFORMATION FROM THIS CONSOLE OR UI FOR IT MAY POSE A GREAT SECURITY RISK TOWARD YOU")
+
     const barHTML = `
         <div class="bar">
             <ul>
@@ -34,6 +36,8 @@ export function renderBar() {
     const barContainer = document.createElement('div');
     barContainer.innerHTML = barHTML;
     body.insertBefore(barContainer, body.firstChild);
+
+   
 }
 
 export function initializeGlobalButtons(accountNumber) {
