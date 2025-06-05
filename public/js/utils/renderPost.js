@@ -75,6 +75,21 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     const displayUsername = username || post.username || 'Anonymous';
     const displayPfp = pfp || post.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
 
+     apiRequest('/api/getComments', 'POST', { postId: post.postId })
+        .then((response) => {
+            if (response.success) {
+                response.comments.forEach(({ comment, username, pfp }) => {
+                    renderComment({ ...comment, username, pfp }, commentDiv, fromAccountNumber);
+                });
+            } else {
+                console.error('Failed to fetch comments:', response.message);
+            }
+        })
+        .catch((error) => {
+            console.error('Error fetching comments:', error);
+        });
+
+
     setPostAttributes(postDiv,
         postDetailsDiv,
         postImage,
@@ -95,7 +110,7 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         displayPfp
     );
 
-    postDiv.append(postDetailsDiv, postBodyDiv, dividerDiv,buttonsDiv, footerDiv);
+    postDiv.append(postDetailsDiv, postBodyDiv,buttonsDiv, );
     footerDiv.append(dateE);
 
     commentDiv.style.display = 'none';
@@ -109,24 +124,11 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     postDiv.appendChild(commentDiv);
     buttonsDiv.appendChild(toggleCommentsButton); 
 
-    // Process post content to make mentions clickable and render images
+
     const processedContent = processContent(post.content || 'test');
     contentP.innerHTML = processedContent; // Use innerHTML to allow anchor tags and images
-
-     apiRequest('/api/getComments', 'POST', { postId: post.postId })
-        .then((response) => {
-            if (response.success) {
-                response.comments.forEach(({ comment, username, pfp }) => {
-                    renderComment({ ...comment, username, pfp }, commentDiv, fromAccountNumber);
-                });
-            } else {
-                console.error('Failed to fetch comments:', response.message);
-            }
-        })
-        .catch((error) => {
-            console.error('Error fetching comments:', error);
-        });
-
+    // Process post content to make mentions clickable and render images
+   
     // Add delete button if the post belongs to the logged-in user
     if (post.accountNumber === fromAccountNumber) {
         const deleteButton = createElementWithClass('button', 'deleteButton');
@@ -151,7 +153,11 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         postDetailsDiv.appendChild(deleteButton);
     }
 
-    usernameTitle.addEventListener("click", function (event) {window.location.href = `/profile/${post.accountNumber}`;  });
+
+
+    usernameTitle.addEventListener("click", function (event) 
+        {window.location.href = `/profile/${post.accountNumber}`;  
+    });
 
     commentButton.addEventListener('click', async () => {
         const commentContent = commentTextBox.value.trim();
@@ -218,27 +224,27 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
 function setPostAttributes(postDiv,postDetailsDiv, postImage, usernameTitle, titleH1, postBodyDiv, contentP, dividerDiv, viewsH2, likeButton, likeCounter, repostButton, repostCounter,buttonsDiv, dateE, post, username, pfp) {
     postImage.src = pfp || post.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
     usernameTitle.textContent = `@${username || post.username || ''}`;
-    titleH1.textContent = post.title || 'test';
+    // titleH1.textContent = post.title || 'test';
     contentP.textContent = post.content || 'test';
     viewsH2.textContent = `${post.views || 0} Views`;
-    likeCounter.textContent = `${post.likes?.length || 0} likes`;
-    repostCounter.textContent = `${post.reposts?.length || 0} reposts`;
+    // likeCounter.textContent = `${post.likes?.length || 0} likes`;
+    // repostCounter.textContent = `${post.reposts?.length || 0} reposts`;
+
+    titleH1.textContent = post.createdAt ? formatDate(post.createdAt) : '19:18 - April 20 2025';
 
     // Update buttons to only show icons
-    // likeButton.innerHTML = '<img class="post-image-natural" src="https://www.freeiconspng.com/uploads/youtube-like-button-png-11.png" alt="Like" style="width:25px; height:25px;">';
-    likeButton.textContent = 'Like';
+    likeButton.textContent = `Likes (${post.likes?.length || 0})`;
     likeButton.type = 'submit';
 
-    // repostButton.innerHTML = '<img src="https://www.shareicon.net/data/512x512/2015/08/31/93872_repost_512x512.png" alt="Repost" style="width:25px; height:25px;">';
-    repostButton.textContent = 'Repost';
+    repostButton.textContent = `Reposts (${post.reposts?.length || 0})`;
     repostButton.type = 'submit';
 
     dateE.textContent = post.createdAt ? formatDate(post.createdAt) : '19:18 - April 20 2025';
 
     postDetailsDiv.append(postImage, usernameTitle, titleH1);
-    dividerDiv.append(viewsH2, likeCounter, repostCounter);
+    // dividerDiv.append(viewsH2, likeCounter, repostCounter);
     postBodyDiv.append(contentP);
-    postBodyDiv.append(dividerDiv);
+    // postBodyDiv.append(dividerDiv);
     buttonsDiv.append(likeButton, repostButton);
 }
 
@@ -246,6 +252,8 @@ function renderComment(comment, commentDiv, loggedInAccountNumber) {
     const commentElement = createElementWithClass('div', 'comment');
     const postDetailsDiv = createElementWithClass('div', 'postCommentDetails');
     const postImage = createElementWithClass('img', 'pfp');
+    const titleH1 = createElementWithClass('h1', 'postTitle');
+
     const usernameTitle = createElementWithClass('h1', 'usernameTitle');
     const postBodyDiv = createElementWithClass('div', 'postCommentBody');
     const contentP = createElementWithClass('p');
@@ -255,12 +263,13 @@ function renderComment(comment, commentDiv, loggedInAccountNumber) {
     postImage.src = comment.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
     usernameTitle.textContent = `@${comment.username || 'Anonymous'}`;
     contentP.textContent = comment.content || 'No content';
-    dateE.textContent = comment.createdAt ? formatDate(comment.createdAt) : 'Unknown date';
+    titleH1.textContent = comment.createdAt ? formatDate(comment.createdAt) : 'Unknown date';
+    // titleH1.textContent = comment.title || 'No title';
 
-    postDetailsDiv.append(postImage, usernameTitle);
+    postDetailsDiv.append(postImage, usernameTitle,titleH1);
     postBodyDiv.append(contentP);
-    footerDiv.append(dateE);
-    commentElement.append(postDetailsDiv, postBodyDiv, footerDiv);
+    // footerDiv.append(dateE);
+    commentElement.append(postDetailsDiv, postBodyDiv);
 
     if (comment.accountNumber === loggedInAccountNumber) {
         const deleteButton = createElementWithClass('button', 'deleteButton');
@@ -291,7 +300,6 @@ export function setupLikes(likeButton, likeCounter, post, accountNumber) {
     const postId = post.postId;
 
     // Set initial state of the like button
-
     apiRequest('/api/checkLike', 'POST', { postId, accountNumber })
         .then(data => {
             if (data.liked) {
@@ -314,7 +322,7 @@ export function setupLikes(likeButton, likeCounter, post, accountNumber) {
             })
             .then(data => {
                 if (data && data.success) {
-                    likeCounter.textContent = `${data.post.likes.length} likes`;
+                    likeButton.textContent = `L (${data.post.likes.length})`;
                 }
             })
             .catch(error => { console.error('Error liking post or fetching updated data:', error); });
@@ -349,7 +357,7 @@ export function setupReposts(repostButton, repostCounter, post, accountNumber) {
             })
             .then(data => {
                 if (data && data.success) {
-                    repostCounter.textContent = `${data.post.reposts.length} reposts`;
+                    repostButton.textContent = `R (${data.post.reposts.length})`;
                 }
             })
             .catch(error => { console.error('Error reposting post or fetching updated data:', error); });
@@ -381,14 +389,14 @@ export function changeProfileEdit(edit, text, border, cE, tE, eE) {
 
 export function setupEditButton(parent, post, titleElement, contentElement) {
     const editButton = createElementWithClass('button', 'postButton postEditButton');
-    editButton.textContent = 'Edit Post';
+    editButton.textContent = 'Edit';
     editButton.setAttribute('data-id', post.postId);
 
     editButton.addEventListener('click', () => {
         const isEditable = contentElement.isContentEditable;
 
         if (isEditable) {
-            changeProfileEdit(false, 'Edit Post', '', contentElement, titleElement, editButton);
+            changeProfileEdit(false, 'Edit', '', contentElement, titleElement, editButton);
             updatePost(post.postId, titleElement.textContent, contentElement.textContent);
 
             const processedContent = processContent(contentElement.textContent);

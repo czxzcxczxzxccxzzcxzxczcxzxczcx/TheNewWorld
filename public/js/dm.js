@@ -148,6 +148,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                     messageInput.value = ''; // Clear the input box
                 }
             });
+
+            // Add event listener for Enter key
+            messageInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    const content = messageInput.value.trim();
+                    if (content) {
+                        sendMessage(content);
+                        messageInput.value = '';
+                    }
+                }
+            });
         }
     }
 

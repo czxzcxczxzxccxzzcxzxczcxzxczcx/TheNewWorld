@@ -11,7 +11,11 @@ export function renderUsers(users, container) {
         userElement.appendChild(userImage);
         userElement.appendChild(userName);
 
-        userElement.addEventListener('click', () => {window.location.href = `/profile/${user.accountNumber}`; });
+        userElement.addEventListener('click', () => {
+            window.location.href = `/profile/${user.accountNumber}`; 
+                    console.log(`Redirecting to profile of ${user.username}`)
+}
+        );
 
         container.appendChild(userElement);
     });
