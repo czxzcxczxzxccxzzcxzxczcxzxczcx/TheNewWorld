@@ -8,11 +8,11 @@ export function initializeCreatePost(accountNumber) {
     createPostDiv.innerHTML = `
         <form>
             <h1 id="username">Create a Post</h1>
-            <input class="titleInput" id="titleText" type="text" placeholder="Title">
+            
             <textarea class="bodyInput" id="bodyText" type="text" placeholder="Body"></textarea>
             <button id="createPost" type="submit" class="postPanelButton">Create Post</button>
         </form>
-    `;
+    `; // <input class="titleInput" id="titleText" type="text" placeholder="Title">
 
     const body = document.body;
     body.insertBefore(createPostDiv, body.firstChild);
@@ -28,7 +28,8 @@ export function initializeCreatePost(accountNumber) {
     document.getElementById('createPost').addEventListener('click', async function (event) {
         event.preventDefault();
 
-        const title = document.getElementById('titleText').value;
+        // const title = document.getElementById('titleText').value;
+        const title = " ";
         const content = document.getElementById('bodyText').value;
 
         if (title && content) {

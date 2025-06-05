@@ -35,13 +35,14 @@ body {
 NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
 
 .bar {
-    background-color: rgb(16, 19, 24);
-    box-shadow: 0 4px 2px rgb(26, 32, 41); 
+    background-color: rgb(8, 10, 12);
+    box-shadow: 0 4px 2px rgb(11, 14, 18); 
     position: absolute;
     top: 0vh;
     width: 100%;
     height: 5vh; 
     display: flex;
+    align-items: center;
     align-self: center;
 }
 
@@ -52,10 +53,11 @@ NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
     
 }
 
-.bar h1 {
+.bar h1, .bar .logo {
     color: white;
     display:flex;
     align-items: center;
+    height:100%;
     justify-self: center;
     margin-bottom: 18px;
     text-align: center;
@@ -79,6 +81,7 @@ NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
     width: 35px;
     margin-right: 20px;
     margin-top: 5px;
+    display:none;
 }
 
 .bar .buttons  a h1 {
@@ -276,24 +279,26 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
 .postPanel {   
     top: 25vh;
     position: fixed;
-    width: 100%;
+    opacity: 95%;
+    width: min-content;
     z-index: 1000; /* High z-index to ensure it is in front of everything */
-    max-width: min-content; 
+    /* max-width: min-content;  */
     border-width: 2px;
     height: min-content; 
-    border-radius: 10px;
+    border-radius: 5px;
     display: none;
-    flex-direction: column;    
+    flex-direction: column; 
+    border-color: rgb(21, 25, 32);   
     align-self: center;
-    background-color: rgb(25, 33, 44);
-    box-shadow: 0 -4px 2px rgb(39, 49, 65); /* Add shadow above the input container */
+    background-color: rgb(14, 17, 22);
+    /* box-shadow: 0 -4px 2px rgb(39, 49, 65); /*  */
 }
 
 .postPanel form {
     display: flex;
     flex-direction: column;    
     align-items: center;
-    width: 480px;
+    width: 430px;
     height: min-content;
     margin-bottom: 15px 
 }
@@ -303,7 +308,7 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
     font-size: 30px;
     text-align: left;
     margin: 0;
-    margin-top: 10px;
+    margin-top: 5px;
     margin-bottom: 5px;
 }
 .postPanel .titleInput {
@@ -321,22 +326,21 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
 }
 
 .postPanel  .postPanelButton {
-    height: 5vh;
-    width:95%;
-    max-width: 50vw; 
+    height: 4vh;
+    width:400px;
+    /* max-width: 50vw;  */
+    border:none;
     font-size:25px;
-    border-radius: 5px;
-    box-shadow: 0px 2px 0px 0px #d6d6d6
+    border-radius: 2.5px;
 }
 
 .postPanel  .postPanelButton:active {
-    margin-top:2px;
-    margin-bottom: 1px;
-    box-shadow: 0px 0px 0px 0px #d6d6d6
+        background-color: #bdbdbd;
+
 }
 
 .postPanel  .postPanelButton:hover {
-    background-color: #C6C7C7;
+    background-color: #c9c9c9;
 }
 
 .postPanel h1 {
@@ -346,11 +350,12 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
 .postPanel  .bodyInput {
     height: 125px;
     font-size: 20px;
-    margin: 10px;
     background-color: #ffffff;
+    margin-bottom: 5px;
     color:black;
-    width:95%;
-    max-width: 500px; 
+    width:395px;
+    border-radius: 2px;
+    /* max-width: 500px;  */
 }
 
 .postPanel .bodyInput::placeholder {
@@ -371,17 +376,19 @@ POST CSS POST CSS POST CSS */
 
 .post {
     border-radius: 5px;
-    width: 96%;
+    width: 530px;
     display: flex;
     flex-direction: column;    
     height: min-content; 
     align-self: center; 
     justify-items: flex-start; 
     align-items: flex-start;
-    margin-bottom: 50px;
-    background: none;
+    margin-bottom: 40px;
+    /* background: none; */
+    background-color: rgb(0, 0, 0);
+    border-top: 2px solid rgb(17, 21, 26);
     color: white;
-    border: none;
+    /* border: none; */
 }
 
 
@@ -574,40 +581,7 @@ POST CSS POST CSS POST CSS */
 
 
 
-/* USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES
-USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES */
 
-.dmUser {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 70px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    align-content: center;
-    align-items: center;
-    color: white;
-    font-size: 20px;
-    border-radius: 5px;
-}
-
-.dmUser h2 {
-    color: white
-}
-
-.dmUser .dmUserImage {
-    height: 50px;
-    width: 50px;
-    margin-right: 10px;
-    border-radius: 100%;
-}
-
-.dmUser .closeDMButton {
-    background: none;
-    border:none;
-    color:white;
-    font-size: 30px;
-}
 
 
 
@@ -689,7 +663,7 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 .profilePanel {
     margin-bottom: 30px;
     height:auto;
-    width:96%;
+    width:530px;
     flex-direction: column;
     display:flex;
     border: none;
@@ -926,8 +900,8 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 .homePanel {
     box-sizing: border-box;  
     top: 6vh;
-    width: 540px;
-    min-width: 540px; 
+    width: 100%;
+    /* min-width: 540px;  */
     border-radius: 5px;
     display: flex;
     flex-direction: column;    
@@ -987,7 +961,7 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     border-radius: 5px;
     overflow-y: scroll;
     box-sizing: border-box;
-    background-color: rgb(13, 17, 23);
+    background-color: rgb(4, 6, 8);
     z-index: 5;
 }
 
@@ -1091,19 +1065,6 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     color: #007bff;
 }
 
-.openDMButton {
-    margin-left: 20px;
-    padding: 6px 16px;
-    border-radius: 5px;
-    border: none;
-    background: #007bff;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-}
-.openDMButton:hover {
-    background: #0056b3;
-}
 
 @media (max-width: 767px) {
     .homePanel {
@@ -1134,12 +1095,19 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
 #messagePanel {
     position: absolute;
     top: calc(6.5vh + 68px); /* Dynamically align with the bottom of .dmTop */
-    width: 510px;
+    width: 520px;
     min-width: 510px;
-    height: calc(100vh - (6.5vh + 80px + 90px)); /* Adjust height to leave space for .dmTop and .inputContainer */
+    height: calc(100vh - (6.5vh + 140px)); /* Adjust height to leave space for .dmTop and .inputContainer */
     z-index: 5; /* Ensure it stays below the input container */
     padding: 10px; /* Add padding for spacing */
 }
+
+.messagePanel {
+    top:10vh;
+    height: 75vh;
+}
+
+
 
 .inputContainer {
     position: fixed; /* Ensure it stays at the bottom of the viewport */
@@ -1228,6 +1196,60 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
 }
 
 
+/* USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES
+USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES */
+
+.dmUser {
+    display: flex;
+    flex-direction: row;
+    width: 540px;
+    height: 50px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    align-content: center;
+    align-items: center;
+    color: white;
+    font-size: 20px;
+    border-radius: 5px;
+}
+
+.dmUser h2 {
+    color: white
+}
+
+.dmUser .dmUserImage {
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+    border-radius: 100%;
+}
+
+.dmUser .closeDMButton {
+    background: none;
+    border:none;
+    color:white;
+    font-size: 30px;
+}
+
+.dmUser .openDMButton {
+    margin-left: 20px;
+    padding: 6px 16px;
+    border-radius: 5px;
+    border: none;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left:auto;
+}
+
+.dmUser .dmUserName {
+    cursor: pointer;
+}
+.dmUser .openDMButton:hover {
+    background: #0056b3;
+}
+
 
 
 
@@ -1285,10 +1307,10 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
 
 .searchPanel {
     position: absolute;
-    top: calc(8vh + 50px); /* Align the top of the panel with the bottom of the search bar */
+    top: calc(8vh + 60px); /* Align the top of the panel with the bottom of the search bar */
     width: 540px;
     min-width: 540px;
-    height: calc(100vh - (8vh + 50px)); /* Adjust height dynamically to fit within the viewport */
+    height: calc(100vh - (8vh + 60px)); /* Adjust height dynamically to fit within the viewport */
     border-radius: 5px;
     display: flex;
     flex-direction: column;
