@@ -376,7 +376,7 @@ POST CSS POST CSS POST CSS */
 
 .post {
     border-radius: 5px;
-    width: 530px;
+    width: 520px;
     display: flex;
     flex-direction: column;    
     height: min-content; 
@@ -663,7 +663,7 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 .profilePanel {
     margin-bottom: 30px;
     height:auto;
-    width:530px;
+    width:520px;
     flex-direction: column;
     display:flex;
     border: none;
