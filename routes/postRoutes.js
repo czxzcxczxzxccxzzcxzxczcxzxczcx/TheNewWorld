@@ -4,11 +4,13 @@ const { Post, User } = require('../utils/database/database');
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 const { createNotification } = require('../utils/database/genNotification');
 const router = express.Router();
+const multer = require('multer');
+const AWS = require('aws-sdk');
+const upload = multer({ storage: multer.memoryStorage() });
 
-// Rate limiter for createPost only
 const createPostLimiter = rateLimit({
-    windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 5, // limit each IP to 15 createPost requests per windowMs
+    windowMs: 0.5 * 60 * 1000, // 10 minutes
+    max: 3, // limit each IP to 15 createPost requests per windowMs
     message: { success: false, message: 'Too many posts created, please try again later.' }
 });
 
@@ -24,10 +26,6 @@ const generateUniquePostId = async () => {
     }
     return postId;
 };
-
-const multer = require('multer');
-const AWS = require('aws-sdk');
-const upload = multer({ storage: multer.memoryStorage() });
 
 const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -45,12 +43,10 @@ router.post('/uploadPostImage', upload.single('image'), async (req, res) => {
   Key: `post-images/${Date.now()}_${req.file.originalname}`,
   Body: req.file.buffer,
   ContentType: req.file.mimetype
-  // ACL: 'public-read'   <-- REMOVE THIS LINE
 };
 
   try {
     const data = await s3.upload(params).promise();
-    // data.Location is the S3 URL, replace with your CloudFront domain if needed
     const imageUrl = data.Location.replace(
       `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/`,
       `https://YOUR_CLOUDFRONT_DOMAIN/`

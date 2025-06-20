@@ -1264,8 +1264,8 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
 .searchBar {
     position: relative;
     top: 8vh;
-    width: 540px;
-    min-width: 540px;
+    width: 510px;
+    min-width: 510px;
     margin-bottom: 10px;
     border-radius: 2px;
     height: 50px;
@@ -1286,7 +1286,6 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     padding: 10px;
     font-size: 20px;
     color: black;
-    margin-right:10px;
     background-color: white; /* Ensure visibility */
     border: 1px solid #ccc; /* Add border for input */
 }
