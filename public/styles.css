@@ -1079,6 +1079,10 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
         width: 100%;
         text-align: center;
     }
+
+    .bar {
+        margin-bottom: 20px;
+    }
     #notificationsPanel {
        display: none;
     }
@@ -1095,7 +1099,7 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
 #messagePanel {
     position: absolute;
     top: calc(6.5vh + 68px); /* Dynamically align with the bottom of .dmTop */
-    width: 520px;
+    width: 521px;
     min-width: 510px;
     height: calc(100vh - (6.5vh + 140px)); /* Adjust height to leave space for .dmTop and .inputContainer */
     z-index: 5; /* Ensure it stays below the input container */
@@ -1202,7 +1206,7 @@ USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES */
 .dmUser {
     display: flex;
     flex-direction: row;
-    width: 540px;
+    width: 500px;
     height: 50px;
     margin-top: 5px;
     margin-bottom: 5px;

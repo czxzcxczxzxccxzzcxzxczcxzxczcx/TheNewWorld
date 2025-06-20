@@ -1,4 +1,5 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit'); // Added for global rate limiting
 const app = express();
 
 const cookieParser = require('cookie-parser');
@@ -18,6 +19,14 @@ app.use(cookieParser());
 app.use(session({secret: process.env.SESSION_SECRET || 'secret', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Global rate limiter (example: 200 requests per 15 minutes per IP)
+// const globalLimiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 15 minutes
+//     max: 300, // limit each IP to 200 requests per windowMs
+//     message: { success: false, message: 'Too many requests, please try again later.' }
+// });
+// app.use(globalLimiter);
 
 initDatabase();
 setupSocket(io);

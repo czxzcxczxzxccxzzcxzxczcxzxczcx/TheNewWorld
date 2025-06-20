@@ -4,6 +4,8 @@ const sessionStore = require('../utils/database/sessionStore'); // Import sessio
 const { createNotification } = require('../utils/database/genNotification');
 const router = express.Router();
 
+// Add a rate limiter middleware for all routes in this router
+
 const generateUniquePostId = async () => {
     let postId;
     let postExists = true;
@@ -95,12 +97,17 @@ router.post('/getPost', async (req, res) => {
 });
 
 router.post('/likePost', async (req, res) => {
-    const { postId, accountNumber } = req.body;
+    const sessionId = req.cookies.TNWID;
+    if (!(sessionId && sessionStore[sessionId])) {
+        return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+    const user = sessionStore[sessionId];
+    const accountNumber = user.accountNumber;
+    const { postId } = req.body;
     try {
         const existingPost = await Post.findOne({ postId });
-        const user = await User.findOne({ accountNumber });
+        const dbUser = await User.findOne({ accountNumber });
 
-        
         if (!existingPost) {
             return res.status(404).json({ success: false, message: 'Post not found' });
         }
@@ -122,17 +129,15 @@ router.post('/likePost', async (req, res) => {
 
         // Generate a notification for the post owner if the user likes their post
         if (existingPost.accountNumber !== accountNumber) {
-            const notification = await createNotification({
+            await createNotification({
                 from: accountNumber,
                 to: existingPost.accountNumber,
-                content: `${user.username} liked your post.`,
+                content: `${dbUser.username} liked your post.`,
             });
-
         }
 
-        return res.status(200).json({ success: true, message: 'Post liked successfully', post: existingPost,  removed: false});
+        return res.status(200).json({ success: true, message: 'Post liked successfully', post: existingPost, removed: false });
     } catch (error) {
-        console.error('Error liking post:', error); // Log the error in the console
         return res.status(500).json({ success: false, message: 'Error liking post', error });
     }
 });
@@ -184,8 +189,13 @@ router.post('/checkRepost', async (req, res) => {
 
 // Route to repost or remove repost of a post
 router.post('/repost', async (req, res) => {
-    const { postId, accountNumber } = req.body;
-
+    const sessionId = req.cookies.TNWID;
+    if (!(sessionId && sessionStore[sessionId])) {
+        return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+    const userSession = sessionStore[sessionId];
+    const accountNumber = userSession.accountNumber;
+    const { postId } = req.body;
     try {
         const user = await User.findOne({ accountNumber });
         const post = await Post.findOne({ postId });
@@ -224,12 +234,11 @@ router.post('/repost', async (req, res) => {
 
         // Generate a notification for the post owner if the user reposts their post
         if (post.accountNumber !== accountNumber) {
-            const notification = await createNotification({
+            await createNotification({
                 from: accountNumber,
                 to: post.accountNumber,
                 content: `${user.username} reposted your post.`,
             });
-
         }
 
         return res.status(200).json({ success: true, message: 'Post reposted successfully', user, post, removed: false });
@@ -241,17 +250,22 @@ router.post('/repost', async (req, res) => {
 
 // Creates a new post
 router.post('/createPost', async (req, res) => {
-    const { accountNumber, title, content } = req.body;
-
+    const sessionId = req.cookies.TNWID;
+    if (!(sessionId && sessionStore[sessionId])) {
+        return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+    const user = sessionStore[sessionId];
+    const accountNumber = user.accountNumber;
+    const { title, content } = req.body;
     try {
-        const user = await User.findOne({ accountNumber });
+        const dbUser = await User.findOne({ accountNumber });
 
-        if (!user) {
+        if (!dbUser) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
         const postId = await generateUniquePostId();
-        const newPost = new Post({postId: postId, title: title, content: content, accountNumber: user.accountNumber,});
+        const newPost = new Post({ postId: postId, title: title, content: content, accountNumber: dbUser.accountNumber });
 
         await newPost.save();
 
