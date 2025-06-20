@@ -1,10 +1,16 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit'); // Import rate limiter for specific route
 const { Post, User } = require('../utils/database/database');
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 const { createNotification } = require('../utils/database/genNotification');
 const router = express.Router();
 
-// Add a rate limiter middleware for all routes in this router
+// Rate limiter for createPost only
+const createPostLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000, // 10 minutes
+    max: 5, // limit each IP to 15 createPost requests per windowMs
+    message: { success: false, message: 'Too many posts created, please try again later.' }
+});
 
 const generateUniquePostId = async () => {
     let postId;
@@ -18,6 +24,42 @@ const generateUniquePostId = async () => {
     }
     return postId;
 };
+
+const multer = require('multer');
+const AWS = require('aws-sdk');
+const upload = multer({ storage: multer.memoryStorage() });
+
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION
+});
+
+router.post('/uploadPostImage', upload.single('image'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'No file uploaded' });
+  }
+
+  const params = {
+  Bucket: process.env.AWS_S3_BUCKET_NAME,
+  Key: `post-images/${Date.now()}_${req.file.originalname}`,
+  Body: req.file.buffer,
+  ContentType: req.file.mimetype
+  // ACL: 'public-read'   <-- REMOVE THIS LINE
+};
+
+  try {
+    const data = await s3.upload(params).promise();
+    // data.Location is the S3 URL, replace with your CloudFront domain if needed
+    const imageUrl = data.Location.replace(
+      `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/`,
+      `https://YOUR_CLOUDFRONT_DOMAIN/`
+    );
+    res.json({ success: true, imageUrl });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Upload failed', error: err });
+  }
+});
 
 router.post('/deletePost', async (req, res) => {
     const { postId } = req.body;
@@ -249,7 +291,7 @@ router.post('/repost', async (req, res) => {
 });
 
 // Creates a new post
-router.post('/createPost', async (req, res) => {
+router.post('/createPost', createPostLimiter, async (req, res) => {
     const sessionId = req.cookies.TNWID;
     if (!(sessionId && sessionStore[sessionId])) {
         return res.status(401).json({ success: false, message: 'Not authenticated' });
