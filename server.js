@@ -1,5 +1,5 @@
 const {app, server, setupRoutes, express} = require('./utils/middleware');
-const PORT = process.env.PORT || 2121;
+const PORT = process.env.PORT || 1111;
 
 // Servers the static files from the 'public' directory
 app.use(express.static(require('path').join(__dirname, 'public')));

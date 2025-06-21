@@ -5,7 +5,7 @@ const sessionStore = require('../utils/database/sessionStore'); // Import sessio
 const { createNotification } = require('../utils/database/genNotification');
 const router = express.Router();
 const multer = require('multer');
-const AWS = require('aws-sdk');
+const { s3Client, PutObjectCommand } = require('../utils/awsS3Client');
 const upload = multer({ storage: multer.memoryStorage() });
 
 const createPostLimiter = rateLimit({
@@ -27,30 +27,22 @@ const generateUniquePostId = async () => {
     return postId;
 };
 
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION
-});
-
 router.post('/uploadPostImage', upload.single('image'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: 'No file uploaded' });
   }
 
+  const key = `post-images/${Date.now()}_${req.file.originalname}`;
   const params = {
-  Bucket: process.env.AWS_S3_BUCKET_NAME,
-  Key: `post-images/${Date.now()}_${req.file.originalname}`,
-  Body: req.file.buffer,
-  ContentType: req.file.mimetype
-};
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Key: key,
+    Body: req.file.buffer,
+    ContentType: req.file.mimetype,
+  };
 
   try {
-    const data = await s3.upload(params).promise();
-    const imageUrl = data.Location.replace(
-      `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/`,
-      `https://YOUR_CLOUDFRONT_DOMAIN/`
-    );
+    await s3Client.send(new PutObjectCommand(params));
+    const imageUrl = `${process.env.AWS_CLOUDFRONT_DOMAIN}/${key}`;
     res.json({ success: true, imageUrl });
   } catch (err) {
     console.error('Error uploading image to S3:', err);

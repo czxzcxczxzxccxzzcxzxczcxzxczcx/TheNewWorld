@@ -5,7 +5,7 @@ BODY CSS  BODY CSS  BODY CSS  BODY CSS  BODY CSS   */
 
 body {
     position: relative;
-    background-color:  rgb(0, 0, 0);
+    background-color: rgb(0, 0, 0);
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
@@ -19,7 +19,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
-    justify-content: center;    
+    justify-content: center;
 }
 
 
@@ -35,29 +35,32 @@ body {
 NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
 
 .bar {
-    background-color: rgb(8, 10, 12);
-    box-shadow: 0 4px 2px rgb(11, 14, 18); 
+    background-color: rgb(16, 20, 24);
+    box-shadow: 0 4px 2px rgb(11, 14, 18);
     position: absolute;
     top: 0vh;
     width: 100%;
-    height: 5vh; 
+    height: 5vh;
     display: flex;
     align-items: center;
     align-self: center;
+    overscroll-behavior: contain;
+    touch-action: none;
 }
 
 .bar ul {
     display: flex;
     flex-direction: row;
     align-items: center;
-    
+
 }
 
-.bar h1, .bar .logo {
+.bar h1,
+.bar .logo {
     color: white;
-    display:flex;
+    display: flex;
     align-items: center;
-    height:100%;
+    height: 100%;
     justify-self: center;
     margin-bottom: 18px;
     text-align: center;
@@ -70,7 +73,7 @@ NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
     flex-direction: row;
     justify-self: center;
     align-items: center;
-    position:absolute;
+    position: absolute;
     justify-content: space-evenly;
     position: absolute;
     right: 0;
@@ -81,19 +84,20 @@ NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
     width: 35px;
     margin-right: 20px;
     margin-top: 5px;
-    display:none;
+    display: none;
 }
 
-.bar .buttons  a h1 {
+.bar .buttons a h1 {
     margin: 10px;
     font-size: 20px;
 }
 
 .bar .buttons a {
-    text-decoration: none; 
+    text-decoration: none;
 }
+
 .bar .buttons a:hover {
-    border-bottom: 2px solid white; 
+    border-bottom: 2px solid white;
 }
 
 .bar .buttons #adminPanelButton {
@@ -101,9 +105,9 @@ NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
 }
 
 .bar .buttons h1:hover {
-    cursor: pointer; 
+    cursor: pointer;
     color: #007bff;
-    text-decoration: underline; 
+    text-decoration: underline;
 }
 
 
@@ -116,33 +120,33 @@ LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
 .panel {
     position: fixed;
     justify-items: center;
-    height:  300px;
+    height: 300px;
     width: 280px;
     top: 25vh;
     /* margin-top: 120px; */
     border-radius: 5px;
     display: none;
-    flex-direction: column;    
+    flex-direction: column;
     align-self: center;
-    align-items:center;
+    align-items: center;
     /* background-color: rgb(19, 25, 34); */
     /* box-shadow: 0 4px 2px rgb(31, 41,56);  */
 }
 
 .panel form {
-    
+
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
     align-items: center;
-    height:30vh;
-    width:300px;
+    height: 30vh;
+    width: 300px;
 }
 
 .panel h1 {
-    color:white;
+    color: white;
     font-size: 35px;
     margin-top: 20px;
-    height:20px;
+    height: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -151,7 +155,7 @@ LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
 }
 
 .panel .status {
-    color:white;
+    color: white;
     font-size: 20px;
     margin: top -10px;
     height: 1px;
@@ -162,24 +166,24 @@ LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
     flex-direction: column;
     align-items: center;
     align-self: center;
-   width:100%;
+    width: 100%;
 
 }
 
 
 .google-login-container a {
-   margin-top: 20px;
-   margin-bottom: 15px;
-   width:100%;
-   display:flex;
-    text-decoration:none;
-    height:35px;
-   flex-direction: row;
-   justify-items: center;
-   align-items: center;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    width: 100%;
+    display: flex;
+    text-decoration: none;
+    height: 35px;
+    flex-direction: row;
+    justify-items: center;
+    align-items: center;
 
-   background-color: white;
-   border-radius: 5px;
+    background-color: white;
+    border-radius: 5px;
 }
 
 .google-login-container a:hover {
@@ -237,7 +241,7 @@ LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS */
     /* margin-bottom: 50px; */
     margin-top: 5px;
     border: none;
-    border-radius:5px;
+    border-radius: 5px;
     /* box-shadow: 0px 2px 0px 0px #d6d6d6 */
 }
 
@@ -248,15 +252,15 @@ LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS */
     font-size: 20px;
     /* margin-bottom: 50px; */
     border: none;
-    background:none;
+    background: none;
     color: white;
-    border-radius:5px;
+    border-radius: 5px;
     font-weight: 400;
     /* box-shadow: 0px 2px 0px 0px #d6d6d6 */
 }
 
 .otherInput:hover {
-    color:#0c77e9
+    color: #0c77e9
 }
 
 
@@ -280,32 +284,33 @@ LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS */
 /* CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS  
 CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
 
-.postPanel {   
+.postPanel {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     opacity: 95%;
     width: min-content;
-    z-index: 1000; /* High z-index to ensure it is in front of everything */
+    z-index: 1000;
+    /* High z-index to ensure it is in front of everything */
     /* max-width: min-content;  */
     border-width: 2px;
-    height: min-content; 
+    height: min-content;
     border-radius: 5px;
     display: none;
-    flex-direction: column; 
-    border-color: rgb(21, 25, 32);   
+    flex-direction: column;
+    border-color: rgb(21, 25, 32);
     background-color: rgb(26, 31, 41);
     /* box-shadow: 0 -4px 2px rgb(39, 49, 65); /*  */
 }
 
 .postPanel form {
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
     align-items: center;
     width: 430px;
     height: min-content;
-    margin-bottom: 15px 
+    margin-bottom: 15px
 }
 
 .postPanel h1 {
@@ -316,10 +321,11 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
     margin-top: 5px;
     margin-bottom: 5px;
 }
+
 .postPanel .titleInput {
     height: 50px;
     min-width: 95%;
-    max-width: 50vw; 
+    max-width: 50vw;
     font-size: 20px;
     border-radius: 5px;
     color: black;
@@ -330,12 +336,12 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
     color: black;
 }
 
-.postPanel  .postPanelButton {
+.postPanel .postPanelButton {
     height: 4vh;
-    width:400px;
+    width: 400px;
     /* max-width: 50vw;  */
-    border:none;
-    font-size:25px;
+    border: none;
+    font-size: 25px;
     border-radius: 2.5px;
 }
 
@@ -345,42 +351,45 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
     width: 90%;
 }
 
-.postPanel  .postPanelButton:active {
-        background-color: #bdbdbd;
+.postPanel .postPanelButton:active {
+    background-color: #bdbdbd;
 
 }
 
-.postPanel  .postPanelButton:hover {
+.postPanel .postPanelButton:hover {
     background-color: #c9c9c9;
 }
 
 .postPanel h1 {
-    color:white;
+    color: white;
 }
+
 .postPanel .imageUploading {
     margin-top: 10px;
 }
-.postPanel .imageUploading button, .postPanel .imageUploading input {
-    width:395px;
+
+.postPanel .imageUploading button,
+.postPanel .imageUploading input {
+    width: 395px;
     height: 30px;
     font-size: 20px;
     border-radius: 5px;
     margin-bottom: 10px;
-    color:white;
+    color: white;
     background-color: #007bff;
-    border:none;
+    border: none;
 
 }
 
 
 
-.postPanel  .bodyInput {
+.postPanel .bodyInput {
     height: 125px;
     font-size: 20px;
     background-color: #ffffff;
     margin-bottom: 5px;
-    color:black;
-    width:395px;
+    color: black;
+    width: 395px;
     border-radius: 2px;
     /* max-width: 500px;  */
 }
@@ -405,10 +414,10 @@ POST CSS POST CSS POST CSS */
     border-radius: 5px;
     width: 520px;
     display: flex;
-    flex-direction: column;    
-    height: min-content; 
-    align-self: center; 
-    justify-items: flex-start; 
+    flex-direction: column;
+    height: min-content;
+    align-self: center;
+    justify-items: flex-start;
     align-items: flex-start;
     margin-bottom: 40px;
     /* background: none; */
@@ -424,39 +433,43 @@ POST CSS POST CSS POST CSS */
     width: 30px;
     margin-right: 10px;
     font-size: 20px;
-    margin-left:auto;
+    margin-left: auto;
     font-weight: bold;
-    height: 30px; 
+    height: 30px;
     display: flex;
-    justify-content: center; /* Horizontally center the text */
-    align-items: center; /* Vertically center the text */
+    justify-content: center;
+    /* Horizontally center the text */
+    align-items: center;
+    /* Vertically center the text */
     font-weight: bold;
-    background:none;
+    background: none;
     border: none;
-    color:white;
+    color: white;
 
 }
 
 .post .deleteButton:hover {
-    cursor: pointer; 
+    cursor: pointer;
     color: #007bff;
-    text-decoration: underline; 
+    text-decoration: underline;
 }
 
-.post .postDetails .usernameTitle, .post .postCommentDetails .usernameTitle {
+.post .postDetails .usernameTitle,
+.post .postCommentDetails .usernameTitle {
     font-size: 21px;
-    font-weight:500;
-    
+    font-weight: 500;
+
 }
 
 .post .postDetails .usernameTitle:hover {
-    cursor: pointer; 
+    cursor: pointer;
     color: #007bff;
-    text-decoration: underline; 
+    text-decoration: underline;
 }
 
 
-.post .postDetails .postTitle, .post .postCommentDetails .postTitle {
+.post .postDetails .postTitle,
+.post .postCommentDetails .postTitle {
     border-left: rgb(255, 255, 255) 2px solid;
     padding-left: 15px;
     text-align: left;
@@ -464,14 +477,15 @@ POST CSS POST CSS POST CSS */
     font-weight: 400;
 }
 
-.post .postDetails, .post .postCommentDetails  {
+.post .postDetails,
+.post .postCommentDetails {
     display: flex;
     align-items: center;
     margin-bottom: 5px;
     margin-top: 5px;
     font-size: 12px;
     margin-left: 15px;
-    width:95%;
+    width: 95%;
 
     text-align: center;
     margin-right: 10px;
@@ -480,17 +494,19 @@ POST CSS POST CSS POST CSS */
     border-right: none;
 }
 
-.post  .postDetails h1, .post .postCommentDetails h1  {
+.post .postDetails h1,
+.post .postCommentDetails h1 {
     margin-right: 20px;
 }
 
-.post .postCommentDetails  {
+.post .postCommentDetails {
     font-size: 10px;
     margin-right: 20px;
     border: none;
 }
 
-.post   .postDetails .pfp, .post .postCommentDetails .pfp {
+.post .postDetails .pfp,
+.post .postCommentDetails .pfp {
     height: 60px;
     margin-top: 5px;
     width: 60px;
@@ -498,23 +514,24 @@ POST CSS POST CSS POST CSS */
     border-radius: 100%;
 }
 
-.post   .postDetails  .homeHover:hover {
+.post .postDetails .homeHover:hover {
     cursor: pointer;
 }
 
-.post   .postBody, .postCommentBody {
+.post .postBody,
+.postCommentBody {
     display: flex;
-    text-shadow:none;
+    text-shadow: none;
     text-align: left;
     margin-left: 15px;
     flex-direction: column;
     display: flex;
     justify-items: center;
-    line-height: 1.5;  
+    line-height: 1.5;
     height: auto;
     overflow: wrap;
     width: 95%;
-    word-wrap:break-word;
+    word-wrap: break-word;
     font-weight: 400;
     font-size: 20px;
     white-space: pre-wrap;
@@ -535,7 +552,7 @@ POST CSS POST CSS POST CSS */
 } */
 
 .post .divider {
-    display:flex;
+    display: flex;
     flex-direction: row;
     margin-bottom: 10px;
     margin-left: 15px;
@@ -558,7 +575,7 @@ POST CSS POST CSS POST CSS */
     border-left: none;
     border-right: none;
     align-self: center;
-    justify-content:space-between;
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -571,16 +588,16 @@ POST CSS POST CSS POST CSS */
     height: 30px;
     font-weight: bold;
     font-size: 19px;
-    color:white;
+    color: white;
     margin-left: 15px;
     background: none;
     margin-right: 10px;
 }
 
 .post .buttonsDiv .postButton:hover {
-    cursor: pointer; 
+    cursor: pointer;
     color: #007bff;
-    text-decoration: underline; 
+    text-decoration: underline;
 }
 
 
@@ -595,7 +612,7 @@ POST CSS POST CSS POST CSS */
     width: 100%;
 }
 
-#profileReposts  {
+#profileReposts {
     display: none;
 }
 
@@ -622,19 +639,22 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
 
 .commentSection {
     display: flex;
-    flex-direction: column; /* stack comments vertically */
+    flex-direction: column;
+    /* stack comments vertically */
     width: 100%;
     align-self: center;
-    align-items: center;    /* center children horizontally */
-    justify-content: center; /* center children vertically if needed */
+    align-items: center;
+    /* center children horizontally */
+    justify-content: center;
+    /* center children vertically if needed */
 }
 
 .comment {
     flex-direction: column;
-    width: auto; 
+    width: auto;
     display: flex;
     align-self: center;
-    margin: 10px auto; 
+    margin: 10px auto;
     justify-items: flex-start;
     align-items: center;
     border-radius: 5px;
@@ -673,7 +693,7 @@ COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
 }
 
 .commentSection .commentButton {
-    margin-left:5px;
+    margin-left: 5px;
     border-radius: 5px;
 }
 
@@ -690,33 +710,33 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 
 .profilePanel {
     margin-bottom: 30px;
-    height:auto;
-    width:520px;
+    height: auto;
+    width: 520px;
     flex-direction: column;
-    display:flex;
+    display: flex;
     border: none;
-    color:white;
+    color: white;
 }
 
 .profilePanel .profileBio {
-    display:flex;
+    display: flex;
     flex-direction: column;
     align-items: start;
     overflow: auto;
-    word-wrap: break-word;  
-    white-space: pre-wrap;  
-    white-space: normal;  
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    white-space: normal;
     margin-left: 10px;
     font-size: 20px;
 }
 
 .profilePanel .profileStats {
-    display:flex;
+    display: flex;
     flex-direction: row;
     align-content: flex-start;
     align-items: center;
     overflow-wrap: break-word;
-    box-sizing: border-box;  
+    box-sizing: border-box;
 }
 
 .profilePanel .profileStats h1 {
@@ -724,7 +744,8 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     font-size: 20px;
 }
 
-.profilePanel .profileStats .profileEditButton, .profileFollowButton {
+.profilePanel .profileStats .profileEditButton,
+.profileFollowButton {
     width: 110px;
     height: 30px;
     font-size: 15px;
@@ -732,17 +753,19 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     margin-right: 10px;
     margin-top: 25px;
     font-weight: 600;
-    border-radius:2.5px;
+    border-radius: 2.5px;
     display: none;
-    border:none;
+    border: none;
     box-shadow: 0px 2px 0px 0px #d6d6d6;
 }
 
-.profilePanel .profileStats .profileEditButton:active, .profileFollowButton:active {
+.profilePanel .profileStats .profileEditButton:active,
+.profileFollowButton:active {
     background-color: #afafaf;
 }
 
-.profilePanel .profileStats .profileEditButton:active, .profileFollowButton:hover {
+.profilePanel .profileStats .profileEditButton:active,
+.profileFollowButton:hover {
     background-color: #C6C7C7;
 }
 
@@ -757,24 +780,24 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 }
 
 .profilePanel .profileInfo {
-    display:flex;
+    display: flex;
     flex-direction: row;
     margin-bottom: 20px;
-    height: min-content; 
+    height: min-content;
     align-items: center;
     max-width: 500px;
-     margin-left: 5px;
+    margin-left: 5px;
     margin-top: 5px;
-    box-sizing: border-box; 
+    box-sizing: border-box;
     font-size: 15px;
 }
 
 .profilePanel .profileInfo img {
-    display:flex;
+    display: flex;
     margin-bottom: -20px;
     font-size: 15px;
     width: 100px;
-    border-radius:100%;
+    border-radius: 100%;
     margin-left: 4px;
     margin-top: 5px;
     height: 100px;
@@ -786,7 +809,7 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     margin-left: 10px;
     font-size: 27px;
     text-decoration: none;
-    color:white;
+    color: white;
 }
 
 .profilePanel .profileInfo a {
@@ -797,27 +820,28 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 .profilePanel .profileInfo .profileUser {
     display: flex;
     flex-direction: row;
-    font-size:90px;
+    font-size: 90px;
     width: auto;
-    white-space: nowrap; /* Prevent wrapping */
-    overflow: hidden; 
+    white-space: nowrap;
+    /* Prevent wrapping */
+    overflow: hidden;
 }
 
 .profilePanel .profileBio #changePfp {
     display: none;
     overflow: auto;
-    word-wrap: break-word; 
+    word-wrap: break-word;
     margin: 0;
 }
 
 .profilePanel .profileBio p {
     text-align: left;
-    word-wrap: break-word;  
-    white-space: normal;  
+    word-wrap: break-word;
+    white-space: normal;
     width: 95%;
     overflow: hidden;
-    word-wrap: break-word;  
-    white-space: pre-wrap;  
+    word-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .profilePanel .selectionDiv {
@@ -838,8 +862,8 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
     height: 70px;
     font-size: 15px;
     background: none;
-    border:none;
-    color:white;
+    border: none;
+    color: white;
     font-size: 25px;
     font-weight: bold;
     margin-right: 5px;
@@ -847,14 +871,14 @@ PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
 }
 
 .profilePanel .profileButton:hover {
-    cursor: pointer; 
+    cursor: pointer;
     color: #007bff;
-    text-decoration: underline; 
+    text-decoration: underline;
 }
 
 .profilePanel .spaceDiv {
     display: flex;
-    display:none;
+    display: none;
     align-self: center;
     background-color: white;
     width: 98%;
@@ -894,23 +918,23 @@ FOLLOWING PANEL CSS  FOLLOWING PANEL CSS  FOLLOWING PANEL CSS   */
     height: 50px;
     font-size: 20px;
     margin-left: auto;
-    border:none;
+    border: none;
     margin-right: 10px;
-    background:none;
+    background: none;
     justify-self: center;
-    color:white;
+    color: white;
     align-self: center;
 }
 
 .followingPanel .followingButton:hover {
-    color:#0063ce;
-    text-decoration: underline; 
+    color: #0063ce;
+    text-decoration: underline;
 }
 
 .followingPanel h1 {
     color: white;
     margin-left: 20px;
-    font-size:25px;
+    font-size: 25px;
 }
 
 
@@ -926,27 +950,29 @@ FOLLOWING PANEL CSS  FOLLOWING PANEL CSS  FOLLOWING PANEL CSS   */
 HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 
 .homePanel {
-    box-sizing: border-box;  
+    box-sizing: border-box;
     top: 6vh;
     width: 100%;
     /* min-width: 540px;  */
     border-radius: 5px;
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
     align-self: center;
     align-items: center;
-    align-content:  flex-start;
-    justify-content:  flex-start;
+    align-content: flex-start;
+    justify-content: flex-start;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    height: 94vh; /* Full height of the viewport */
-    padding-bottom: 70px; /* Add padding to prevent overlap with the input box */
+    height: 94vh;
+    /* Full height of the viewport */
+    padding-bottom: 70px;
+    /* Add padding to prevent overlap with the input box */
     position: relative;
 }
 
 .homePanel::-webkit-scrollbar {
-    display: none; 
+    display: none;
 }
 
 
@@ -961,22 +987,22 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 
 .adminPanel {
     position: absolute;
-    overflow-y:scroll;
-    box-sizing: border-box;  
+    overflow-y: scroll;
+    box-sizing: border-box;
     top: 6.25vh;
     width: 540px;
-    min-width: 540px; 
-    height: 93vh; 
+    min-width: 540px;
+    height: 93vh;
     border-radius: 5px;
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
     align-self: center;
     align-items: center;
-    justify-content:  flex-start;
+    justify-content: flex-start;
 }
 
 .adminPanel::-webkit-scrollbar {
-    display: none; 
+    display: none;
 }
 
 
@@ -985,7 +1011,7 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     top: calc(6.5vh + 68px);
     width: 200px;
     min-width: 200px;
-    height: calc(100vh - (6.5vh + 80px + 90px)); 
+    height: calc(100vh - (6.5vh + 80px + 90px));
     border-radius: 5px;
     overflow-y: scroll;
     box-sizing: border-box;
@@ -994,12 +1020,13 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 }
 
 #notificationsPanel li {
-    font-size:15px;
+    font-size: 15px;
     margin-bottom: 15px;
     text-align: left;
 }
+
 #notificationsPanel li button {
-    background:none;
+    background: none;
     border: none;
     color: white;
     font-size: 15px;
@@ -1007,7 +1034,7 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 
 
 #notificationsPanel::-webkit-scrollbar {
-    display: none; 
+    display: none;
 }
 
 
@@ -1017,35 +1044,35 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     width: 95%;
     scroll-snap-align: start;
     display: flex;
-    flex-direction: column;    
-    height: min-content; 
-    align-self: center; 
-    justify-items: flex-start; 
-    align-items:center;
+    flex-direction: column;
+    height: min-content;
+    align-self: center;
+    justify-items: flex-start;
+    align-items: center;
     margin-bottom: 15px;
     color: white;
 }
 
 .adminDiv .textAndButton {
-    display:flex;
+    display: flex;
     width: 95%;
     height: min-content;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    margin-left:20px;
+    margin-left: 20px;
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
 .adminDiv .buttons {
-    display:flex;
+    display: flex;
     width: 100%;
     height: min-content;
     flex-direction: row;
     align-items: center;
-    justify-self:center;
-    justify-content:space-around;
+    justify-self: center;
+    justify-content: space-around;
     margin-top: 20px;
     margin-bottom: 20px;
 }
@@ -1063,25 +1090,25 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 .adminDiv .textAndButton .adminTextBox {
     width: 110px;
     height: 25px;
-    border-radius:2px;
-    border:none;
-    margin-right:10px
+    border-radius: 2px;
+    border: none;
+    margin-right: 10px
 }
 
-.adminDiv .textAndButton .adminButton, .adminDiv .buttons .adminButton
-{
+.adminDiv .textAndButton .adminButton,
+.adminDiv .buttons .adminButton {
     width: auto;
     height: 30px;
     font-size: 16px;
-    border-radius:5px;
+    border-radius: 5px;
     border: none;
-    font-weight:600;
+    font-weight: 600;
     color: white;
-    background:none;
+    background: none;
 }
 
 .adminDiv .textAndButton .adminButton {
-    margin-left:auto;
+    margin-left: auto;
 }
 
 
@@ -1095,25 +1122,72 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 
 
 @media (max-width: 767px) {
+    html, body {
+         /* overscroll-behavior: contain;
+    touch-action: none;
+    overflow: hidden; */
+    /* overflow-x: hidden; */
+    }
     .homePanel {
-        width: 100vw;  
+        width: 100vw;
         min-width: 100vw;
     }
-    .post .footer .postEditButton, .post .divider .likeButton, .post .divider .postButton {
-        width: 100px;  
+
+    .post .footer .postEditButton,
+    .post .divider .likeButton,
+    .post .divider .postButton {
+        width: 100px;
     }
+
     .bar .logo {
-        display: none;  
+        display: none;
         width: 100%;
         text-align: center;
     }
 
     .bar {
         margin-bottom: 20px;
+         overscroll-behavior: contain;
+    touch-action: none;
     }
+
     #notificationsPanel {
-       display: none;
+        display: none;
     }
+
+    /* .panel {
+    width: 60vw; */
+}
+
+.panel form {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 30vh;
+    width: 350px;
+    margin-bottom: 25px;
+}
+
+.panel .titleInput {
+    height: 70px;
+}
+
+.inputText {
+    width: 95%;
+    font-size: 15px;
+    height: 50px;
+    margin-bottom: 5px;
+}
+
+.inputSubmit {
+    height: 40px;
+    width: 100%;
+}
+
+.google-login-container a {
+    height: 50px;
+    margin-top: 25px;
 }
 
 
@@ -1126,49 +1200,66 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
 
 #messagePanel {
     position: absolute;
-    top: calc(6.5vh + 68px); /* Dynamically align with the bottom of .dmTop */
+    top: calc(6.5vh + 68px);
+    /* Dynamically align with the bottom of .dmTop */
     width: 521px;
     min-width: 510px;
-    height: calc(100vh - (6.5vh + 140px)); /* Adjust height to leave space for .dmTop and .inputContainer */
-    z-index: 5; /* Ensure it stays below the input container */
-    padding: 10px; /* Add padding for spacing */
+    height: calc(100vh - (6.5vh + 140px));
+    /* Adjust height to leave space for .dmTop and .inputContainer */
+    z-index: 5;
+    /* Ensure it stays below the input container */
+    padding: 10px;
+    /* Add padding for spacing */
 }
 
 .messagePanel {
-    top:10vh;
+    top: 10vh;
     height: 75vh;
 }
 
 
 
 .inputContainer {
-    position: fixed; /* Ensure it stays at the bottom of the viewport */
-    bottom: 0; /* Align it to the bottom of the viewport */
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Adjust for centering */
-    width: 500px; /* Match the width of the message panel */
-    height: 70px; /* Fixed height for the input container */
+    position: fixed;
+    /* Ensure it stays at the bottom of the viewport */
+    bottom: 0;
+    /* Align it to the bottom of the viewport */
+    left: 50%;
+    /* Center horizontally */
+    transform: translateX(-50%);
+    /* Adjust for centering */
+    width: 500px;
+    /* Match the width of the message panel */
+    height: 70px;
+    /* Fixed height for the input container */
     padding: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10; /* Ensure it stays above the message panel */
+    z-index: 10;
+    /* Ensure it stays above the message panel */
 }
 
 .dmTop {
-    position: fixed; /* Ensure it stays at the bottom of the viewport */
+    position: fixed;
+    /* Ensure it stays at the bottom of the viewport */
     top: 6.5vh;
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Adjust for centering */
-    width: 500px; /* Match the width of the message panel */
-    height: 40px; /* Fixed height for the input container */
+    left: 50%;
+    /* Center horizontally */
+    transform: translateX(-50%);
+    /* Adjust for centering */
+    width: 500px;
+    /* Match the width of the message panel */
+    height: 40px;
+    /* Fixed height for the input container */
     padding: 10px;
     display: flex;
     align-items: center;
-    justify-items:center;
-    color:white;
+    justify-items: center;
+    color: white;
     justify-content: flex-start;
-    z-index: 10; /* Ensure it stays above the message panel */
+    z-index: 10;
+    /* Ensure it stays above the message panel */
 }
 
 
@@ -1178,6 +1269,7 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
     margin-right: 10px;
     border-radius: 100%;
 }
+
 #messageInput {
     flex: 1;
     resize: none;
@@ -1185,7 +1277,8 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
     color: black;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: white; /* Ensure visibility */
+    background-color: white;
+    /* Ensure visibility */
 }
 
 #sendButton {
@@ -1208,23 +1301,31 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
     max-width: 60%;
     font-size: 20px;
     word-wrap: break-word;
-    text-shadow: none; /* Remove text shadow for better readability */
-    display: inline-block; /* Ensure the message bubbles are inline */
+    text-shadow: none;
+    /* Remove text shadow for better readability */
+    display: inline-block;
+    /* Ensure the message bubbles are inline */
 }
 
 
 .message.sent {
-    background-color: #007bff; /* Blue for sent messages */
+    background-color: #007bff;
+    /* Blue for sent messages */
     color: white;
-    align-self: flex-end; /* Align sent messages to the right */
-    text-align: left; /* Align text inside the bubble */
+    align-self: flex-end;
+    /* Align sent messages to the right */
+    text-align: left;
+    /* Align text inside the bubble */
 }
 
 .message.received {
-    background-color: #f1f1f1; /* White for received messages */
+    background-color: #f1f1f1;
+    /* White for received messages */
     color: black;
-    align-self: flex-start; /* Align received messages to the left */
-    text-align: left; /* Align text inside the bubble */
+    align-self: flex-start;
+    /* Align received messages to the left */
+    text-align: left;
+    /* Align text inside the bubble */
 }
 
 
@@ -1258,8 +1359,8 @@ USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES */
 
 .dmUser .closeDMButton {
     background: none;
-    border:none;
-    color:white;
+    border: none;
+    color: white;
     font-size: 30px;
 }
 
@@ -1272,12 +1373,13 @@ USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES */
     color: white;
     font-size: 16px;
     cursor: pointer;
-    margin-left:auto;
+    margin-left: auto;
 }
 
 .dmUser .dmUserName {
     cursor: pointer;
 }
+
 .dmUser .openDMButton:hover {
     background: #0056b3;
 }
@@ -1314,8 +1416,10 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     padding: 10px;
     font-size: 20px;
     color: black;
-    background-color: white; /* Ensure visibility */
-    border: 1px solid #ccc; /* Add border for input */
+    background-color: white;
+    /* Ensure visibility */
+    border: 1px solid #ccc;
+    /* Add border for input */
 }
 
 .searchBar button {
@@ -1329,19 +1433,23 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     text-align: center;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px; /* Adjust font size for better readability */
+    font-size: 16px;
+    /* Adjust font size for better readability */
 }
 
 .searchBar button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #0056b3;
+    /* Darker blue on hover */
 }
 
 .searchPanel {
     position: absolute;
-    top: calc(8vh + 60px); /* Align the top of the panel with the bottom of the search bar */
+    top: calc(8vh + 60px);
+    /* Align the top of the panel with the bottom of the search bar */
     width: 540px;
     min-width: 540px;
-    height: calc(100vh - (8vh + 60px)); /* Adjust height dynamically to fit within the viewport */
+    height: calc(100vh - (8vh + 60px));
+    /* Adjust height dynamically to fit within the viewport */
     border-radius: 5px;
     display: flex;
     flex-direction: column;
@@ -1349,22 +1457,25 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     align-items: center;
     align-content: flex-start;
     justify-content: flex-start;
-    overflow-y: scroll; /* Allow scrolling for overflow */
+    overflow-y: scroll;
+    /* Allow scrolling for overflow */
     box-sizing: border-box;
-    z-index: 5; /* Ensure it stays below the search bar */
+    z-index: 5;
+    /* Ensure it stays below the search bar */
 }
 
 .searchPanel::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for cleaner UI */
+    display: none;
+    /* Hide scrollbar for cleaner UI */
 }
 
 .notFound {
     position: absolute;
     display: flex;
-    top:30vh;
-   align-self: center;
-   color:white;
-   justify-self: center;
+    top: 30vh;
+    align-self: center;
+    color: white;
+    justify-self: center;
 }
 
 .settingsPanel {
@@ -1378,29 +1489,30 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     top: 25vh;
     border-radius: 5px;
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
     align-self: center;
     align-items: center;
-    align-content:  center;
-    justify-content:  flex-start;
+    align-content: center;
+    justify-content: flex-start;
 
 
-        color:white;
+    color: white;
 }
 
 
 .settingsPanel form {
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
     align-items: center;
     width: 100%;
     height: min-content;
 }
 
 .settingsPanel .settingsInputs {
-    display:flex;
+    display: flex;
     margin-bottom: 10px;
 }
+
 .settingsTitle {
     align-self: flex-start;
     text-align: left;
@@ -1410,15 +1522,17 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     font-size: 28px;
     font-weight: bold;
 }
+
 .settingsPanel .settingsInputs button {
     margin-left: 10px;
 }
 
 .settingsPanel .settingsInputs label {
     font-size: 20px;
-    width:200px;
+    width: 200px;
     text-align: left;
 }
+
 .donationPanel {
     position: fixed;
     /* top: 6.25vh;
@@ -1430,22 +1544,22 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     top: 25vh;
     border-radius: 5px;
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
     align-self: center;
     align-items: center;
-    align-content:  center;
-    justify-content:  center;
+    align-content: center;
+    justify-content: center;
     /* background-color: rgb(18, 24, 33); */
     /* box-shadow: 0 4px 2px rgb(18, 24, 32);  */
 
-        color:white;
+    color: white;
 
 
 }
 
 .donationPanel form {
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
     align-items: center;
     width: 100%;
     height: min-content;
@@ -1471,7 +1585,7 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
 
 .donationPanel .inputs input {
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
     align-items: center;
     width: 80px;
     height: 20px;
@@ -1483,14 +1597,15 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     display: flex;
     align-items: center;
 
-    justify-content: center; /* Center vertically */
+    justify-content: center;
+    /* Center vertically */
     width: 110px;
     border-radius: 3px;
-    color:white;
+    color: white;
     background: #0056b3;
     font-size: 17px;
-    margin-left:10px;
-    border:none;
+    margin-left: 10px;
+    border: none;
     height: 30px;
     font-weight: 600;
     text-align: center;
@@ -1515,10 +1630,10 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
 .donate {
     position: absolute;
     display: flex;
-    top:30vh;
-   align-self: center;
-   color:white;
-   justify-self: center;
+    top: 30vh;
+    align-self: center;
+    color: white;
+    justify-self: center;
 }
 
 /* *, *::before, *::after {
