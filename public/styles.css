@@ -1038,6 +1038,45 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 }
 
 
+@media (max-width: 767px) {
+    html, body {
+         overscroll-behavior: contain;
+    touch-action: none;
+    }
+    .homePanel {
+        width: 100vw;
+        min-width: 100vw;
+            height: 80vh;
+
+    }
+
+    
+
+    .post .footer .postEditButton,
+    .post .divider .likeButton,
+    .post .divider .postButton {
+        width: 110px;
+    }
+
+    .bar .logo {
+        display: none;
+        width: 100%;
+        text-align: center;
+    }
+
+    .bar {
+        margin-bottom: 20px;
+         /* overscroll-behavior: contain;
+    touch-action: none; */
+    }
+
+    #notificationsPanel {
+        display: none;
+    }
+
+    /* .panel {
+    width: 60vw; */
+}
 .adminDiv {
     height: 200px;
     border-radius: 5px;
@@ -1168,9 +1207,9 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
     position: absolute;
     top: calc(6.5vh + 68px);
     /* Dynamically align with the bottom of .dmTop */
-    width: 521px;
+    width: 520px;
     min-width: 510px;
-    height: calc(100vh - (6.5vh + 140px));
+    height: calc(100vh - (17vh + 140px));
     /* Adjust height to leave space for .dmTop and .inputContainer */
     z-index: 5;
     /* Ensure it stays below the input container */
@@ -1180,7 +1219,7 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
 
 .messagePanel {
     top: 10vh;
-    height: 75vh;
+    height: 68vh;
 }
 
 
@@ -1199,6 +1238,7 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
     height: 70px;
     /* Fixed height for the input container */
     padding: 10px;
+    margin-top:10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1214,7 +1254,7 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
     /* Center horizontally */
     transform: translateX(-50%);
     /* Adjust for centering */
-    width: 500px;
+    width: 400px;
     /* Match the width of the message panel */
     height: 40px;
     /* Fixed height for the input container */
@@ -1301,7 +1341,7 @@ USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES */
 .dmUser {
     display: flex;
     flex-direction: row;
-    width: 500px;
+    width: 480px;
     height: 50px;
     margin-top: 5px;
     margin-bottom: 5px;
@@ -1607,40 +1647,3 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
 } */
 
 
-@media (max-width: 767px) {
-    html, body {
-         /* overscroll-behavior: contain;
-    touch-action: none;
-    overflow: hidden; */
-    /* overflow-x: hidden; */
-    }
-    .homePanel {
-        width: 100vw;
-        min-width: 100vw;
-    }
-
-    .post .footer .postEditButton,
-    .post .divider .likeButton,
-    .post .divider .postButton {
-        width: 110px;
-    }
-
-    .bar .logo {
-        display: none;
-        width: 100%;
-        text-align: center;
-    }
-
-    .bar {
-        margin-bottom: 20px;
-         overscroll-behavior: contain;
-    touch-action: none;
-    }
-
-    #notificationsPanel {
-        display: none;
-    }
-
-    /* .panel {
-    width: 60vw; */
-}
