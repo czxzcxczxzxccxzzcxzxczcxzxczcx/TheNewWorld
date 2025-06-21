@@ -266,11 +266,11 @@ LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS */
 
 
 .inputSubmit:hover {
-    background-color: #C6C7C7;
+    background-color: #096dd8;
 }
 
 .inputSubmit:active {
-    background-color: #adadad;
+    background-color: #096fdb;
 }
 
 
@@ -1121,43 +1121,6 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 }
 
 
-@media (max-width: 767px) {
-    html, body {
-         /* overscroll-behavior: contain;
-    touch-action: none;
-    overflow: hidden; */
-    /* overflow-x: hidden; */
-    }
-    .homePanel {
-        width: 100vw;
-        min-width: 100vw;
-    }
-
-    .post .footer .postEditButton,
-    .post .divider .likeButton,
-    .post .divider .postButton {
-        width: 100px;
-    }
-
-    .bar .logo {
-        display: none;
-        width: 100%;
-        text-align: center;
-    }
-
-    .bar {
-        margin-bottom: 20px;
-         overscroll-behavior: contain;
-    touch-action: none;
-    }
-
-    #notificationsPanel {
-        display: none;
-    }
-
-    /* .panel {
-    width: 60vw; */
-}
 
 .panel form {
 
@@ -1182,7 +1145,10 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 
 .inputSubmit {
     height: 40px;
-    width: 100%;
+    width: 97%;
+    background: #007bff;
+    color:white;
+    font-size:25px
 }
 
 .google-login-container a {
@@ -1639,3 +1605,42 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
 /* *, *::before, *::after {
   color: black !important;
 } */
+
+
+@media (max-width: 767px) {
+    html, body {
+         /* overscroll-behavior: contain;
+    touch-action: none;
+    overflow: hidden; */
+    /* overflow-x: hidden; */
+    }
+    .homePanel {
+        width: 100vw;
+        min-width: 100vw;
+    }
+
+    .post .footer .postEditButton,
+    .post .divider .likeButton,
+    .post .divider .postButton {
+        width: 110px;
+    }
+
+    .bar .logo {
+        display: none;
+        width: 100%;
+        text-align: center;
+    }
+
+    .bar {
+        margin-bottom: 20px;
+         overscroll-behavior: contain;
+    touch-action: none;
+    }
+
+    #notificationsPanel {
+        display: none;
+    }
+
+    /* .panel {
+    width: 60vw; */
+}
