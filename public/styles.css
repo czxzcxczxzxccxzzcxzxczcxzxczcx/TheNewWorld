@@ -498,13 +498,13 @@ POST CSS POST CSS POST CSS */
     color: rgb(90, 120, 255)
 }
 
-.post .postBody img {
+/* .post .postBody img {
     display: block;
     width: auto;
     height: 30vh;
     width: 30vh;
     border-radius: 5px;
-}
+} */
 
 .post .divider {
     display:flex;

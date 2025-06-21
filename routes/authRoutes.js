@@ -5,9 +5,9 @@ const sessionStore = require('../utils/database/sessionStore');
 const { hashPassword, comparePassword } = require('../utils/hashing');
 const crypto = require('crypto');
 const passport = require('../utils/passport');
-
 const router = express.Router();
 
+// Function to generate a unique account number
 const generateAccountNumber = async () => {
     let accountNumber;
     let userExists = true;
@@ -22,8 +22,10 @@ const generateAccountNumber = async () => {
     return accountNumber
 };
 
+// Route to create a new account
 router.post(
     '/newAccount',
+    // Validate and sanitize input
     [
         body('fullName')
             .trim()
@@ -33,14 +35,20 @@ router.post(
         body('password')
             .isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
     ],
+    
     async (req, res) => {
+        // Check for validation errors
         const errors = validationResult(req);
+
+        // If there are validation errors, return the first error message
         if (!errors.isEmpty()) {
             return res.json({ success: false, message: errors.array()[0].msg });
         }
 
+        // Extract username and password from request body
         const { fullName, password } = req.body;
 
+        // Check if username or password is empty
         try {
             // Check if username already exists
             const existingUser = await User.findOne({ username: fullName });
@@ -52,8 +60,10 @@ router.post(
             const newUser = new User({accountNumber: accountNumber, password: hashed, username: fullName,});
             const sessionId = crypto.randomBytes(16).toString('hex');
 
+            // Save the new user to the database
             await newUser.save();
 
+            // Store session information
             sessionStore[sessionId] = {userId: newUser._id, username: newUser.username, accountNumber: newUser.accountNumber,};
 
             res.cookie('TNWID', sessionId, {httpOnly: true,  secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000, sameSite: 'Strict',});

@@ -32,9 +32,11 @@ function processContent(content) {
     // Make mentions clickable
     let processedContent = makeMentionsClickable(content);
 
-    // First, replace image URLs that are inside < > or &lt; &gt; with <img> tags
-    processedContent = processedContent.replace(/<\s*(https?:\/\/[^>\s]+\.(?:png|jpg|jpeg|gif))\s*>/gi, '<img src="$1" alt="User Image" class="post-image-natural">');
-    processedContent = processedContent.replace(/&lt;\s*(https?:\/\/[^&\s]+\.(?:png|jpg|jpeg|gif))\s*&gt;/gi, '<img src="$1" alt="User Image" class="post-image-natural">');
+    // Use the same responsive class and style for all images, but left-align by default
+    const imgClass = 'post-image-responsive';
+    const imgStyle = 'max-width:200px; height:auto;';
+    processedContent = processedContent.replace(/<\s*(https?:\/\/[^>\s]+\.(?:png|jpg|jpeg|gif))\s*>/gi, `<img src="$1" alt="User Image" class="${imgClass}" style="${imgStyle}">`);
+    processedContent = processedContent.replace(/&lt;\s*(https?:\/\/[^&\s]+\.(?:png|jpg|jpeg|gif))\s*&gt;/gi, `<img src="$1" alt="User Image" class="${imgClass}" style="${imgStyle}">`);
 
     // Then, make plain URLs clickable, but skip those already inside an <img> tag
     processedContent = processedContent.replace(/(https?:\/\/[^\s<>'"()\[\]{}]+)/gi, function(url) {

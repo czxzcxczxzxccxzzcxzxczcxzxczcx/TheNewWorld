@@ -1,11 +1,17 @@
-export async function apiRequest(url, method = 'GET', body = null) {
+export async function apiRequest(url, method = 'GET', body = null, isFormData = false) {
     const options = {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
     };
 
-    if (body) {
+    if (isFormData && body instanceof FormData) {
+        options.body = body;
+        // Do NOT set Content-Type header for FormData; browser will set it
+    } else if (body) {
+        options.headers = { 'Content-Type': 'application/json' };
         options.body = JSON.stringify(body);
+    } else {
+        options.headers = { 'Content-Type': 'application/json' };
     }
 
     try {
