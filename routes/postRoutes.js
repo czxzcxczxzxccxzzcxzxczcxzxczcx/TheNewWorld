@@ -53,6 +53,7 @@ router.post('/uploadPostImage', upload.single('image'), async (req, res) => {
     );
     res.json({ success: true, imageUrl });
   } catch (err) {
+    console.error('Error uploading image to S3:', err);
     res.status(500).json({ success: false, message: 'Upload failed', error: err });
   }
 });
