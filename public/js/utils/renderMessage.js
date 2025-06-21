@@ -9,7 +9,16 @@ export function renderOpenDMUsers(opendmData, containerElementId) {
 
     container.innerHTML = ''; // Clear the container before rendering
 
+    // Sort by latestMessageTime descending
+    opendmData.sort((a, b) => {
+        const aTime = a.latestMessageTime ? new Date(a.latestMessageTime).getTime() : 0;
+        const bTime = b.latestMessageTime ? new Date(b.latestMessageTime).getTime() : 0;
+        return bTime - aTime;
+    });
+
     opendmData.forEach(user => {
+                console.log(user);
+
         const userElement = createElementWithClass('div', 'dmUser');
         const userImage = createElementWithClass('img', 'dmUserImage');
         const userName = createElementWithClass('h2', 'dmUserName');
@@ -109,14 +118,30 @@ export function setupUserSearchOnEnter(inputId, containerElementId) {
     const input = document.getElementById(inputId);
 
     if (!input) return;
-   input.addEventListener('keydown', async (e) => {
+    input.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
             const query = input.value.trim();
-            if (!query) return;
             const container = document.getElementById(containerElementId);
             if (container) container.innerHTML = '';
+            if (!query) {
+                // If search is empty, show open DMs
+                try {
+                    const res = await import('./apiRequest.js').then(mod => mod.apiRequest(
+                        '/api/getOpenDMs',
+                        'POST',
+                        {}
+                    ));
+                    if (res.success && Array.isArray(res.openDMs)) {
+                        renderOpenDMUsers(res.openDMs, 'homePanel');
+                    } else {
+                        renderOpenDMUsers([], containerElementId);
+                    }
+                } catch (err) {
+                    renderOpenDMUsers([], containerElementId);
+                }
+                return;
+            }
             try {
-                
                 const res = await import('./apiRequest.js').then(mod => mod.apiRequest(
                     '/api/searchUsers',
                     'POST',
@@ -124,7 +149,7 @@ export function setupUserSearchOnEnter(inputId, containerElementId) {
                 ));
                 if (res.success && Array.isArray(res.users)) {
                     renderUserSearchResults(res.users, containerElementId);
-                    console.log("searching for users")
+                    console.log("searching for users");
                 } else {
                     renderUserSearchResults([], containerElementId);
                 }

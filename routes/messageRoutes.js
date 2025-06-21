@@ -162,7 +162,24 @@ router.post('/getOpenDMs', async (req, res) => {
         // Fetch user details for each account in openDM
         const openDMs = await User.find({ accountNumber: { $in: senderUser.openDM } }, 'accountNumber username pfp');
 
-        res.status(200).json({ success: true, openDMs });
+        // For each open DM, get the latest message time between the sender and the DM user
+        const openDMsWithLatest = await Promise.all(openDMs.map(async (dmUser) => {
+            const latestMessage = await Message.findOne({
+                $or: [
+                    { from: senderAccountNumber, to: dmUser.accountNumber },
+                    { from: dmUser.accountNumber, to: senderAccountNumber }
+                ]
+            }).sort({ sentAt: -1 }).limit(1);
+            return {
+                accountNumber: dmUser.accountNumber,
+                username: dmUser.username,
+                pfp: dmUser.pfp,
+                latestMessageTime: latestMessage ? latestMessage.sentAt : null,
+                latestMessageContent: latestMessage ? latestMessage.content : null
+            };
+        }));
+
+        res.status(200).json({ success: true, openDMs: openDMsWithLatest });
     } catch (error) {
         console.error('Error fetching open DMs:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });

@@ -7,12 +7,15 @@ export function initializeCreatePost(accountNumber) {
     createPostDiv.style.display = 'none'; // Initially hidden
     createPostDiv.innerHTML = `
         <form>
-            <h1 id="username">Create a Post</h1>
+            <h1 id="username">Create A New Post</h1>
             
             <textarea class="bodyInput" id="bodyText" type="text" placeholder="Body"></textarea>
+            <div id="postPreview" style="min-height:30px;margin-bottom:10px;"></div>
             <button id="createPost" type="submit" class="postPanelButton">Create Post</button>
+            <div class="imageUploading">
             <input type="file" id="imageInput" accept="image/*" />
             <button id="uploadBtn" type="button">Upload Image</button>
+            </div>
             <div id="uploadResult"></div>
         </form>
     `; // <input class="titleInput" id="titleText" type="text" placeholder="Title">
@@ -44,7 +47,7 @@ export function initializeCreatePost(accountNumber) {
             // Use apiRequest for file upload
             const data = await apiRequest('/api/uploadPostImage', 'POST', formData, true);
             if (data.success) {
-                uploadResult.innerHTML = `<img src="${data.imageUrl}" style="max-width:200px;"><br>URL: <a href="${data.imageUrl}" target="_blank">${data.imageUrl}</a>`;
+                // uploadResult.innerHTML = `<img src="${data.imageUrl}" style="max-width:200px;"><br>URL: <a href="${data.imageUrl}" target="_blank">${data.imageUrl}</a>`;
                 window.uploadedImageUrl = data.imageUrl;
                 // Insert <imageUrl> into the post body textarea
                 const bodyText = document.getElementById('bodyText');
@@ -52,6 +55,7 @@ export function initializeCreatePost(accountNumber) {
                     // Add a space if needed
                     if (bodyText.value && !bodyText.value.endsWith('\n')) bodyText.value += '\n';
                     bodyText.value += `<${data.imageUrl}>\n`;
+                    updatePreview(); // Update preview after inserting image URL
                 }
             } else {
                 uploadResult.textContent = data.message;
@@ -81,4 +85,33 @@ export function initializeCreatePost(accountNumber) {
             }
         }
     });
+
+    // Live preview for <url> images in post body
+    const bodyText = document.getElementById('bodyText');
+    const postPreview = document.getElementById('postPreview');
+    function processContent(content) {
+        // Make mentions clickable
+        function makeMentionsClickable(content) {
+            return content.replace(/@([a-zA-Z0-9_]+)/g, '<a href="/profile/$1">@$1</a>');
+        }
+        let processedContent = makeMentionsClickable(content);
+        const imgClass = 'post-image-responsive';
+        const imgStyle = 'max-width:200px; height:auto;';
+        processedContent = processedContent.replace(/<\s*(https?:\/\/[^>\s]+\.(?:png|jpg|jpeg|gif))\s*>/gi, `<img src="$1" alt="User Image" class="${imgClass}" style="${imgStyle}">`);
+        processedContent = processedContent.replace(/&lt;\s*(https?:\/\/[^&\s]+\.(?:png|jpg|jpeg|gif))\s*&gt;/gi, `<img src="$1" alt="User Image" class="${imgClass}" style="${imgStyle}">`);
+        processedContent = processedContent.replace(/(https?:\/\/[^\s<>'"()\[\]{}]+)/gi, function(url) {
+            if (processedContent.includes(`<img src=\"${url}\"`)) return url;
+            if (/^<a [^>]+>/.test(url)) return url;
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+        });
+        // Preserve line breaks
+        processedContent = processedContent.replace(/\n/g, '<br>');
+        return processedContent;
+    }
+    function updatePreview() {
+        postPreview.innerHTML = processContent(bodyText.value);
+    }
+    bodyText.addEventListener('input', updatePreview);
+    // Initial preview
+    updatePreview();
 }

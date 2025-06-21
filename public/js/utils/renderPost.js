@@ -34,7 +34,7 @@ function processContent(content) {
 
     // Use the same responsive class and style for all images, but left-align by default
     const imgClass = 'post-image-responsive';
-    const imgStyle = 'max-width:200px; height:auto;';
+    const imgStyle = 'max-width:250px; height:auto;';
     processedContent = processedContent.replace(/<\s*(https?:\/\/[^>\s]+\.(?:png|jpg|jpeg|gif))\s*>/gi, `<img src="$1" alt="User Image" class="${imgClass}" style="${imgStyle}">`);
     processedContent = processedContent.replace(/&lt;\s*(https?:\/\/[^&\s]+\.(?:png|jpg|jpeg|gif))\s*&gt;/gi, `<img src="$1" alt="User Image" class="${imgClass}" style="${imgStyle}">`);
 
