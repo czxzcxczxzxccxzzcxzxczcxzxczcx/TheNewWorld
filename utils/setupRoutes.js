@@ -1,22 +1,30 @@
 const postRoutes = require('../routes/postRoutes');
 const profileRoutes = require('../routes/profileRoutes');
 const authRoutes = require('../routes/authRoutes');
-const staticRoutes = require('../routes/staticRoutes');
 const adminRoutes = require('../routes/adminRoutes');
 const commentRoutes = require('../routes/commentRoutes');
-const messageRoutes = require('../routes/messageRoutes');
 const searchRoutes = require('../routes/searchRoutes');
+const messageRoutes = require('../routes/messageRoutes');
 const paymentRoutes = require('../routes/paymentRoutes');
+const staticRoutes = require('../routes/staticRoutes');
 
-const setupRoutes = (app) => {
-    app.use('/api', postRoutes);
-    app.use('/api', profileRoutes);
+
+const protectedRoutes = [
+    postRoutes,
+    profileRoutes,
+    adminRoutes,
+    commentRoutes,
+    searchRoutes,
+    messageRoutes,
+    paymentRoutes,
+];
+
+
+const setupRoutes = (app,required) => {
+    // Auth routes do NOT require authentication
     app.use('/api', authRoutes);
-    app.use('/api', adminRoutes);
-    app.use('/api', commentRoutes);
-    app.use('/api', searchRoutes);
-    app.use('/api', messageRoutes);
-    app.use('/api', paymentRoutes);
+    // All other API routes require authentication
+    protectedRoutes.forEach(route => app.use('/api', required, route));
     app.use('/', staticRoutes);
 };
 
