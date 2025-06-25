@@ -1,6 +1,8 @@
 const express = require('express');
 const { User, Notification } = require('../utils/database/database');
 const { createNotification } = require('../utils/database/genNotification');
+const { updateUserPassword } = require('../utils/database/databaseFunctions');
+
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 
 
@@ -283,6 +285,62 @@ router.post('/setNotificationShown', async (req, res) => {
         return res.json({ success: true, message: 'Notification set as not shown' });
     } catch (error) {
         console.error('Error setting notification as not shown:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+// Route to change user password (user must be authenticated)
+router.post('/changePassword', async (req, res) => {
+    const { newPassword } = req.body;
+    const sessionId = req.cookies.TNWID;
+    try {
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+        const user = sessionStore[sessionId];
+        const accountNumber = user.accountNumber;
+        if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
+            return res.status(400).json({ success: false, message: 'Password must be at least 6 characters.' });
+        }
+        await updateUserPassword(accountNumber, newPassword);
+        return res.json({ success: true, message: 'Password updated successfully.' });
+    } catch (error) {
+        console.error('Error changing password:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+// Route to change username (user must be authenticated)
+router.post('/changeUsername', async (req, res) => {
+    const { newUsername } = req.body;
+    const sessionId = req.cookies.TNWID;
+    try {
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+        if (!newUsername || typeof newUsername !== 'string' || newUsername.trim().length < 3 || newUsername.trim().length > 20) {
+            return res.status(400).json({ success: false, message: 'Username must be 3-20 characters' });
+        }
+        if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) {
+            return res.status(400).json({ success: false, message: 'Username must be alphanumeric or underscores' });
+        }
+        // Check if username is taken
+        const existingUser = await User.findOne({ username: newUsername });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: 'Username is already taken' });
+        }
+        const user = sessionStore[sessionId];
+        const accountNumber = user.accountNumber;
+        await User.findOneAndUpdate(
+            { accountNumber },
+            { $set: { username: newUsername } },
+            { new: true }
+        );
+        // Update session as well
+        user.username = newUsername;
+        return res.json({ success: true, message: 'Username updated successfully.' });
+    } catch (error) {
+        console.error('Error changing username:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });

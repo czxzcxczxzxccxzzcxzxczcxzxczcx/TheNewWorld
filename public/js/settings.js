@@ -90,10 +90,35 @@ document.addEventListener("DOMContentLoaded", function () {
         modalBg.onclick = (e) => { if (e.target === modalBg) modalBg.remove(); };
 
         saveBtn.onclick = async () => {
-            // TODO: Add API call to update the setting
-            // Example: await apiRequest(`/api/change${settingType}`, 'POST', { value: input.value });
-            alert(`Changed ${labelText} to: ` + input.value);
-            modalBg.remove();
+            if (settingType === 'username') {
+                try {
+                    const res = await apiRequest('/api/changeUsername', 'POST', { newUsername: input.value });
+                    if (res.success) {
+                        alert('Username updated successfully!');
+                        modalBg.remove();
+                        window.location.reload();
+                    } else {
+                        alert(res.message || 'Failed to update username.');
+                    }
+                } catch (err) {
+                    alert('Failed to update username.');
+                }
+            } else if (settingType === 'password') {
+                try {
+                    const res = await apiRequest('/api/changePassword', 'POST', { newPassword: input.value });
+                    if (res.success) {
+                        alert('Password updated successfully!');
+                        modalBg.remove();
+                    } else {
+                        alert(res.message || 'Failed to update password.');
+                    }
+                } catch (err) {
+                    alert('Failed to update password.');
+                }
+            } else {
+                alert(`Changed ${labelText} to: ` + input.value);
+                modalBg.remove();
+            }
         };
 
         modalBg.appendChild(modal);
@@ -101,6 +126,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     document.getElementById('changeUsername').onclick = () => showSettingsModal('username', 'Username');
-    document.getElementById('changePFP').onclick = () => showSettingsModal('pfp', 'Profile Picture');
+    // document.getElementById('changePFP').onclick = () => showSettingsModal('pfp', 'Profile Picture');
     document.getElementById('changePassword').onclick = () => showSettingsModal('password', 'Password');
 });

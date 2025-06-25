@@ -1490,7 +1490,7 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     width: 540px;
     min-width: 540px; 
     height: 92vh;  */
-    width: 500px;
+    width: 400px;
     height: 300px;
     top: 25vh;
     border-radius: 5px;
@@ -1510,7 +1510,7 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
+    width: 400px;
     height: min-content;
 }
 
@@ -1535,7 +1535,7 @@ SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING 
 
 .settingsPanel .settingsInputs label {
     font-size: 20px;
-    width: 200px;
+    width: 300px;
     text-align: left;
 }
 

@@ -206,6 +206,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         if (isEditable) {
             changeEdit(false, "none", "Edit Profile", "", "", "");
+            gebid("pfp").style.cursor = 'default';
             try {
                 await apiRequest('/api/updateSettings', 'POST', { bio, pfp, username });
             } catch (error) {
@@ -213,6 +214,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         } else {
             changeEdit(true, "block", "Save Profile", '1px dashed #ccc', '1px dashed #ccc', '1px dashed #ccc');
+            gebid("pfp").style.cursor = 'pointer';
         }
     });
 
@@ -259,6 +261,51 @@ document.addEventListener("DOMContentLoaded", async function () {
     gebid("postsButton").addEventListener("click", function () {
         setProfileSectionStyles("flex", "none", "#007bff", "#ffffff");
     });
+
+    // Add PFP upload functionality
+    const pfpImg = gebid('pfp');
+    if (pfpImg) {
+        // Create a hidden file input for PFP upload
+        let pfpFileInput = document.createElement('input');
+        pfpFileInput.type = 'file';
+        pfpFileInput.accept = 'image/*';
+        pfpFileInput.style.display = 'none';
+        document.body.appendChild(pfpFileInput);
+
+        pfpImg.addEventListener('click', function () {
+              const isEditable = gebid("bio").isContentEditable;
+
+            if (isEditable) {
+                pfpFileInput.value = '';
+                pfpFileInput.click();
+            }
+        });
+
+        pfpFileInput.addEventListener('change', async function () {
+            if (!pfpFileInput.files.length) return;
+            const file = pfpFileInput.files[0];
+            const formData = new FormData();
+            formData.append('image', file);
+            try {
+                // Upload to CDN
+                const data = await apiRequest('/api/uploadPostImage', 'POST', formData, true);
+                if (data.success && data.imageUrl) {
+                    // Update settings with new PFP URL
+                    const username = gebid('profileUsername').textContent;
+                    const bio = gebid('bio').textContent.trim();
+                    await apiRequest('/api/updateSettings', 'POST', { pfp: data.imageUrl, username, bio });
+                    // Update the text content of changePfp
+                    gebid('changePfp').textContent = data.imageUrl;
+                    // Optionally update the profile image src immediately
+                    pfpImg.src = data.imageUrl;
+                } else {
+                    alert(data.message || 'Failed to upload image.');
+                }
+            } catch (err) {
+                alert('Failed to upload image.');
+            }
+        });
+    }
 
     fetchUserInfoAndSetupPage();
 });
