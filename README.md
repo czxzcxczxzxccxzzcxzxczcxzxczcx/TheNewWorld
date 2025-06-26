@@ -46,14 +46,16 @@ Technologies Used
 
 Getting Started Locally
   1) Clone the repository
+    
     run the command "git clone https://github.com/czxzcxczxzxccxzzcxzxczcxzxczcx/TheNewWorld.git"
 
   2) Install all neccessary dependencies
+   
     run the command "npm install"
 
 
   3) Create a .env file in the root directory with the follow:
-  
+
     DB_URI=your_mongoDB_connection_string
 
     GOOGLE_CLIENT_ID=your_google_client_id
