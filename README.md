@@ -1,61 +1,71 @@
 The New World — Full-Stack Social Media Platform
 
 Overview:
-  - The New World is a Twitter-inspired social media platform demonstrating practical front-end and back-end skills.
-  - Built with Node.js, Express, MongoDB, and JavaScript, it features real-time communication, user authentication, dynamic data handling, and API integration.
+  - The New World is a full-stack, twitter-inspired social media platform that was made to demonstrate real-time user interactivity, with secured user authentication, a responsive UI design, and end-to-end CRUD operations. Built using Node.js, Express, MongoDB and JavaScript, The New World features real-time communication, user authentication, dynamic data handling, third-party API integration, and easy deployment to platforms like Microsoft Azure
 
-About This Project:
-  - This project was initially developed as a personal learning project during my high school years. It helped me build foundational full-stack development skills and explore - real-time web technologies. Since then, I have continued to improve and maintain it to reflect my growth as a developer.
+About the Project:
+  - Originally created as a high school passion project to learn web development, The New World helped me build foundational skills in full-stack development. Over time, I've continuously enhanced the platform to reflect my evolving knowledge and technical depth. The project now serves as a comprehensive showcase of both core web technologies, and advanced features like real-time messaging and third-party integrations
 
-Key Skills Demonstrated:
-  - Full Stack Development: Seamless front-end and back-end integration
-  - Database Design: Efficient data modeling using MongoDB
-  - Authentication & Security: Session management with cookies, password hashing with bcrypt
-  - Real-Time Functionality: WebSockets for instant user updates
-  - REST API Design: Well-structured endpoints to manage CRUD operations
-  - Responsive UI: Intuitive user interface optimized for various devices
+Key Skills Demonstrated
+  - Full Stack Development: Seamless front-end/back-end interaction
+  - Database Design: Scalable and efficient MongoDB schema modeling
+  - Authentication & Security: Session-based auth, cookie handling, bcrypt password hashing
+  - Real-Time Functionality: Live chat and notifications via WebSockets
+  - REST API Design: Organized, modular endpoints for clean CRUD operations
+  - Responsive UI: Smooth UX across both mobile and desktop platforms
 
 Features
-  - Real-Time Direct Messaging with WebSockets
-  - Post Creation, Editing & Deletion
-  - User & Post Search
-  - Follow System: Connect and follow users
-  - Post Interactions: Likes, reposts, comments, and mentions
-  - Notifications: Alerts for user activity
-  - Image Embedding in posts
-  - Form Validation for usernames and passwords
-  - Account Management: Signup, login, and Google OAuth
-  - Admin Panel: Customized dashboard for site admins
-  - Donation System: Payments via Stripe
+  - Post Management: Create, edit, delete, and preview posts
+  - Image Embedding: Auto-embed images via URL or AWS CDN uploads
+  - Comments: Leave, edit, and delete comments on posts
+  - Reposts & Likes: Engage with content via social interactions
+  - Search: Find users or posts with advanced search bars
+  - Mentions: Mention users using @username in posts
+  - Notifications: Get notified for relevant user activity
+  - Direct Messaging: Real-time private chat with WebSocket updates
+  - Profiles: Public user pages accessible via ID or @username
+  - Account Settings: Change username or password
+  - 404 Page: Custom not-found error page for invalid URLs
+  - Admin Panel: Manage user data, passwords, and more
+  - Donations: Integrated Stripe payment system
+  - Authentication: Google OAuth + cookie-based login system
+  - Form Validation: Express-validator for secure sign-ups
+  - Responsive Design: Decent mobile & polished PC UI support
 
-Technologies Used:
-  - bcrypt – Password encryption
+Technologies Used
+  - Node.js, Express – Server-side logic and routing
+  - MongoDB, Mongoose – NoSQL database and ORM
+  - bcrypt – Password hashing
   - cookie-parser – Cookie handling
-  - dotenv – Environment variable management
-  - express – Backend web framework
-  - express-validator – Input validation
-  - mongoose – MongoDB object modeling
-  - passport – Authentication middleware (Google OAuth)
-  - socket.io – Real-time bidirectional communication
-  - stripe – Payment processing
+  - express-validator – Form & input validation
+  - passport – Google OAuth authentication
+  - socket.io – Real-time bi-directional communication
+  - stripe – Payment gateway integration
+  - dotenv – Secure environment configuration
+  - AWS – CDN-based image upload and hosting
 
-Getting Started Locally:
-  - Clone or download this repository.
-  - Open your terminal and run: 
-    - "npm install"
-    to install dependencies.
-  - Create a .env file in the root directory with the following content:
-    - DB_URI=your mongoDB database key
-    - GOOGLE_CLIENT_ID=your google client id
-    - GOOGLE_CLIENT_SECRET=your google secret key
-    - STRIPE_SECRET_KEY=your stripe secret key
+Getting Started Locally
+  1) Clone the repository
+    run the command "git clone https://github.com/czxzcxczxzxccxzzcxzxczcxzxczcx/TheNewWorld.git"
 
-  - Lastly in the console run the command "node server.js"
-    - Open your browser and navigate to http://localhost:1111 (or the configured port).
+  2) Install all neccessary dependencies
+    run the command "npm install"
 
-Getting Started With Microsoft Azure:
-  - Clone this as your own repository. 
-    - Next, open the repository in VS Code or similar enviorment to have git control.
-    - Then, create the .env file and put the code above inside of it.
-  - Next inside of an Azure Web App link the repository as a deployment. 
-  - Lastly, start the server, in the console it should load the server
+  3) Create a .env file in the root directory with the follow:
+    DB_URI=your_mongoDB_connection_string
+
+    GOOGLE_CLIENT_ID=your_google_client_id
+    GOOGLE_CLIENT_SECRET=your_google_secret
+
+    STRIPE_SECRET_KEY=your_stripe_secret_key
+
+    AWS_ACCESS_KEY_ID=your_aws_access_key
+    AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+    AWS_REGION=your_aws_region
+    AWS_S3_BUCKET_NAME=your_bucket_name
+    AWS_CLOUDFRONT_DOMAIN=your_distribution_domain
+
+  4) Start the application
+    run the command "node server.js"
+
+  You may choose to deploy with Azure to do this you may fork the repository, and then deploy it into an Azure Web App, after this create the environment variables within azure. After you have done this you should be able to start the application
