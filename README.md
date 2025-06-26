@@ -47,11 +47,11 @@ Technologies Used
 Getting Started Locally
   1) Clone the repository
     
-    run the command "git clone https://github.com/czxzcxczxzxccxzzcxzxczcxzxczcx/TheNewWorld.git"
+    git clone https://github.com/czxzcxczxzxccxzzcxzxczcxzxczcx/TheNewWorld.git
 
   2) Install all neccessary dependencies
    
-    run the command "npm install"
+    npm install
 
 
   3) Create a .env file in the root directory with the follow:
