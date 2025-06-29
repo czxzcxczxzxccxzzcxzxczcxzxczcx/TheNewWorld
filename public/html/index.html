@@ -11,11 +11,34 @@
     <script type="module" src="/js/login.js" defer></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
+    <style>
+        body {
+             
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh; /* ensures it covers the full height */
+            margin: 0; /* removes default margin */
+        }
+          body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* <-- adjust darkness here */
+             
+            background: url('https://d3gi1mmy5sozy4.cloudfront.net/post-images/1750912843813_Uasdsadntitled.png') no-repeat center center / cover;
+    filter: blur(8px);
+    z-index: -1;
+
+            z-index: 0;
+        }
+    </style>
 
     <title>The New World</title>
 </head>
 
-<body>
+<body >
     <div class="bar">
         <ul>
             <img class="logoImg" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvisenya.xyz%2F_next%2Fimage%3Furl%3D%252Ficon.png%26w%3D384%26q%3D65&f=1&nofb=1&ipt=e4d071ccd8d0fa8f57ec7d34e3c76775538fd8ab94aa2a8d045c47f13ed0069c">

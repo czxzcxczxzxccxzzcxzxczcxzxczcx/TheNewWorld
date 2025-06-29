@@ -38,10 +38,32 @@ function processContent(content) {
     processedContent = processedContent.replace(/<\s*(https?:\/\/[^>\s]+\.(?:png|jpg|jpeg|gif))\s*>/gi, `<img src="$1" alt="User Image" class="${imgClass}" style="${imgStyle}">`);
     processedContent = processedContent.replace(/&lt;\s*(https?:\/\/[^&\s]+\.(?:png|jpg|jpeg|gif))\s*&gt;/gi, `<img src="$1" alt="User Image" class="${imgClass}" style="${imgStyle}">`);
 
-    // Then, make plain URLs clickable, but skip those already inside an <img> tag
-    processedContent = processedContent.replace(/(https?:\/\/[^\s<>'"()\[\]{}]+)/gi, function(url) {
-        // If this URL is already part of an <img ... src="url" ...>, skip linking
-        if (processedContent.includes(`<img src=\"${url}\"`)) return url;
+    // Embed YouTube videos
+    processedContent = processedContent.replace(/<\s*(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)[^>]*)\s*>/gi, (match, url, videoId) => {
+        // Extract video ID from both formats
+        let id = videoId;
+        if (!id && url.includes('watch?v=')) {
+            const matchId = url.match(/v=([\w-]+)/);
+            if (matchId) id = matchId[1];
+        }
+        if (!id && url.includes('youtu.be/')) {
+            const matchId = url.match(/youtu.be\/([\w-]+)/);
+            if (matchId) id = matchId[1];
+        }
+        if (id) {
+            return `<iframe width="350" height="200" src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen style="margin:10px 0;"></iframe>`;
+        }
+        return match;
+    });
+
+    // Embed MP4 videos
+    processedContent = processedContent.replace(/<\s*(https?:\/\/[^>\s]+\.(?:mp4))\s*>/gi, `<video controls style="max-width:350px; height:auto; margin:10px 0;"><source src="$1" type="video/mp4">Your browser does not support the video tag.</video>`);
+    processedContent = processedContent.replace(/&lt;\s*(https?:\/\/[^&\s]+\.(?:mp4))\s*&gt;/gi, `<video controls style="max-width:350px; height:auto; margin:10px 0;"><source src="$1" type="video/mp4">Your browser does not support the video tag.</video>`);
+
+    // Make plain URLs clickable, but skip those already inside an <img>, <iframe>, or <video> tag
+    processedContent = processedContent.replace(/(https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=%]+)(?![^<]*>|[^<>]*<\/(?:a|img|iframe|video)>)/gi, function(url) {
+        // If this URL is already part of an <img ... src="url" ...>, <iframe ... src="url" ...>, or <video ... src="url" ...>, skip linking
+        if (processedContent.includes(`<img src=\"${url}\"`) || processedContent.includes(`<iframe src=\"${url}\"`) || processedContent.includes(`<source src=\"${url}\"`)) return url;
         // Don't double-link if already inside an <a>
         if (/^<a [^>]+>/.test(url)) return url;
         return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;

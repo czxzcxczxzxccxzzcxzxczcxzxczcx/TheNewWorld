@@ -215,18 +215,6 @@ LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
     margin-left: 10px;
 }
 
-
-
-
-
-
-
-
-
-
-/* LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS
-LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS */
-
 .inputText {
     width: 100%;
     height: 35px;
@@ -242,6 +230,7 @@ LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS */
     margin-top: 5px;
     border: none;
     border-radius: 5px;
+    transition: background 0.15s ease; /* Add this line */
     /* box-shadow: 0px 2px 0px 0px #d6d6d6 */
 }
 
@@ -263,15 +252,52 @@ LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS LOGIN PANEL INPUT CSS */
     color: #0c77e9
 }
 
-
-
 .inputSubmit:hover {
-    background-color: #096dd8;
+    /* background-color: #096dd8; */
+        background: #3d3d3d;
+
 }
 
 .inputSubmit:active {
     background-color: #096fdb;
 }
+
+
+
+.panel form {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 30vh;
+    width: 350px;
+    margin-bottom: 25px;
+}
+
+.panel .titleInput {
+    height: 70px;
+}
+
+.inputText {
+    width: 95%;
+    font-size: 15px;
+    height: 50px;
+    margin-bottom: 5px;
+}
+
+.inputSubmit {
+    height: 40px;
+    width: 97%;
+    background: #303030;
+    color:white;
+    font-size:25px
+}
+
+.google-login-container a {
+    height: 50px;
+    margin-top: 25px;
+}
+
 
 
 
@@ -300,7 +326,7 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
     display: none;
     flex-direction: column;
     border-color: rgb(21, 25, 32);
-    background-color: rgb(26, 31, 41);
+    background-color: rgb(13, 15, 20);
     /* box-shadow: 0 -4px 2px rgb(39, 49, 65); /*  */
 }
 
@@ -337,7 +363,7 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
 }
 
 .postPanel .postPanelButton {
-    height: 4vh;
+    height: 3vh;
     width: 400px;
     /* max-width: 50vw;  */
     border: none;
@@ -390,7 +416,7 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
     margin-bottom: 5px;
     color: black;
     width: 395px;
-    border-radius: 2px;
+    border-radius: 5px;
     /* max-width: 500px;  */
 }
 
@@ -1046,7 +1072,7 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
     .homePanel {
         width: 100vw;
         min-width: 100vw;
-            height: 80vh;
+            height: 90vh;
 
     }
 
@@ -1161,40 +1187,6 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 
 
 
-.panel form {
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 30vh;
-    width: 350px;
-    margin-bottom: 25px;
-}
-
-.panel .titleInput {
-    height: 70px;
-}
-
-.inputText {
-    width: 95%;
-    font-size: 15px;
-    height: 50px;
-    margin-bottom: 5px;
-}
-
-.inputSubmit {
-    height: 40px;
-    width: 97%;
-    background: #007bff;
-    color:white;
-    font-size:25px
-}
-
-.google-login-container a {
-    height: 50px;
-    margin-top: 25px;
-}
-
 
 
 
@@ -1254,7 +1246,7 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
     /* Center horizontally */
     transform: translateX(-50%);
     /* Adjust for centering */
-    width: 400px;
+    width: 500px;
     /* Match the width of the message panel */
     height: 40px;
     /* Fixed height for the input container */
@@ -1284,15 +1276,21 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: white;
+    font-size:15px;
+    width: 100%;
     /* Ensure visibility */
 }
 
 #sendButton {
     margin-left: 10px;
-    padding: 10px 20px;
+    /* padding: 20px 20px; */
     background-color: #007bff;
     color: white;
     border: none;
+    font-size:15px;
+    height: 55px;
+    width: 60px;
+    text-align: center;
     border-radius: 5px;
     cursor: pointer;
 }
