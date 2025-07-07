@@ -25,7 +25,10 @@ body {
 
 
 
+* {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
+}
 
 
 
@@ -37,8 +40,8 @@ NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
 .bar {
     background-color: rgb(16, 20, 24);
     box-shadow: 0 4px 2px rgb(11, 14, 18);
-    position: absolute;
-    top: 0vh;
+    position: fixed; /* Changed from absolute to fixed */
+    top: 0;
     width: 100%;
     height: 5vh;
     display: flex;
@@ -46,6 +49,8 @@ NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
     align-self: center;
     overscroll-behavior: contain;
     touch-action: none;
+    transition: transform 0.3s ease; /* Added transition for smooth animation */
+    z-index: 1000; /* Added z-index to ensure bar is on top */
 }
 
 .bar ul {
@@ -330,6 +335,7 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
     /* box-shadow: 0 -4px 2px rgb(39, 49, 65); /*  */
 }
 
+
 .postPanel form {
     display: flex;
     flex-direction: column;
@@ -363,12 +369,14 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
 }
 
 .postPanel .postPanelButton {
-    height: 3vh;
+    height: 40px;
     width: 400px;
     /* max-width: 50vw;  */
     border: none;
+    align-self: center;
+    justify-self: center;
+    text-align: center  ;
     font-size: 25px;
-    border-radius: 2.5px;
 }
 
 .postPanel #postPreview {
@@ -394,7 +402,30 @@ CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
     margin-top: 10px;
 }
 
-.postPanel .imageUploading button,
+.postPanel #imageInput {
+    /* Hide the default file input while keeping it functional */
+    display: none;
+}
+
+.postPanel .imageUploading button {
+    width: 395px;
+    height: 40px;
+    font-size: 25px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    cursor: pointer;
+}
+
+.postPanel .imageUploading button:hover {
+    background-color: #0069d9;
+}
+
+.postPanel .imageUploading button:active {
+    background-color: #0062cc;
+}
 .postPanel .imageUploading input {
     width: 395px;
     height: 30px;
@@ -1194,21 +1225,29 @@ HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
 
 /* MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS
 MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
+.dm {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+#back {
+    margin-left: auto;
+    color: white
+}
 
 #messagePanel {
-    position: absolute;
+     position: absolute;
     top: calc(6.5vh + 68px);
     /* Dynamically align with the bottom of .dmTop */
     width: 520px;
     min-width: 510px;
-    height: calc(100vh - (17vh + 140px));
+    height: calc(100vh - (10vh + 140px));
     /* Adjust height to leave space for .dmTop and .inputContainer */
     z-index: 5;
     /* Ensure it stays below the input container */
     padding: 10px;
     /* Add padding for spacing */
 }
-
 .messagePanel {
     top: 10vh;
     height: 68vh;
@@ -1238,6 +1277,12 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
     /* Ensure it stays above the message panel */
 }
 
+
+
+.inputContainer #messageInput {
+    background-color: #ffffff;
+    color:rgb(0, 0, 0);
+}
 .dmTop {
     position: fixed;
     /* Ensure it stays at the bottom of the viewport */
@@ -1299,7 +1344,7 @@ MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
 
 .message {
     /* margin: 10px; */
-    padding: 10px;
+    padding: 5px 10px;;
     margin-bottom: 5px;
     border-radius: 10px;
     max-width: 60%;
@@ -1361,8 +1406,9 @@ USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES */
     border-radius: 100%;
 }
 
-.dmUser .closeDMButton {
+.dmUser .closeDMButton, #back {
     background: none;
+    text-decoration: none;
     border: none;
     color: white;
     font-size: 30px;

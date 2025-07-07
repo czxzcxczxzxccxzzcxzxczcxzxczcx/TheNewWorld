@@ -1,5 +1,7 @@
 import { apiRequest } from './utils/apiRequest.js';
+import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
 
+renderBar();
 let socket;
 
 async function loadSocketIO() {
@@ -45,6 +47,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         fetchRecipientInfo(recipientAccountNumber);
         fetchAndRenderMessages(accountNumber, recipientAccountNumber);
+         initializeGlobalButtons(accountNumber);
     } else {
         window.location.href = '/';
     }
@@ -126,6 +129,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     function setupInputBox() {
         if (!document.querySelector('.inputContainer')) {
             const inputContainer = document.createElement('div');
+            const dmContainer = gebid('dmContainer');
             inputContainer.className = 'inputContainer';
 
             const messageInput = document.createElement('textarea');
@@ -138,7 +142,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             inputContainer.appendChild(messageInput);
             inputContainer.appendChild(sendButton);
-            document.body.appendChild(inputContainer); // Append to the document body
+            dmContainer.appendChild(inputContainer); // Append to the document body
 
             // Add event listener to send button
             sendButton.addEventListener('click', () => {

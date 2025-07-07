@@ -13,8 +13,8 @@ export function initializeCreatePost(accountNumber) {
             <div id="postPreview" style="min-height:30px;margin-bottom:10px;"></div>
             <button id="createPost" type="submit" class="postPanelButton">Create Post</button>
             <div class="imageUploading">
-            <input type="file" id="imageInput" accept="image/*" />
-            <button id="uploadBtn" type="button">Upload Image</button>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;" />
+                <button id="uploadBtn" type="button">Upload Image</button>
             </div>
             <div id="uploadResult"></div>
         </form>
@@ -23,7 +23,7 @@ export function initializeCreatePost(accountNumber) {
     const body = document.body;
     body.insertBefore(createPostDiv, body.firstChild);
 
-    const createPostButton = document.querySelector('a[href="/createPost"]');
+    const createPostButton = document.getElementById('createPostButton');
     if (createPostButton) {
         createPostButton.addEventListener('click', function (event) {
             event.preventDefault(); // Prevent navigation
@@ -31,23 +31,29 @@ export function initializeCreatePost(accountNumber) {
         });
     }
 
-    // Image upload handler using apiRequest
-    document.getElementById('uploadBtn').addEventListener('click', async function (event) {
+    // Connect the button to the hidden file input
+    document.getElementById('uploadBtn').addEventListener('click', function(event) {
         event.preventDefault();
+        document.getElementById('imageInput').click();
+    });
+
+    // Handle file selection
+    document.getElementById('imageInput').addEventListener('change', async function() {
         const input = document.getElementById('imageInput');
         const uploadResult = document.getElementById('uploadResult');
         if (!input.files.length) {
-            uploadResult.textContent = 'Please select an image!';
+            uploadResult.textContent = 'No image selected';
             return;
         }
+        
         const file = input.files[0];
         const formData = new FormData();
         formData.append('image', file);
+        
         try {
             // Use apiRequest for file upload
             const data = await apiRequest('/api/uploadPostImage', 'POST', formData, true);
             if (data.success) {
-                // uploadResult.innerHTML = `<img src="${data.imageUrl}" style="max-width:200px;"><br>URL: <a href="${data.imageUrl}" target="_blank">${data.imageUrl}</a>`;
                 window.uploadedImageUrl = data.imageUrl;
                 // Insert <imageUrl> into the post body textarea
                 const bodyText = document.getElementById('bodyText');

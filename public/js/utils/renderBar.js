@@ -12,7 +12,7 @@ export function renderBar() {
                     <a href="/home">
                         <h1>Home</h1>
                     </a>
-                    <a href="/createPost">
+                    <a id="createPostButton">
                         <h1>Create Post</h1>
                     </a>
                     <a href="/messages">
@@ -37,7 +37,30 @@ export function renderBar() {
     barContainer.innerHTML = barHTML;
     body.insertBefore(barContainer, body.firstChild);
 
-   
+    // Add scroll event handling for the navbar
+//     let lastScrollTop = 0;
+    
+//     document.getElementById('homePanel').addEventListener('scroll', function() {
+//         const bar = document.querySelector('.bar');
+//         if (!bar) return;
+        
+//         // Get the homePanel element to check if we're on a page with this panel
+//         const homePanel = document.getElementById('homePanel');
+//         if (!homePanel) return;
+
+//         const scrollTop = homePanel.scrollTop || document.documentElement.scrollTop;
+
+//         if (scrollTop > lastScrollTop) {
+//             // Scrolling down
+//             bar.style.transform = 'translateY(-100%)';
+            
+//         } else {
+//             // Scrolling up
+//             bar.style.transform = 'translateY(0)';
+//         }
+        
+//         lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+//     }, { passive: true }); // Passive for better performance
 }
 
 export function initializeGlobalButtons(accountNumber) {
