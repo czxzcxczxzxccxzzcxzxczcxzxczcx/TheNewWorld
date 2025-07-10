@@ -73,3 +73,6 @@ Getting Started Locally
     run the command "node server.js"
 
   You may choose to deploy with Azure to do this you may fork the repository, and then deploy it into an Azure Web App, after this create the environment variables within azure. After you have done this you should be able to start the application
+
+  The application has also been tested using render for deployment
+  you can view the public demo here https://thenewworld.onrender.com/
