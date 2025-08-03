@@ -30,52 +30,119 @@ router.post(
         body('fullName')
             .trim()
             .notEmpty().withMessage('Username is required')
-            .isLength({ min: 3, max: 20 }).withMessage('Username must be 3-20 characters')
-            .matches(/^[a-zA-Z0-9_]+$/).withMessage('Username must be alphanumeric or underscores'),
+            .isLength({ min: 3, max: 20 }).withMessage('Username must be between 3-20 characters long')
+            .matches(/^[a-zA-Z0-9_]+$/).withMessage('Username can only contain letters, numbers, and underscores'),
         body('password')
-            .isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+            .isLength({ min: 6, max: 67 }).withMessage('Password must be between 6-67 characters long')
+            .matches(/[0-9]/).withMessage('Password must contain at least one number')
+            .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage('Password must contain at least one special character')
     ],
     
     async (req, res) => {
         // Check for validation errors
         const errors = validationResult(req);
 
-        // If there are validation errors, return the first error message
+        // If there are validation errors, provide detailed feedback
         if (!errors.isEmpty()) {
-            return res.json({ success: false, message: errors.array()[0].msg });
+            const errorMessages = errors.array().map(error => ({
+                field: error.path,
+                message: error.msg
+            }));
+            
+            return res.json({ 
+                success: false, 
+                message: 'Validation failed', 
+                errors: errorMessages,
+                // For backward compatibility, include the first error message directly
+                firstError: errors.array()[0].msg
+            });
         }
 
         // Extract username and password from request body
         const { fullName, password } = req.body;
 
-        // Check if username or password is empty
         try {
             // Check if username already exists
             const existingUser = await User.findOne({ username: fullName });
             if (existingUser) {
-                return res.json({ success: false, message: 'Username is already taken' });
+                return res.json({ 
+                    success: false, 
+                    message: 'This username is already taken. Please choose a different username.',
+                    field: 'fullName'
+                });
             }
+            
+            // Hash password and generate account number
             const hashed = await hashPassword(password);
             const accountNumber = await generateAccountNumber();
-            const newUser = new User({accountNumber: accountNumber, password: hashed, username: fullName,});
+            
+            // Create new user document
+            const newUser = new User({
+                accountNumber: accountNumber,
+                password: hashed,
+                username: fullName,
+            });
+            
+            // Generate session ID
             const sessionId = crypto.randomBytes(16).toString('hex');
 
             // Save the new user to the database
             await newUser.save();
 
             // Store session information
-            sessionStore[sessionId] = {userId: newUser._id, username: newUser.username, accountNumber: newUser.accountNumber,};
+            sessionStore[sessionId] = {
+                userId: newUser._id,
+                username: newUser.username,
+                accountNumber: newUser.accountNumber,
+            };
 
-            res.cookie('TNWID', sessionId, {httpOnly: true,  secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000, sameSite: 'Strict',});
-            res.json({ success: true, user: newUser });
+            // Set cookie and respond with success
+            res.cookie('TNWID', sessionId, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 24 * 60 * 60 * 1000,
+                sameSite: 'Strict',
+            });
+            
+            res.json({ 
+                success: true, 
+                message: 'Account created successfully',
+                user: {
+                    username: newUser.username,
+                    accountNumber: newUser.accountNumber
+                }
+            });
+            
+            console.log(`New account created: ${newUser.username} (${newUser.accountNumber})`);
         } catch (err) {
-            res.json({ success: false, message: "Error creating user" });
+            console.error('Account creation error:', err);
+            res.json({ 
+                success: false, 
+                message: "An error occurred while creating your account. Please try again later."
+            });
         }
     }
 );
 
 router.post('/login', async (req, res) => {
     const { fullName, password } = req.body;
+    
+    // Input validation
+    if (!fullName || fullName.trim() === '') {
+        return res.json({ 
+            success: false, 
+            message: 'Username is required',
+            field: 'fullName'
+        });
+    }
+    
+    if (!password || password.trim() === '') {
+        return res.json({ 
+            success: false, 
+            message: 'Password is required',
+            field: 'password'
+        });
+    }
     
     try {
         const user = await User.findOne({ username: fullName });
@@ -91,15 +158,26 @@ router.post('/login', async (req, res) => {
 
                 console.log(`Server Login:\t\tSuccessful by ${user.username} (${user.accountNumber})`);
             } else {
-                res.json({ success: false, message: 'Invalid password' });
-                console.log(`Server Login:\t\tError: Invalid password`);
-
+                res.json({ 
+                    success: false, 
+                    message: 'The password you entered is incorrect',
+                    field: 'password'
+                });
+                console.log(`Server Login:\t\tError: Invalid password for user ${fullName}`);
             }
         } else {
-            res.json({ success: false, message: 'Invalid account number or name' });
+            res.json({ 
+                success: false, 
+                message: 'No account found with this username',
+                field: 'fullName'
+            });
         }
     } catch (err) {
-        res.json({ success: false, message: 'Error logging in' });
+        console.error('Login error:', err);
+        res.json({ 
+            success: false, 
+            message: 'An error occurred while logging in. Please try again later.'
+        });
     }
 });
 

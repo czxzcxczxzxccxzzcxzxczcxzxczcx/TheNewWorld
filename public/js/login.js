@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.log("Account created successfully");
                     window.location.href = '/home';
                 } else {
-                    alert("Error creating account: " + (data.message || "Unknown error"));
+                    alert("Error creating account: " + (data.firstError || "Unknown error"));
                 }
             } catch (error) {
                 console.error("Error during account creation:", error);
