@@ -15,12 +15,9 @@ const io = new Server(server, {cors: {origin: '*',methods: ['GET', 'POST']}});
 function requireAuth(req, res, next) {
     const sessionId = req.cookies.TNWID;
     const sessionStore = require('./database/sessionStore');
-    if (!sessionId || !sessionStore[sessionId]) {
-        return res.status(401).json({ success: false, message: 'Not authenticated' });
-    }
+    if (!sessionId || !sessionStore[sessionId]) {return res.status(401).json({ success: false, message: 'Not authenticated' });}
     next();
 }
-
 
 app.set('trust proxy', 1); // or true
 app.use(express.json());
@@ -32,8 +29,5 @@ app.use(passport.session());
 
 initDatabase();
 setupSocket(io);
-
-// Middleware to require authentication via session cookie
-
 
 module.exports = { app, server, setupRoutes, express, requireAuth, io };
