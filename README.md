@@ -1,7 +1,5 @@
 The New World — Full-Stack Social Media Platform
-the messages are too small
 
-also fix it so when holding click on the posts the post in the new url  is sized weird and should match how the posts are on the home page
 Overview:
   - The New World is a full-stack, twitter-inspired social media platform that was made to demonstrate real-time user interactivity, with secured user authentication, a responsive UI design, and end-to-end CRUD operations. Built using Node.js, Express, MongoDB and JavaScript, The New World features real-time communication, user authentication, dynamic data handling, third-party API integration, and easy deployment to platforms like Microsoft Azure
 
