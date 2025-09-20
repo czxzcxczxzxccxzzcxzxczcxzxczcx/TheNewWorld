@@ -1,5 +1,5 @@
 const express = require('express');
-const { User, Notification } = require('../utils/database/database');
+const { User, Notification, Post, Comment, Message } = require('../utils/database/database');
 const { createNotification } = require('../utils/database/genNotification');
 const { updateUserPassword } = require('../utils/database/databaseFunctions');
 
@@ -115,10 +115,12 @@ router.post('/updateSettings', async (req, res) => {
             if (!/^[a-zA-Z0-9_]+$/.test(username)) {
                 return res.status(400).json({ success: false, message: 'Username must be alphanumeric or underscores' });
             }
-            // Check if username is taken by another user
+            // Check if username is taken by another user (case-insensitive)
             const user = sessionStore[sessionId];
             const accountNumber = user.accountNumber;
-            const existingUser = await User.findOne({ username });
+            const existingUser = await User.findOne({ 
+                username: { $regex: new RegExp(`^${username}$`, 'i') } 
+            });
             if (existingUser && existingUser.accountNumber !== accountNumber) {
                 return res.status(400).json({ success: false, message: 'Username is already taken' });
             }
@@ -324,8 +326,10 @@ router.post('/changeUsername', async (req, res) => {
         if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) {
             return res.status(400).json({ success: false, message: 'Username must be alphanumeric or underscores' });
         }
-        // Check if username is taken
-        const existingUser = await User.findOne({ username: newUsername });
+        // Check if username is taken (case-insensitive)
+        const existingUser = await User.findOne({ 
+            username: { $regex: new RegExp(`^${newUsername}$`, 'i') } 
+        });
         if (existingUser) {
             return res.status(400).json({ success: false, message: 'Username is already taken' });
         }
@@ -341,6 +345,124 @@ router.post('/changeUsername', async (req, res) => {
         return res.json({ success: true, message: 'Username updated successfully.' });
     } catch (error) {
         console.error('Error changing username:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+// Secure password change route that requires current password verification
+router.post('/changePasswordSecure', async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const sessionId = req.cookies.TNWID;
+    
+    try {
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const user = sessionStore[sessionId];
+        const accountNumber = user.accountNumber;
+
+        // Validate inputs
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ success: false, message: 'Current password and new password are required' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ success: false, message: 'New password must be at least 6 characters' });
+        }
+
+        // Get user from database to verify current password
+        const dbUser = await User.findOne({ accountNumber });
+        if (!dbUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Verify current password
+        const bcrypt = require('bcrypt');
+        const isCurrentPasswordValid = await bcrypt.compare(currentPassword, dbUser.password);
+        if (!isCurrentPasswordValid) {
+            return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+        }
+
+        // Update password
+        await updateUserPassword(accountNumber, newPassword);
+        return res.json({ success: true, message: 'Password updated successfully' });
+
+    } catch (error) {
+        console.error('Error changing password securely:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+// Secure account deletion route
+router.post('/deleteAccount', async (req, res) => {
+    const { confirmUsername } = req.body;
+    const sessionId = req.cookies.TNWID;
+    
+    try {
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const user = sessionStore[sessionId];
+        const accountNumber = user.accountNumber;
+
+        // Get user from database
+        const dbUser = await User.findOne({ accountNumber });
+        if (!dbUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Verify username confirmation
+        if (confirmUsername !== dbUser.username) {
+            return res.status(400).json({ success: false, message: 'Username confirmation does not match' });
+        }
+
+        // Delete all user's posts
+        await Post.deleteMany({ accountNumber });
+
+        // Delete all user's comments
+        await Comment.deleteMany({ accountNumber });
+
+        // Delete all user's messages
+        await Message.deleteMany({ 
+            $or: [
+                { senderAccountNumber: accountNumber },
+                { receiverAccountNumber: accountNumber }
+            ]
+        });
+
+        // Delete all user's notifications
+        await Notification.deleteMany({
+            $or: [
+                { fromAccountNumber: accountNumber },
+                { accountNumber: accountNumber }
+            ]
+        });
+
+        // Remove user from other users' following/followers lists
+        await User.updateMany(
+            { following: accountNumber },
+            { $pull: { following: accountNumber } }
+        );
+        await User.updateMany(
+            { followers: accountNumber },
+            { $pull: { followers: accountNumber } }
+        );
+
+        // Delete the user account
+        await User.deleteOne({ accountNumber });
+
+        // Clear session
+        delete sessionStore[sessionId];
+
+        // Clear session cookie
+        res.clearCookie('TNWID');
+
+        return res.json({ success: true, message: 'Account deleted successfully' });
+
+    } catch (error) {
+        console.error('Error deleting account:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });

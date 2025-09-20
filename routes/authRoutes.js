@@ -62,8 +62,10 @@ router.post(
         const { fullName, password } = req.body;
 
         try {
-            // Check if username already exists
-            const existingUser = await User.findOne({ username: fullName });
+            // Check if username already exists (case-insensitive)
+            const existingUser = await User.findOne({ 
+                username: { $regex: new RegExp(`^${fullName}$`, 'i') } 
+            });
             if (existingUser) {
                 return res.json({ 
                     success: false, 
@@ -145,7 +147,9 @@ router.post('/login', async (req, res) => {
     }
     
     try {
-        const user = await User.findOne({ username: fullName });
+        const user = await User.findOne({ 
+            username: { $regex: new RegExp(`^${fullName}$`, 'i') } 
+        });
 
         if (user) {
             const isMatch = await comparePassword(password, user.password);

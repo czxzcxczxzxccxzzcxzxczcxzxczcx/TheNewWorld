@@ -1,40 +1,118 @@
 <!DOCTYPE html>
-
 <html lang='en'>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=no">
-<link rel="icon" type="image/x-icon" href="/src/TNW.png">
-
+    <link rel="icon" type="image/x-icon" href="/src/TNW.png">
     <link rel="stylesheet" type="text/css" href="styles.css">
     <script type="module" src="/js/settings.js" defer></script>
-
-    <title>The New World</title>
+    <title>Settings - The New World</title>
 </head>
 
 <body>
-    <div class="settingsPanel">
-        <h1 class="settingsTitle">Account Settings</h1>
-
-        <form id="settingsForm">
-            <div class="settingsInputs">
-                <label for="username">Username:</label>
-                <button id="changeUsername" type="button">Edit</button>
+    <!-- Navigation Bar -->
+    <div id="nav" class="nav"></div>
+    
+    <div class="mainContainer">
+        <div class="settingsContainer">
+            <div class="settingsHeader">
+                <h1>Account Settings</h1>
+                <p>Manage your account preferences and privacy settings</p>
             </div>
 
-            <!-- <div class="settingsInputs">
-                <label for="pfp">profile Picture:</label>
-                <button id="changePFP" type="button">Edit</button>
-            </div> -->
-            <div class="settingsInputs">
-                <label for="password">Password:</label>
-                <button id="changePassword" type="button">Edit</button>
+            <!-- Profile Section -->
+            <div class="settingsSection">
+                <h2 class="sectionTitle">Profile</h2>
+                
+                <!-- Profile Picture -->
+                <div class="settingItem">
+                    <div class="settingItemLeft">
+                        <div class="profilePictureContainer">
+                            <img id="currentProfilePicture" class="currentProfilePicture" src="" alt="Profile Picture">
+                            <div class="profilePictureOverlay">
+                                <span>Change Photo</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settingItemRight">
+                        <h3>Profile Picture</h3>
+                        <p>Upload a new profile picture to personalize your account</p>
+                        <button class="settingButton" id="changeProfilePicture">
+                            <span>Change Photo</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Username -->
+                <div class="settingItem">
+                    <div class="settingItemLeft">
+                        <div class="settingIcon">👤</div>
+                    </div>
+                    <div class="settingItemRight">
+                        <h3>Username</h3>
+                        <p id="currentUsername">Loading...</p>
+                        <button class="settingButton" id="changeUsername">
+                            <span>Edit Username</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bio -->
+                <div class="settingItem">
+                    <div class="settingItemLeft">
+                        <div class="settingIcon">📝</div>
+                    </div>
+                    <div class="settingItemRight">
+                        <h3>Bio</h3>
+                        <p id="currentBio">Loading...</p>
+                        <button class="settingButton" id="changeBio">
+                            <span>Edit Bio</span>
+                        </button>
+                    </div>
+                </div>
             </div>
-            <!-- <button type="submit">Save Changes</button> -->
-        </form>
 
+            <!-- Security Section -->
+            <div class="settingsSection">
+                <h2 class="sectionTitle">Security</h2>
+                
+                <!-- Password -->
+                <div class="settingItem">
+                    <div class="settingItemLeft">
+                        <div class="settingIcon">🔒</div>
+                    </div>
+                    <div class="settingItemRight">
+                        <h3>Password</h3>
+                        <p>Change your password to keep your account secure</p>
+                        <button class="settingButton" id="changePassword">
+                            <span>Change Password</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Danger Zone -->
+            <div class="settingsSection dangerZone">
+                <h2 class="sectionTitle">Danger Zone</h2>
+                
+                <!-- Delete Account -->
+                <div class="settingItem">
+                    <div class="settingItemLeft">
+                        <div class="settingIcon dangerIcon">⚠️</div>
+                    </div>
+                    <div class="settingItemRight">
+                        <h3>Delete Account</h3>
+                        <p>Permanently delete your account and all associated data. This action cannot be undone.</p>
+                        <button class="settingButton dangerButton" id="deleteAccount">
+                            <span>Delete Account</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</body>
 
+    <!-- Hidden file input for profile picture -->
+    <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
+</body>
 </html>

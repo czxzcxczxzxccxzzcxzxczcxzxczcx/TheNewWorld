@@ -24,10 +24,12 @@ passport.use(new GoogleStrategy({
             let baseUsername = (profile.displayName || 'user').replace(/[^\w]/g, '');
             if (!baseUsername) baseUsername = 'user';
 
-            // Ensure username is unique
+            // Ensure username is unique (case-insensitive)
             let finalUsername = baseUsername;
             let suffix = 1;
-            while (await User.findOne({ username: finalUsername })) {
+            while (await User.findOne({ 
+                username: { $regex: new RegExp(`^${finalUsername}$`, 'i') } 
+            })) {
                 finalUsername = `${baseUsername}${suffix}`;
                 suffix++;
             }

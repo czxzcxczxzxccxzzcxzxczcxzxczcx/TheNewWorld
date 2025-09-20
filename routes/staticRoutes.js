@@ -33,8 +33,10 @@ router.get('/profile/:identifier', async (req, res) => {
         let user;
 
         if (isNaN(identifier)) {
-            // If identifier is not a number, treat it as a username
-            user = await User.findOne({ username: identifier });
+            // If identifier is not a number, treat it as a username (case-insensitive)
+            user = await User.findOne({ 
+                username: { $regex: new RegExp(`^${identifier}$`, 'i') } 
+            });
         } else {
             // Otherwise, treat it as an account number
             user = await User.findOne({ accountNumber: identifier });

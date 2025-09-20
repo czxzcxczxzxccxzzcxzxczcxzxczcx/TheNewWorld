@@ -23,6 +23,9 @@ export function renderBar() {
                     <a href="" id="profileButton">
                         <h1>My Profile</h1>
                     </a>
+                    <a href="/settings" id="settingsButton">
+                        <h1>Settings</h1>
+                    </a>
                     <a id="logoutButton" href="">
                         <h1>Logout</h1>
                     </a>

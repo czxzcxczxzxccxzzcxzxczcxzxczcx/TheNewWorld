@@ -16,7 +16,27 @@ export async function apiRequest(url, method = 'GET', body = null, isFormData = 
 
     try {
         const response = await fetch(url, options);
-        return await response.json();
+        
+        // Check if response is ok
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // Check if response has content
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error(`Non-JSON response from ${url}:`, text);
+            throw new Error(`Server returned non-JSON response: ${text.substring(0, 100)}`);
+        }
+        
+        // Try to parse JSON
+        const text = await response.text();
+        if (!text.trim()) {
+            throw new Error(`Empty response from ${url}`);
+        }
+        
+        return JSON.parse(text);
     } catch (error) {
         console.error(`Error during API request to ${url}:`, error);
         throw error;
