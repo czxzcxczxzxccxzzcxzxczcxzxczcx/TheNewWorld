@@ -287,7 +287,7 @@ router.post('/createPost', createPostLimiter, async (req, res) => {
     }
     const user = sessionStore[sessionId];
     const accountNumber = user.accountNumber;
-    const { title, content } = req.body;
+    const { title, content, imageUrl } = req.body;
     try {
         const dbUser = await User.findOne({ accountNumber });
 
@@ -296,12 +296,27 @@ router.post('/createPost', createPostLimiter, async (req, res) => {
         }
 
         const postId = await generateUniquePostId();
-        const newPost = new Post({ postId: postId, title: title, content: content, accountNumber: dbUser.accountNumber });
+        
+        // Create post data object with optional imageUrl
+        const postData = { 
+            postId: postId, 
+            title: title, 
+            content: content, 
+            accountNumber: dbUser.accountNumber 
+        };
+        
+        // Add imageUrl to post if it exists
+        if (imageUrl) {
+            postData.imageUrl = imageUrl;
+        }
+        
+        const newPost = new Post(postData);
 
         await newPost.save();
 
         res.status(201).json({ success: true, message: 'Post created successfully', post: newPost });
     } catch (error) {
+        console.error('Error creating post:', error);
         res.status(500).json({ success: false, message: 'Error creating post' });
     }
 });
@@ -316,6 +331,28 @@ router.post('/getAllPosts', async (req, res) => {
 
     } catch (err) {
         console.error("Error fetching users:", err);
+    }
+});
+
+// Get a single post by postId
+router.get('/getPost/:postId', async (req, res) => {
+    try {
+        const { postId } = req.params;
+
+        if (!postId) {
+            return res.status(400).json({ success: false, message: "Post ID is required" });
+        }
+
+        const post = await Post.findOne({ postId });
+
+        if (!post) {
+            return res.status(404).json({ success: false, message: "Post not found" });
+        }
+
+        res.json({ success: true, post });
+    } catch (error) {
+        console.error('Error fetching post:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 

@@ -2,7 +2,7 @@ import { renderPost } from './utils/renderPost.js';
 import { apiRequest } from './utils/apiRequest.js'; // Import apiRequest for AJAX requests
 import { initializeCreatePost } from './utils/createPostHandler.js';
 import { renderUsers } from './utils/renderUser.js';
-import { renderBar } from './utils/renderBar.js';
+import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
 
 renderBar();
 
@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.success) {
                 const user = data.user;
                 initializeCreatePost(user.accountNumber);
+                initializeGlobalButtons(user.accountNumber);
             } else {
                 window.location.href = '/';
             }

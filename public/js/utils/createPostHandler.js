@@ -55,6 +55,9 @@ export function initializeCreatePost(accountNumber) {
             const data = await apiRequest('/api/uploadPostImage', 'POST', formData, true);
             if (data.success) {
                 window.uploadedImageUrl = data.imageUrl;
+                uploadResult.textContent = 'Image uploaded successfully!';
+                uploadResult.style.color = 'green';
+                
                 // Insert <imageUrl> into the post body textarea
                 const bodyText = document.getElementById('bodyText');
                 if (bodyText) {
@@ -65,9 +68,11 @@ export function initializeCreatePost(accountNumber) {
                 }
             } else {
                 uploadResult.textContent = data.message;
+                uploadResult.style.color = 'red';
             }
         } catch (err) {
             uploadResult.textContent = 'Upload failed.';
+            uploadResult.style.color = 'red';
         }
     });
 
@@ -77,18 +82,20 @@ export function initializeCreatePost(accountNumber) {
         // const title = document.getElementById('titleText').value;
         const title = " ";
         const content = document.getElementById('bodyText').value;
-        // Optionally include the uploaded image URL in the post content or as a separate field
-        const imageUrl = window.uploadedImageUrl || null;
-
-        if (title && content) {
+        // Image URL is now handled within the content via <url> syntax, no separate field needed
+        
+        // Allow posts with just images or regular text content
+        if (title && content.trim()) {
             try {
-                const data = await apiRequest('/api/createPost', 'POST', { accountNumber, title, content, imageUrl });
+                const data = await apiRequest('/api/createPost', 'POST', { accountNumber, title, content });
                 if (data.success) {
                     window.location.href = `/profile/${accountNumber}`;
                 }
             } catch (error) {
                 console.error('Error creating post:', error);
             }
+        } else {
+            alert('Please add some content to your post.');
         }
     });
 
@@ -102,14 +109,41 @@ export function initializeCreatePost(accountNumber) {
         }
         let processedContent = makeMentionsClickable(content);
         const imgClass = 'post-image-responsive';
-        const imgStyle = 'max-width:200px; height:auto;';
-        processedContent = processedContent.replace(/<\s*(https?:\/\/[^>\s]+\.(?:png|jpg|jpeg|gif))\s*>/gi, `<img src="$1" alt="User Image" class="${imgClass}" style="${imgStyle}">`);
-        processedContent = processedContent.replace(/&lt;\s*(https?:\/\/[^&\s]+\.(?:png|jpg|jpeg|gif))\s*&gt;/gi, `<img src="$1" alt="User Image" class="${imgClass}" style="${imgStyle}">`);
-        processedContent = processedContent.replace(/(https?:\/\/[^\s<>'"()\[\]{}]+)/gi, function(url) {
-            if (processedContent.includes(`<img src=\"${url}\"`)) return url;
-            if (/^<a [^>]+>/.test(url)) return url;
+        const imgStyle = 'max-width:200px; height:auto; border-radius: 8px; margin: 10px 0;';
+        
+        // More flexible image detection that works with CloudFront URLs and other image hosting
+        // First handle <URL> syntax for any image URL (including those without extensions)
+        processedContent = processedContent.replace(/<\s*(https?:\/\/[^>\s]+)\s*>/gi, function(match, url) {
+            // Check if it's likely an image URL (common image hosts or file extensions)
+            if (url.match(/\.(png|jpg|jpeg|gif|webp|bmp|svg)(\?.*)?$/i) || 
+                url.includes('cloudfront.net') || 
+                url.includes('amazonaws.com') ||
+                url.includes('post-images/')) {
+                return `<img src="${url}" alt="User Image" class="${imgClass}" style="${imgStyle}">`;
+            }
+            // If not an image, treat as regular link
             return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
         });
+        
+        // Handle HTML-encoded brackets
+        processedContent = processedContent.replace(/&lt;\s*(https?:\/\/[^&\s]+)\s*&gt;/gi, function(match, url) {
+            if (url.match(/\.(png|jpg|jpeg|gif|webp|bmp|svg)(\?.*)?$/i) || 
+                url.includes('cloudfront.net') || 
+                url.includes('amazonaws.com') ||
+                url.includes('post-images/')) {
+                return `<img src="${url}" alt="User Image" class="${imgClass}" style="${imgStyle}">`;
+            }
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+        });
+        
+        // Make remaining plain URLs clickable (but skip those already processed)
+        processedContent = processedContent.replace(/(https?:\/\/[^\s<>'"()\[\]{}]+)/gi, function(url) {
+            if (processedContent.includes(`<img src="${url}"`) || processedContent.includes(`<a href="${url}"`)) {
+                return url;
+            }
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+        });
+        
         // Preserve line breaks
         processedContent = processedContent.replace(/\n/g, '<br>');
         return processedContent;

@@ -79,10 +79,19 @@ router.post('/sendMessage', async (req, res) => {
 });
 
 // Route to delete a message
-router.post('/deleteMessage', async (req, res) => {
-    const { messageId, accountNumber } = req.body;
+router.delete('/deleteMessage/:messageId', async (req, res) => {
+    const { messageId } = req.params;
+    const sessionId = req.cookies.TNWID;
 
     try {
+        // Verify the user's session
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const user = sessionStore[sessionId];
+        const accountNumber = user.accountNumber;
+
         // Find the message by ID
         const message = await Message.findOne({ messageId });
 
@@ -90,15 +99,23 @@ router.post('/deleteMessage', async (req, res) => {
             return res.status(404).json({ success: false, message: 'Message not found' });
         }
 
-        // Ensure the user is either the sender or recipient of the message
-        if (message.from !== accountNumber && message.to !== accountNumber) {
-            return res.status(403).json({ success: false, message: 'You are not authorized to delete this message' });
+        // Ensure the user is the sender of the message (only sender can delete)
+        if (message.from !== accountNumber) {
+            return res.status(403).json({ success: false, message: 'You can only delete your own messages' });
         }
 
         // Delete the message
         await Message.deleteOne({ messageId });
 
-        res.status(200).json({ success: true, message: 'Message deleted successfully' });
+        res.status(200).json({ 
+            success: true, 
+            message: 'Message deleted successfully',
+            deletedMessage: {
+                messageId: message.messageId,
+                from: message.from,
+                to: message.to
+            }
+        });
     } catch (error) {
         console.error('Error deleting message:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });

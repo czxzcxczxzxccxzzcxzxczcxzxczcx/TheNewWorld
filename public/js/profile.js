@@ -128,6 +128,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 gebid('following').textContent = `${Array.isArray(data.following) ? data.following.length : 0} Following`; // Ensure array
                 gebid('followers').textContent = `${Array.isArray(data.followers) ? data.followers.length : 0} Followers`; // Ensure array
                 gebid('changePfp').textContent = `${data.pfp}`;
+                
+                // Hide the pfp URL initially
+                gebid('changePfp').style.display = 'none';
             })
             .catch(error => console.error('Error fetching profile data:', error));
     }
@@ -272,13 +275,77 @@ document.addEventListener("DOMContentLoaded", async function () {
         pfpFileInput.style.display = 'none';
         document.body.appendChild(pfpFileInput);
 
-        pfpImg.addEventListener('click', function () {
-              const isEditable = gebid("bio").isContentEditable;
-
-            if (isEditable) {
-                pfpFileInput.value = '';
-                pfpFileInput.click();
+        // Variables for hold-click detection
+        let holdTimer = null;
+        let isHolding = false;
+        
+        // Mouse events for hold-click detection
+        pfpImg.addEventListener('mousedown', function (e) {
+            holdTimer = setTimeout(() => {
+                isHolding = true;
+                // Show the pfp URL on hold
+                const changePfpElement = gebid('changePfp');
+                changePfpElement.style.display = 'block';
+                changePfpElement.style.opacity = '1';
+            }, 500); // 500ms hold time
+        });
+        
+        pfpImg.addEventListener('mouseup', function (e) {
+            if (holdTimer) {
+                clearTimeout(holdTimer);
             }
+            
+            if (!isHolding) {
+                // Regular click behavior - check if editable for file upload
+                const isEditable = gebid("bio").isContentEditable;
+                if (isEditable) {
+                    pfpFileInput.value = '';
+                    pfpFileInput.click();
+                }
+            }
+            
+            isHolding = false;
+        });
+        
+        pfpImg.addEventListener('mouseleave', function (e) {
+            if (holdTimer) {
+                clearTimeout(holdTimer);
+            }
+            isHolding = false;
+            // Hide the pfp URL when mouse leaves
+            gebid('changePfp').style.display = 'none';
+        });
+        
+        // Touch events for mobile hold-click detection
+        pfpImg.addEventListener('touchstart', function (e) {
+            holdTimer = setTimeout(() => {
+                isHolding = true;
+                // Show the pfp URL on hold
+                const changePfpElement = gebid('changePfp');
+                changePfpElement.style.display = 'block';
+                changePfpElement.style.opacity = '1';
+            }, 500); // 500ms hold time
+        });
+        
+        pfpImg.addEventListener('touchend', function (e) {
+            if (holdTimer) {
+                clearTimeout(holdTimer);
+            }
+            
+            if (!isHolding) {
+                // Regular tap behavior - check if editable for file upload
+                const isEditable = gebid("bio").isContentEditable;
+                if (isEditable) {
+                    pfpFileInput.value = '';
+                    pfpFileInput.click();
+                }
+            }
+            
+            isHolding = false;
+            // Hide the pfp URL after touch ends
+            setTimeout(() => {
+                gebid('changePfp').style.display = 'none';
+            }, 1000); 
         });
 
         pfpFileInput.addEventListener('change', async function () {

@@ -32,9 +32,12 @@
         </div>
 
         <!-- New notifications panel -->
-        <div id="notificationsPanel" style=" float: right;  color: white; padding: 10px;">
-            <h3>Notifications</h3>
-            <ul id="notificationsList" style="list-style-type: none; padding: 0;">
+        <div id="notificationsPanel" class="notificationsPanel">
+            <div class="notificationsPanelHeader">
+                <h3>Notifications</h3>
+                <button id="closeNotifications" class="closeNotificationsBtn">×</button>
+            </div>
+            <ul id="notificationsList" class="notificationsList">
                 <!-- Notifications will be dynamically added here -->
             </ul>
         </div>

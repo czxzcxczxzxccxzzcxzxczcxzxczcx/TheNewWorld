@@ -98,6 +98,13 @@ router.post('/deleteComment', async (req, res) => {
                 return res.status(403).json({ success: false, message: 'You are not authorized to delete this comment' });
             }
 
+            // Remove comment from the post's replies array
+            const post = await Post.findOne({ postId: existingComment.postId });
+            if (post && Array.isArray(post.replies)) {
+                post.replies = post.replies.filter(replyId => replyId !== commentId);
+                await post.save();
+            }
+
             await Comment.deleteOne({ commentId });
 
             res.status(200).json({ success: true, message: 'Comment deleted successfully' });
@@ -165,6 +172,18 @@ router.post('/likeComment', async (req, res) => {
         existingComment.likes.push(accountNumber);
         await existingComment.save();
 
+        // Generate a notification for the comment owner if the liker is not the comment owner
+        if (existingComment.accountNumber !== accountNumber) {
+            const user = await User.findOne({ accountNumber });
+            if (user) {
+                const notification = await createNotification({
+                    from: accountNumber,
+                    to: existingComment.accountNumber,
+                    content: `${user.username} liked your comment.`,
+                });
+            }
+        }
+
         return res.status(200).json({ success: true, message: 'Comment liked successfully', removed: false });
     } catch (error) {
         console.error('Error liking comment:', error);
@@ -191,6 +210,73 @@ router.post('/checkCommentLike', async (req, res) => {
     } catch (error) {
         console.error('Error checking like status:', error);
         res.status(500).json({ success: false, message: 'Error checking like status' });
+    }
+});
+
+// Route to repost or unrepost a comment
+router.post('/repostComment', async (req, res) => {
+    const { commentId, accountNumber } = req.body;
+
+    try {
+        const existingComment = await Comment.findOne({ commentId });
+
+        if (!existingComment) {
+            return res.status(404).json({ success: false, message: 'Comment not found' });
+        }
+
+        if (!Array.isArray(existingComment.reposts)) {
+            existingComment.reposts = [];
+        }
+
+        if (existingComment.reposts.includes(accountNumber)) {
+            existingComment.reposts = existingComment.reposts.filter(
+                (repost) => repost.toString() !== accountNumber.toString()
+            );
+            await existingComment.save();
+            return res.status(200).json({ success: true, removed: true });
+        }
+
+        existingComment.reposts.push(accountNumber);
+        await existingComment.save();
+
+        // Generate a notification for the comment owner if the reposter is not the comment owner
+        if (existingComment.accountNumber !== accountNumber) {
+            const user = await User.findOne({ accountNumber });
+            if (user) {
+                const notification = await createNotification({
+                    from: accountNumber,
+                    to: existingComment.accountNumber,
+                    content: `${user.username} reposted your comment.`,
+                });
+            }
+        }
+
+        return res.status(200).json({ success: true, message: 'Comment reposted successfully', removed: false });
+    } catch (error) {
+        console.error('Error reposting comment:', error);
+        res.status(500).json({ success: false, message: 'Error reposting comment' });
+    }
+});
+
+// Route to check if a comment is reposted by a user
+router.post('/checkCommentRepost', async (req, res) => {
+    const { commentId, accountNumber } = req.body;
+
+    try {
+        const existingComment = await Comment.findOne({ commentId });
+
+        if (!existingComment) {
+            return res.status(404).json({ success: false, message: 'Comment not found' });
+        }
+
+        if (existingComment.reposts && existingComment.reposts.includes(accountNumber)) {
+            return res.status(200).json({ success: true, reposted: true });
+        }
+
+        return res.status(200).json({ success: true, reposted: false });
+    } catch (error) {
+        console.error('Error checking repost status:', error);
+        res.status(500).json({ success: false, message: 'Error checking repost status' });
     }
 });
 

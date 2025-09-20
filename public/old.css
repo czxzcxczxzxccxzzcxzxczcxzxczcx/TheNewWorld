@@ -1,0 +1,1751 @@
+@import url('https://db.onlinewebfonts.com/c/2953ad0d3b303180f9aa9edbe3bacf33?family=GT+America+Extended+Light');
+
+/* BODY CSS  BODY CSS  BODY CSS  BODY CSS  BODY CSS  
+BODY CSS  BODY CSS  BODY CSS  BODY CSS  BODY CSS   */
+
+body {
+    position: relative;
+    background-color: rgb(0, 0, 0);
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: stretch;
+    text-align: center;
+    text-shadow: black 2.5px 2.5px 0px;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    justify-content: center;
+}
+
+* {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+
+
+
+
+/* NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  
+NAV BAR CSS  NAV BAR CSS  NAV BAR CSS  NAV BAR CSS   */
+
+.bar {
+    background-color: rgb(16, 20, 24);
+    box-shadow: 0 4px 2px rgb(11, 14, 18);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 5vh;
+    display: flex;
+    align-items: center;
+    align-self: center;
+    overscroll-behavior: contain;
+    touch-action: none;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+.bar ul {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.bar h1,
+.bar .logo {
+    color: white;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    justify-self: center;
+    margin-bottom: 18px;
+    margin-left: 15px;
+    margin-right: 10px;
+    text-align: center;
+    font-size: 28px;
+    overflow: hidden;
+}
+
+.bar .buttons {
+    display: flex;
+    flex-direction: row;
+    justify-self: center;
+    align-items: center;
+    position: absolute;
+    justify-content: space-evenly;
+    right: 0;
+}
+
+.bar .logoImg {
+    height: 35px;
+    width: 35px;
+    margin-right: 20px;
+    margin-top: 5px;
+    display: none;
+}
+
+.bar .buttons a h1 {
+    margin: 10px;
+    font-size: 20px;
+}
+
+.bar .buttons a {
+    text-decoration: none;
+}
+
+.bar .buttons a:hover {
+    /* border-bottom: 2px solid white; */
+}
+
+.bar .buttons #adminPanelButton {
+    display: none;
+}
+
+.bar .buttons h1:hover {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+    transform: translateY(-2px);
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+
+
+
+
+/*LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  
+LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS  LOGIN PANEL CSS   */
+
+.panel {
+    position: fixed;
+    justify-items: center;
+    height: 300px;
+    width: 280px;
+    top: 25vh;
+    /* margin-top: 120px; */
+    border-radius: 5px;
+    display: none;
+    flex-direction: column;
+    align-self: center;
+    align-items: center;
+}
+
+.panel form {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 30vh;
+    width: 300px;
+}
+
+.panel h1 {
+    color: white;
+    font-size: 35px;
+    margin-top: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.panel .status {
+    color: white;
+    font-size: 20px;
+    margin: top -10px;
+    height: 1px;
+}
+
+.google-login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+    width: 100%;
+
+}
+
+
+.google-login-container a {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    width: 100%;
+    display: flex;
+    text-decoration: none;
+    height: 35px;
+    flex-direction: row;
+    justify-items: center;
+    align-items: center;
+
+    background-color: white;
+    border-radius: 5px;
+}
+
+.google-login-container a:hover {
+    background-color: #C6C7C7;
+}
+
+
+.google-login-container a:active {
+    background-color: #b5b6b6;
+}
+
+
+.google-login-container h1 {
+    color: black;
+    font-size: 20px;
+    font-weight: 400;
+    text-shadow: none;
+
+    width: 50vh;
+    height: 5px;
+    margin-bottom: 20px;
+
+}
+
+.google-login-container img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.inputText {
+    width: 100%;
+    height: 35px;
+    margin-bottom: 5px;
+}
+
+.inputSubmit {
+    width: 100%;
+    height: 30px;
+    align-self: center;
+    font-size: 20px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 5px;
+    transition: background 0.15s ease;
+}
+
+.otherInput {
+    width: 250px;
+    height: 30px;
+    align-self: center;
+    font-size: 20px;
+    border: none;
+    background: none;
+    color: white;
+    border-radius: 5px;
+    font-weight: 400;
+}
+
+.otherInput:hover {
+    color: #0c77e9
+}
+
+.inputSubmit:hover {
+    background: #3d3d3d;
+
+}
+
+.inputSubmit:active {
+    background-color: #096fdb;
+}
+
+
+
+.panel form {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 30vh;
+    width: 350px;
+    margin-bottom: 25px;
+}
+
+.panel .titleInput {
+    height: 70px;
+}
+
+.inputText {
+    width: 95%;
+    font-size: 15px;
+    height: 50px;
+    margin-bottom: 5px;
+}
+
+.inputSubmit {
+    height: 40px;
+    width: 97%;
+    background: #303030;
+    color: white;
+    font-size: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.inputSubmit:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: all 0.6s ease;
+}
+
+.inputSubmit:hover:before {
+    left: 100%;
+}
+
+.google-login-container a {
+    height: 50px;
+    margin-top: 25px;
+}
+
+
+
+
+
+
+
+
+
+
+/* CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS  
+CREATE POST PANEL CSS  CREATE POST PANEL CSS  CREATE POST PANEL CSS   */
+
+.postPanel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 95%;
+    width: min-content;
+    z-index: 1000;
+    border-width: 2px;
+    height: min-content;
+    border-radius: 5px;
+    display: none;
+    flex-direction: column;
+    border-color: rgb(21, 25, 32);
+    background-color: rgb(13, 15, 20);
+}
+
+
+.postPanel form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 430px;
+    height: min-content;
+    margin-bottom: 15px
+}
+
+.postPanel h1 {
+    color: white;
+    font-size: 30px;
+    text-align: left;
+    margin: 0;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.postPanel .titleInput {
+    height: 50px;
+    min-width: 95%;
+    max-width: 50vw;
+    font-size: 20px;
+    border-radius: 5px;
+    color: black;
+    background-color: #ffffff;
+}
+
+.postPanel .titleInput::placeholder {
+    color: black;
+}
+
+.postPanel .postPanelButton {
+    height: 40px;
+    width: 400px;
+    border: none;
+    border-radius: 5px;
+    align-self: center;
+    justify-self: center;
+    text-align: center;
+    font-size: 25px;
+    background-color: #e0e0e0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.postPanel #postPreview {
+    color: white;
+    text-align: left;
+    width: 90%;
+}
+
+.postPanel .postPanelButton:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background-color: rgba(0, 123, 255, 0.25);
+    transition: height 0.3s ease;
+    z-index: -1;
+}
+
+.postPanel .postPanelButton:active {
+    background-color: #bdbdbd;
+    transform: scale(0.98);
+}
+
+.postPanel .postPanelButton:hover {
+    background-color: #c9c9c9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.postPanel .postPanelButton:hover:after {
+    height: 100%;
+}
+
+.postPanel h1 {
+    color: white;
+}
+
+.postPanel .imageUploading {
+    margin-top: 10px;
+}
+
+.postPanel #imageInput {
+    /* Hide the default file input while keeping it functional */
+    display: none;
+}
+
+.postPanel .imageUploading button {
+    width: 395px;
+    height: 40px;
+    font-size: 25px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.postPanel .imageUploading button:hover {
+    background-color: #0069d9;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+}
+
+.postPanel .imageUploading button:active {
+    background-color: #0062cc;
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.postPanel .imageUploading input {
+    width: 395px;
+    height: 30px;
+    font-size: 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+
+}
+
+
+
+.postPanel .bodyInput {
+    height: 125px;
+    font-size: 20px;
+    background-color: #ffffff;
+    margin-bottom: 5px;
+    color: black;
+    width: 395px;
+    border-radius: 5px;
+}
+
+.postPanel .bodyInput::placeholder {
+    color: black;
+}
+
+
+
+
+
+
+
+
+
+
+/* POST CSS POST CSS POST CSS 
+POST CSS POST CSS POST CSS */
+
+.post {
+    border-radius: 5px;
+    width: 520px;
+    display: flex;
+    flex-direction: column;
+    height: min-content;
+    align-self: center;
+    justify-items: flex-start;
+    align-items: flex-start;
+    margin-bottom: 40px;
+    background-color: rgb(0, 0, 0);
+    border-top: 2px solid rgb(17, 21, 26);
+    color: white;
+}
+
+
+.post .deleteButton {
+    margin-top: 10px;
+    width: 30px;
+    margin-right: 10px;
+    font-size: 20px;
+    margin-left: auto;
+    font-weight: bold;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    background: none;
+    border: none;
+    color: white;
+
+}
+
+.post .deleteButton:hover {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.post .postDetails .usernameTitle,
+.post .postCommentDetails .usernameTitle {
+    font-size: 21px;
+    font-weight: 500;
+
+}
+
+.post .postDetails .usernameTitle:hover {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+}
+
+
+.post .postDetails .postTitle,
+.post .postCommentDetails .postTitle {
+    border-left: rgb(255, 255, 255) 2px solid;
+    padding-left: 15px;
+    text-align: left;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.post .postDetails,
+.post .postCommentDetails {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    font-size: 12px;
+    margin-left: 15px;
+    width: 95%;
+
+    text-align: center;
+    margin-right: 10px;
+    border-left: none;
+    border-right: none;
+}
+
+.post .postDetails h1,
+.post .postCommentDetails h1 {
+    margin-right: 20px;
+}
+
+.post .postCommentDetails {
+    font-size: 10px;
+    margin-right: 20px;
+    border: none;
+}
+
+.post .postDetails .pfp,
+.post .postCommentDetails .pfp {
+    height: 60px;
+    margin-top: 5px;
+    width: 60px;
+    margin-right: 10px;
+    border-radius: 100%;
+}
+
+.post .postDetails .homeHover:hover {
+    cursor: pointer;
+}
+
+.post .postBody,
+.postCommentBody {
+    display: flex;
+    text-shadow: none;
+    text-align: left;
+    margin-left: 15px;
+    flex-direction: column;
+    display: flex;
+    justify-items: center;
+    line-height: 1.5;
+    height: auto;
+    overflow: wrap;
+    width: 95%;
+    word-wrap: break-word;
+    font-weight: 400;
+    font-size: 20px;
+    white-space: pre-wrap;
+    word-break: break-all;
+
+}
+
+.post .postBody a {
+    color: rgb(90, 120, 255)
+}
+
+
+.post .divider {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    margin-left: 15px;
+    height: 40px;
+    align-items: center;
+}
+
+.post .divider h2 {
+    font-size: 22px;
+    margin-right: 40px;
+    height: 10px;
+}
+
+.post .buttonsDiv {
+    display: flex;
+    width: 95%;
+    height: 50px;
+    margin-bottom: 5px;
+    flex-direction: row;
+    border-left: none;
+    border-right: none;
+    align-self: center;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post .buttonsDiv .postButton {
+    display: flex;
+    border: none;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    height: 30px;
+    font-weight: bold;
+    font-size: 19px;
+    color: white;
+    margin-left: 15px;
+    background: none;
+    margin-right: 10px;
+}
+
+.post .buttonsDiv .postButton {
+    display: flex;
+    border: none;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    height: 30px;
+    font-weight: bold;
+    font-size: 19px;
+    color: white;
+    margin-left: 15px;
+    background: none;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+}
+
+.post .buttonsDiv .postButton:hover {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+    transform: scale(1.1);
+}
+
+
+.post .divider .postButton:hover {
+    background-color: #9e9e9e;
+}
+
+.profilePosts {
+    display: flex;
+    flex-direction: column;
+    height: min-content;
+    width: 100%;
+}
+
+#profileReposts {
+    display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  
+COMMENT CSS  COMMENT CSS  COMMENT CSS  COMMENT CSS  */
+
+.commentSection {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-self: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.comment {
+    flex-direction: column;
+    width: auto;
+    display: flex;
+    align-self: center;
+    margin: 10px auto;
+    justify-items: flex-start;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.commentSection .postCommentDetails .pfp {
+    margin-left: 20px;
+    height: 50px;
+    width: 50px;
+}
+
+.commentSection .postCommentBody {
+    margin-left: 41px;
+}
+
+.comment .postCommentDetails {
+    font-size: 15px;
+}
+
+
+.commentSection .commentInputDiv {
+    display: flex;
+    flex-direction: row;
+    width: 95%;
+    align-content: center;
+    height: 50px;
+
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+}
+
+.commentSection .commentTextBox {
+    width: 95%;
+    border-radius: 5px;
+}
+
+.commentSection .commentButton {
+    margin-left: 5px;
+    border-radius: 5px;
+}
+
+
+
+
+
+
+
+
+
+/* PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  
+PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  PROFILE PANEl CSS  */
+
+.profilePanel {
+    margin-bottom: 30px;
+    height: auto;
+    width: 520px;
+    flex-direction: column;
+    display: flex;
+    border: none;
+    color: white;
+}
+
+.profilePanel .profileBio {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    overflow: auto;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    white-space: normal;
+    margin-left: 10px;
+    font-size: 20px;
+}
+
+.profilePanel .profileStats {
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    align-items: center;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+}
+
+.profilePanel .profileStats h1 {
+    margin: 10px;
+    font-size: 20px;
+}
+
+.profilePanel .profileStats .profileEditButton,
+.profileFollowButton {
+    width: 110px;
+    height: 30px;
+    font-size: 15px;
+    margin-left: 90px;
+    margin-right: 10px;
+    margin-top: 25px;
+    font-weight: 600;
+    border-radius: 2.5px;
+    display: none;
+    border: none;
+    box-shadow: 0px 2px 0px 0px #d6d6d6;
+}
+
+.profilePanel .profileStats .profileEditButton:active,
+.profileFollowButton:active {
+    background-color: #afafaf;
+}
+
+.profilePanel .profileStats .profileEditButton:active,
+.profileFollowButton:hover {
+    background-color: #C6C7C7;
+}
+
+.profilePanel .profileStats a {
+    text-decoration: none;
+    color: white;
+}
+
+.profilePanel .profileStats a:hover {
+    text-decoration: underline;
+    color: #007bff;
+}
+
+.profilePanel .profileInfo {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+    height: min-content;
+    align-items: center;
+    max-width: 500px;
+    margin-left: 5px;
+    margin-top: 5px;
+    box-sizing: border-box;
+    font-size: 15px;
+}
+
+.profilePanel .profileInfo img {
+    display: flex;
+    margin-bottom: -20px;
+    font-size: 15px;
+    width: 100px;
+    border-radius: 100%;
+    margin-left: 4px;
+    margin-top: 5px;
+    height: 100px;
+}
+
+
+
+.profilePanel .profileInfo h1 {
+    margin-left: 10px;
+    font-size: 27px;
+    text-decoration: none;
+    color: white;
+}
+
+.profilePanel .profileInfo a {
+    text-decoration: none;
+    color: white;
+}
+
+.profilePanel .profileInfo .profileUser {
+    display: flex;
+    flex-direction: row;
+    font-size: 90px;
+    width: auto;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.profilePanel .profileBio #changePfp {
+    display: none;
+    overflow: auto;
+    word-wrap: break-word;
+    margin: 0;
+}
+
+.profilePanel .profileBio p {
+    text-align: left;
+    word-wrap: break-word;
+    white-space: normal;
+    width: 95%;
+    overflow: hidden;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.profilePanel .selectionDiv {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    height: min-content;
+}
+
+.profilePanel .profileButton {
+    width: 100%;
+    height: 70px;
+    font-size: 15px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.profilePanel .profileButton:hover {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.profilePanel .spaceDiv {
+    display: flex;
+    display: none;
+    align-self: center;
+    background-color: white;
+    width: 98%;
+    align-self: center;
+    border-radius: 10px;
+    height: 2.5px;
+}
+
+
+
+
+
+
+
+
+/* FOLLOWING PANEL CSS  FOLLOWING PANEL CSS  FOLLOWING PANEL CSS  
+FOLLOWING PANEL CSS  FOLLOWING PANEL CSS  FOLLOWING PANEL CSS   */
+
+.followingPanel {
+    width: 99%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.followingPanel .pfp {
+    height: 60px;
+    width: 60px;
+    align-self: center;
+    margin: 5px;
+}
+
+.followingPanel .followingButton {
+    width: 90px;
+    height: 50px;
+    font-size: 20px;
+    margin-left: auto;
+    border: none;
+    margin-right: 10px;
+    background: none;
+    justify-self: center;
+    color: white;
+    align-self: center;
+}
+
+.followingPanel .followingButton:hover {
+    color: #0063ce;
+    text-decoration: underline;
+}
+
+.followingPanel h1 {
+    color: white;
+    margin-left: 20px;
+    font-size: 25px;
+}
+
+
+
+
+
+
+
+
+
+
+/* HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS 
+HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
+
+.homePanel {
+    box-sizing: border-box;
+    top: 6vh;
+    width: 100%;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    align-items: center;
+    align-content: flex-start;
+    justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    height: 94vh;
+    padding-bottom: 70px;
+    position: relative;
+}
+
+.homePanel::-webkit-scrollbar {
+    display: none;
+}
+
+
+
+
+
+
+
+
+/* HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS 
+HOME PANEL CSS HOME PANEL CSS HOME PANEL CSS  */
+
+.adminPanel {
+    position: absolute;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    top: 6.25vh;
+    width: 540px;
+    min-width: 540px;
+    height: 93vh;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.adminPanel::-webkit-scrollbar {
+    display: none;
+}
+
+
+#notificationsPanel {
+    position: absolute;
+    top: calc(6.5vh + 68px);
+    width: 200px;
+    min-width: 200px;
+    height: calc(100vh - (6.5vh + 80px + 90px));
+    border-radius: 5px;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    background-color: rgb(4, 6, 8);
+    z-index: 5;
+}
+
+#notificationsPanel li {
+    font-size: 15px;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+#notificationsPanel li button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 15px;
+}
+
+
+#notificationsPanel::-webkit-scrollbar {
+    display: none;
+}
+
+
+@media (max-width: 767px) {
+
+    html,
+    body {
+        overscroll-behavior: contain;
+        touch-action: none;
+    }
+
+    .homePanel {
+        width: 100vw;
+        min-width: 100vw;
+        height: 90vh;
+    }
+
+    .post .footer .postEditButton,
+    .post .divider .likeButton,
+    .post .divider .postButton {
+        width: 110px;
+    }
+
+    .bar .logo {
+        display: none;
+    }
+
+    .bar ul {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        justify-content: center;
+    }
+
+    .bar .buttons {
+        position: static;
+        width: 100%;
+        justify-content: center;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .bar .buttons a {
+        flex: 0 1 auto;
+        text-align: center;
+    }
+    
+    .bar .buttons a h1 {
+        font-size: 20px;
+        margin: 8px 10px;
+    }
+    
+    .bar {
+        margin-bottom: 20px;
+        background-color: rgb(27, 33, 39);
+        min-height: 5vh;
+        height: auto;
+        padding: 5px 0;
+    }
+
+    #notificationsPanel {
+        display: none;
+    }
+
+    #loginForm h1,
+    #newAccForm h1 {
+        font-size: 50px;
+        width: 80vh;
+    }
+
+    .panel {
+        width: 100vw;
+    }
+
+    .google-login-container,
+    .inputText,
+    .inputSubmit,
+    .otherInput {
+        width: 450px;
+
+        font-size: 25px;
+        height: 60px;
+    }
+}
+
+.adminDiv {
+    height: 200px;
+    border-radius: 5px;
+    width: 95%;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    height: min-content;
+    align-self: center;
+    justify-items: flex-start;
+    align-items: center;
+    margin-bottom: 15px;
+    color: white;
+}
+
+.adminDiv .textAndButton {
+    display: flex;
+    width: 95%;
+    height: min-content;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.adminDiv .buttons {
+    display: flex;
+    width: 100%;
+    height: min-content;
+    flex-direction: row;
+    align-items: center;
+    justify-self: center;
+    justify-content: space-around;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.adminDiv .spaceDiv {
+    display: flex;
+    align-self: center;
+    background-color: white;
+    width: 95%;
+    justify-self: center;
+    border-radius: 10px;
+    height: 0.5px;
+}
+
+.adminDiv .textAndButton .adminTextBox {
+    width: 110px;
+    height: 25px;
+    border-radius: 2px;
+    border: none;
+    margin-right: 10px
+}
+
+.adminDiv .textAndButton .adminButton,
+.adminDiv .buttons .adminButton {
+    width: auto;
+    height: 30px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    font-weight: 600;
+    color: white;
+    background: none;
+}
+
+.adminDiv .textAndButton .adminButton {
+    margin-left: auto;
+}
+
+
+.adminDiv .textAndButton .adminButton:active {
+    box-shadow: 0px 0px 0px 0px #d6d6d6
+}
+
+.adminDiv .textAndButton .adminButton:hover {
+    color: #007bff;
+}
+
+
+
+
+
+
+
+
+/* MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS
+MESSAGE PANEL CSS  MESSAGE PANEL CSS  MESSAGE PANEL CSS  */
+.dm {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#back {
+    margin-left: auto;
+    font-size: 20px;
+    color: white;
+}
+
+#messagePanel {
+    position: absolute;
+    top: calc(6.5vh + 68px);
+    width: 520px;
+    min-width: 510px;
+    height: calc(100vh - (10vh + 140px));
+    z-index: 5;
+    padding: 10px;
+}
+
+.messagePanel {
+    top: 10vh;
+    height: 68vh;
+}
+
+
+
+.inputContainer {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 70px;
+    padding: 10px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+
+
+.inputContainer #messageInput {
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+}
+
+.dmTop {
+    position: fixed;
+    top: 6.5vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 40px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    color: white;
+    justify-content: flex-start;
+    z-index: 10;
+}
+
+
+.dmTop #profileImage {
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+    border-radius: 100%;
+}
+
+#messageInput {
+    flex: 1;
+    resize: none;
+    padding: 10px;
+    color: black;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    font-size: 15px;
+    width: 100%;
+}
+
+#sendButton {
+    margin-left: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    font-size: 15px;
+    height: 55px;
+    width: 60px;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#sendButton:hover {
+    background-color: #0062cc;
+    transform: translateX(3px);
+}
+
+#sendButton:active {
+    transform: translateX(1px);
+}
+
+.message {
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+    max-width: 60%;
+    font-size: 20px;
+    word-wrap: break-word;
+    text-shadow: none;
+    display: inline-block;
+}
+
+.message.sent {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+    text-align: left;
+}
+
+.message.received {
+    background-color: #f1f1f1;
+    color: black;
+    align-self: flex-start;
+    text-align: left;
+}
+
+
+/* USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES
+USER MESSAGES USER MESSAGES USER MESSAGES USER MESSAGES */
+
+.dmUser {
+    display: flex;
+    flex-direction: row;
+    width: 480px;
+    height: 50px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    align-content: center;
+    align-items: center;
+    color: white;
+    font-size: 20px;
+    border-radius: 5px;
+}
+
+.dmUser h2 {
+    color: white
+}
+
+.dmUser .dmUserImage {
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+    border-radius: 100%;
+}
+
+.dmUser .closeDMButton,
+#back {
+    background: none;
+    text-decoration: none;
+    border: none;
+    color: white;
+}
+
+.dmUser .openDMButton {
+    margin-left: 20px;
+    padding: 6px 16px;
+    border-radius: 5px;
+    border: none;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: auto;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dmUser .dmUserName {
+    cursor: pointer;
+}
+
+.dmUser .openDMButton:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.dmUser .openDMButton:active {
+    transform: scale(0.95);
+}
+
+
+
+
+
+/* SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS
+SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS SEARCHING CSS */
+
+.searchBar {
+    position: relative;
+    top: 8vh;
+    width: 510px;
+    min-width: 510px;
+    margin-bottom: 10px;
+    border-radius: 2px;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    justify-self: center;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    background-color: white;
+}
+
+.searchBar input {
+    width: 100%;
+    height: 20px;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 20px;
+    color: black;
+    background-color: white;
+    border: 1px solid #ccc;
+}
+
+.searchBar button {
+    margin-right: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    height: 40px;
+    align-self: center;
+    justify-self: center;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.searchBar button:hover {
+    background-color: #0056b3;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+    }
+}
+
+.searchPanel {
+    position: absolute;
+    top: calc(8vh + 60px);
+    width: 540px;
+    min-width: 540px;
+    height: calc(100vh - (8vh + 60px));
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    align-items: center;
+    align-content: flex-start;
+    justify-content: flex-start;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    z-index: 5;
+}
+
+.searchPanel::-webkit-scrollbar {
+    display: none;
+}
+
+.notFound {
+    position: absolute;
+    display: flex;
+    top: 30vh;
+    align-self: center;
+    color: white;
+    justify-self: center;
+}
+
+.settingsPanel {
+    position: fixed;
+    width: 400px;
+    height: 300px;
+    top: 25vh;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    align-items: center;
+    align-content: center;
+    justify-content: flex-start;
+    color: white;
+}
+
+
+.settingsPanel form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    height: min-content;
+}
+
+.settingsPanel .settingsInputs {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.settingsTitle {
+    align-self: flex-start;
+    text-align: left;
+    margin-left: 0;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.settingsPanel .settingsInputs button {
+    margin-left: 10px;
+}
+
+.settingsPanel .settingsInputs label {
+    font-size: 20px;
+    width: 300px;
+    text-align: left;
+}
+
+.donationPanel {
+    position: fixed;
+    width: 500px;
+    height: 300px;
+    top: 25vh;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    color: white;
+}
+
+.donationPanel form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: min-content;
+}
+
+
+.donationPanel p {
+    font-size: 20px;
+}
+
+.donationPanel .inputs {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.donationPanel .inputs label {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.donationPanel .inputs input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80px;
+    height: 20px;
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+.donationPanel .inputs button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 110px;
+    border-radius: 3px;
+    color: white;
+    background: #0056b3;
+    font-size: 17px;
+    margin-left: 10px;
+    border: none;
+    height: 30px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.donationPanel .inputs button:hover {
+    background-color: #006ce0;
+}
+
+.donationPanel .inputs button:active {
+    background-color: #007bff;
+}
+
+.donationPanel .stripeLogo {
+    width: 60px;
+    height: 25px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+.donate {
+    position: absolute;
+    display: flex;
+    top: 30vh;
+    align-self: center;
+    color: white;
+    justify-self: center;
+}
+
+/* *, *::before, *::after {
+  color: black !important;
+} */

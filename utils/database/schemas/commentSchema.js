@@ -7,6 +7,7 @@ const commentSchema = new mongoose.Schema({
     postId: { type: String, required: true, ref: 'Post' },
     createdAt: { type: Date, default: Date.now },
     likes: { type: [Number], default: [] },
+    reposts: { type: [Number], default: [] },
     replies: { type: [String], default: [] },
 });
 

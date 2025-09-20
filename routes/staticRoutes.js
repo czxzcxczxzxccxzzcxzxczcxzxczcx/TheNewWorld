@@ -114,6 +114,29 @@ router.get('/dm/:userId', async (req, res) => {
     }
 });
 
+// Route for individual post page
+router.get('/post/:postId', async (req, res) => {
+    try {
+        const { postId } = req.params;
+        
+        // Validate that the post exists
+        const { Post } = require('../utils/database/database');
+        const post = await Post.findOne({ postId });
+
+        if (!post) {
+            return res.status(404).send('ERROR 404 | Post Not Found');
+        }
+
+        const templatePath = path.join(__dirname, '../public/html/post.html');
+        let template = fs.readFileSync(templatePath, 'utf8');
+
+        res.send(template);
+    } catch (error) {
+        console.error('Error fetching post page:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 // Inject a console message into every HTML page
 router.use((req, res, next) => {
     const send = res.send;
