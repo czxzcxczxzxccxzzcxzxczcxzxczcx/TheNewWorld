@@ -227,8 +227,19 @@ router.get('/getFollowers/:userId', async (req, res) => {
 
 // Route to remove a follower (secure endpoint)
 router.post('/removeFollower', async (req, res) => {
+    console.log('removeFollower endpoint called');
     const { followerAccountNumber } = req.body;
-    const currentUserAccountNumber = req.session.user.accountNumber;
+    
+    // Check authentication using the same pattern as other endpoints
+    const sessionId = req.cookies.TNWID;
+    if (!sessionId || !sessionStore[sessionId]) {
+        console.log('No valid session found');
+        return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+    
+    const user = sessionStore[sessionId]; // Get user's data from session
+    const currentUserAccountNumber = user.accountNumber;
+    console.log('Current user:', currentUserAccountNumber, 'Removing follower:', followerAccountNumber);
 
     try {
         // Validate input
@@ -269,7 +280,8 @@ router.post('/removeFollower', async (req, res) => {
         res.json({ success: true, message: 'Follower removed successfully' });
     } catch (error) {
         console.error('Error removing follower:', error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Error stack:', error.stack);
+        res.status(500).json({ success: false, message: 'Internal Server Error', error: error.message });
     }
 });
 

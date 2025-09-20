@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const data = await apiRequest('/api/addOpenDM', 'POST', { recipientAccountNumber: profileAccountNumber });
 
                 if (data.success) {
-                    alert('Direct message opened successfully.');
+                    // alert('Direct message opened successfully.');
                     window.location.href = `/dm/${profileAccountNumber}`; // Redirect to the DM page
                 } else {
                     alert(data.message || 'Failed to open direct message. Please try again.');
