@@ -183,4 +183,96 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert('An error occurred while fetching users.');
             });
     });
+
+    // Check if user is head admin and show admin management section
+    async function checkHeadAdminAccess() {
+        try {
+            const userInfo = await apiRequest('/api/getUserInfo', 'GET');
+            if (userInfo.success) {
+                const user = await apiRequest('/api/get/profile/' + userInfo.user.accountNumber, 'GET');
+                if (user.adminRole === 'headAdmin') {
+                    document.getElementById('adminManagementSection').style.display = 'block';
+                }
+            }
+        } catch (error) {
+            console.error('Error checking head admin access:', error);
+        }
+    }
+
+    // Call the function to check head admin access
+    checkHeadAdminAccess();
+
+    // Grant Admin Event Listener
+    document.getElementById("grantAdminButton").addEventListener("click", async function (event) {
+        event.preventDefault();
+        const targetAccountNumber = document.getElementById('grantAdminAccountNumber').value;
+
+        if (!targetAccountNumber) {
+            alert('Please enter an account number.');
+            return;
+        }
+
+        try {
+            const data = await apiRequest('/api/grantAdmin', 'POST', { targetAccountNumber });
+            if (data.success) {
+                alert(`Admin permissions granted successfully to ${data.user.username}!`);
+                document.getElementById('grantAdminAccountNumber').value = '';
+            } else {
+                alert('Failed to grant admin permissions: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error granting admin permissions:', error);
+            alert('An error occurred while granting admin permissions.');
+        }
+    });
+
+    // Revoke Admin Event Listener
+    document.getElementById("revokeAdminButton").addEventListener("click", async function (event) {
+        event.preventDefault();
+        const targetAccountNumber = document.getElementById('revokeAdminAccountNumber').value;
+
+        if (!targetAccountNumber) {
+            alert('Please enter an account number.');
+            return;
+        }
+
+        try {
+            const data = await apiRequest('/api/revokeAdmin', 'POST', { targetAccountNumber });
+            if (data.success) {
+                alert(`Admin permissions revoked successfully from ${data.user.username}!`);
+                document.getElementById('revokeAdminAccountNumber').value = '';
+            } else {
+                alert('Failed to revoke admin permissions: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error revoking admin permissions:', error);
+            alert('An error occurred while revoking admin permissions.');
+        }
+    });
+
+    // View Users with Roles Event Listener
+    document.getElementById("viewUsersWithRoles").addEventListener("click", async function (event) {
+        event.preventDefault();
+
+        try {
+            const data = await apiRequest('/api/getUsersWithRoles', 'GET');
+            if (data.success) {
+                console.log('Users with roles:', data.users);
+                
+                // Create a nice formatted display
+                let usersList = "Users and their roles:\n\n";
+                data.users.forEach(user => {
+                    const roleEmoji = user.adminRole === 'headAdmin' ? '👑' : user.adminRole === 'admin' ? '🛡️' : '👤';
+                    usersList += `${roleEmoji} ${user.username} (${user.accountNumber}) - ${user.adminRole}\n`;
+                });
+                
+                alert(usersList);
+            } else {
+                alert('Failed to fetch users with roles: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching users with roles:', error);
+            alert('An error occurred while fetching users with roles.');
+        }
+    });
 });

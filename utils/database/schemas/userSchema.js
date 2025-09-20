@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema({
     pfp: { type: String , default: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"},
     liked: { type: [String], default: [] },
     reposts: { type: [String], default: [] },
-    openDM: { type: [String], default: [] }, 
+    openDM: { type: [String], default: [] },
+    adminRole: { type: String, enum: ['user', 'admin', 'headAdmin'], default: 'user' }
 });
 
 module.exports = userSchema;

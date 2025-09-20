@@ -12,11 +12,41 @@ const { Server } = require('socket.io');
 const server = require('http').createServer(app);
 const io = new Server(server, {cors: {origin: '*',methods: ['GET', 'POST']}});
 
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
     const sessionId = req.cookies.TNWID;
     const sessionStore = require('./database/sessionStore');
-    if (!sessionId || !sessionStore[sessionId]) {return res.status(401).json({ success: false, message: 'Not authenticated' });}
-    next();
+    const { User } = require('./database/database');
+    
+    if (!sessionId || !sessionStore[sessionId]) {
+        return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+    
+    try {
+        // Get session data
+        const sessionData = sessionStore[sessionId];
+        
+        // Verify session data against database
+        const user = await User.findOne({ accountNumber: sessionData.accountNumber });
+        
+        if (!user) {
+            // User doesn't exist in database, invalidate session
+            delete sessionStore[sessionId];
+            return res.status(401).json({ success: false, message: 'Invalid session - user not found' });
+        }
+        
+        // Verify both account number and username match exactly
+        if (user.accountNumber !== sessionData.accountNumber || user.username !== sessionData.username) {
+            // Session data doesn't match database, invalidate session
+            delete sessionStore[sessionId];
+            return res.status(401).json({ success: false, message: 'Invalid session - user data mismatch' });
+        }
+        
+        // Authentication successful
+        next();
+    } catch (error) {
+        console.error('Authentication error:', error);
+        return res.status(500).json({ success: false, message: 'Authentication error' });
+    }
 }
 
 app.set('trust proxy', 1); // or true

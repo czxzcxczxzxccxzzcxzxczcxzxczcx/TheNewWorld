@@ -73,6 +73,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     gebid('profileEdit').style.display = "block";
                     gebid('followButton').style.display = "none";
                 } else {
+                    gebid('profileEdit').style.display = "none"; // Explicitly hide edit button
                     gebid('followButton').style.display = "block";
 
                     // Check if the profile is followed
@@ -202,6 +203,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     gebid('profileEdit').addEventListener("click", async function (event) {
         event.preventDefault();
+        
+        // Security check: Only allow editing own profile
+        if (userAccountNumber !== parseInt(profileAccountNumber)) {
+            alert('You can only edit your own profile!');
+            return;
+        }
+        
         const pfp = gebid("changePfp").textContent;
         const username = gebid("profileUsername").textContent;
         const bio = gebid("bio").textContent.trim(); // Trim unnecessary whitespace
@@ -298,7 +306,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (!isHolding) {
                 // Regular click behavior - check if editable for file upload
                 const isEditable = gebid("bio").isContentEditable;
-                if (isEditable) {
+                if (isEditable && userAccountNumber === parseInt(profileAccountNumber)) {
                     pfpFileInput.value = '';
                     pfpFileInput.click();
                 }
@@ -335,7 +343,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (!isHolding) {
                 // Regular tap behavior - check if editable for file upload
                 const isEditable = gebid("bio").isContentEditable;
-                if (isEditable) {
+                if (isEditable && userAccountNumber === parseInt(profileAccountNumber)) {
                     pfpFileInput.value = '';
                     pfpFileInput.click();
                 }

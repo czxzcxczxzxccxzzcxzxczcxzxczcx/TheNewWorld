@@ -3,7 +3,22 @@ const { Post, User, fixPosts, fixProfile } = require('../utils/database/database
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 const router = express.Router();
 
-const matchId = 2369255378 
+// Helper function to check if user has admin access
+async function hasAdminAccess(accountNumber, requiredRole = 'admin') {
+    try {
+        const user = await User.findOne({ accountNumber });
+        if (!user) return false;
+        
+        const roleHierarchy = { user: 0, admin: 1, headAdmin: 2 };
+        const userLevel = roleHierarchy[user.adminRole] || 0;
+        const requiredLevel = roleHierarchy[requiredRole] || 1;
+        
+        return userLevel >= requiredLevel;
+    } catch (error) {
+        console.error('Error checking admin access:', error);
+        return false;
+    }
+} 
                 
 router.post('/updateData', async (req, res) => {
     const { accountNumber, field, value } = req.body;
@@ -16,12 +31,12 @@ router.post('/updateData', async (req, res) => {
         }
 
         const user = sessionStore[sessionId]; // Get user from session store
-        const userId = Number(user.accountNumber); // Ensure userId is a number
-        // console.log(userId, matchId); // Debugging log
+        const accountNumber = user.accountNumber;
 
-        // Verify if the userId matches matchId
-        if (userId !== matchId) {
-            return res.status(403).json({ success: false, message: 'Unauthorized: User ID does not match' });
+        // Check if user has admin access
+        const hasAccess = await hasAdminAccess(accountNumber, 'admin');
+        if (!hasAccess) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Admin access required' });
         }
 
         // Use the updateData function to update the user data
@@ -52,10 +67,12 @@ router.post('/fixPostData', async (req, res) => {
         }
 
         const user = sessionStore[sessionId]; // Get user from session store
-        const userId = Number(user.accountNumber); // Ensure userId is a number
+        const accountNumber = user.accountNumber;
 
-        if (userId !== matchId) {
-            return res.status(403).json({ success: false, message: 'Unauthorized: User ID does not match' });
+        // Check if user has admin access
+        const hasAccess = await hasAdminAccess(accountNumber, 'admin');
+        if (!hasAccess) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Admin access required' });
         }
 
         await fixPosts();
@@ -75,10 +92,12 @@ router.post('/fixUserData', async (req, res) => {
         }
 
         const user = sessionStore[sessionId]; // Get user from session store
-        const userId = Number(user.accountNumber); // Ensure userId is a number
+        const accountNumber = user.accountNumber;
 
-        if (userId !== matchId) {
-            return res.status(403).json({ success: false, message: 'Unauthorized: User ID does not match' });
+        // Check if user has admin access
+        const hasAccess = await hasAdminAccess(accountNumber, 'admin');
+        if (!hasAccess) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Admin access required' });
         }
 
         await fixProfile();
@@ -99,11 +118,12 @@ router.post('/updatePost', async (req, res) => {
         }
 
         const user = sessionStore[sessionId]; // Get user from session store
-        const userId = Number(user.accountNumber); // Ensure userId is a number
+        const accountNumber = user.accountNumber;
 
-        // Verify if the userId matches matchId
-        if (userId !== matchId) {
-            return res.status(403).json({ success: false, message: 'Unauthorized: User ID does not match' });
+        // Check if user has admin access
+        const hasAccess = await hasAdminAccess(accountNumber, 'admin');
+        if (!hasAccess) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Admin access required' });
         }
 
         // Use the updatePost function to update the post data
@@ -134,17 +154,17 @@ router.get('/verify', async (req, res) => {
         }
 
         const user = sessionStore[sessionId]; // Get user from session store
-        const userId = Number(user.accountNumber); // Ensure userId is a number
-        // console.log(userId, matchId); // Debugging log
+        const accountNumber = user.accountNumber;
 
-        // Check if the userId matches matchId
-        if (userId === matchId) {
-            return res.status(200).json({ success: true, message: 'User ID matches matchId' });
+        // Check if user has admin access
+        const hasAccess = await hasAdminAccess(accountNumber, 'admin');
+        if (hasAccess) {
+            return res.status(200).json({ success: true, message: 'Admin access verified' });
         } else {
-            return res.status(200).json({ success: false, message: 'User ID does not match matchId' });
+            return res.status(200).json({ success: false, message: 'Admin access denied' });
         }
     } catch (error) {
-        console.error('Error verifying matchId:', error);
+        console.error('Error verifying admin access:', error);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
@@ -159,11 +179,12 @@ router.get('/getAllUsers', async (req, res) => {
         }
 
         const user = sessionStore[sessionId]; // Get user from session store
-        const userId = Number(user.accountNumber); // Ensure userId is a number
+        const accountNumber = user.accountNumber;
 
-        // Verify if the userId matches matchId
-        if (userId !== matchId) {
-            return res.status(403).json({ success: false, message: 'Unauthorized: User ID does not match' });
+        // Check if user has admin access
+        const hasAccess = await hasAdminAccess(accountNumber, 'admin');
+        if (!hasAccess) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Admin access required' });
         }
 
         // Fetch all users
@@ -185,11 +206,12 @@ router.get('/getAllPosts', async (req, res) => {
         }
 
         const user = sessionStore[sessionId]; // Get user from session store
-        const userId = Number(user.accountNumber); // Ensure userId is a number
+        const accountNumber = user.accountNumber;
 
-        // Verify if the userId matches matchId
-        if (userId !== matchId) {
-            return res.status(403).json({ success: false, message: 'Unauthorized: User ID does not match' });
+        // Check if user has admin access
+        const hasAccess = await hasAdminAccess(accountNumber, 'admin');
+        if (!hasAccess) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Admin access required' });
         }
 
         // Fetch all posts
@@ -211,11 +233,12 @@ router.get('/getAllMessages', async (req, res) => {
         }
 
         const user = sessionStore[sessionId]; // Get user from session store
-        const userId = Number(user.accountNumber); // Ensure userId is a number
+        const accountNumber = user.accountNumber;
 
-        // Verify if the userId matches matchId
-        if (userId !== matchId) {
-            return res.status(403).json({ success: false, message: 'Unauthorized: User ID does not match' });
+        // Check if user has admin access
+        const hasAccess = await hasAdminAccess(accountNumber, 'admin');
+        if (!hasAccess) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Admin access required' });
         }
 
         // Fetch all messages
@@ -224,6 +247,116 @@ router.get('/getAllMessages', async (req, res) => {
         return res.status(200).json({ success: true, messages });
     } catch (error) {
         console.error('Error fetching messages:', error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+// Route for head admin to grant admin permissions
+router.post('/grantAdmin', async (req, res) => {
+    const { targetAccountNumber } = req.body;
+    const sessionId = req.cookies.TNWID;
+
+    try {
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const user = sessionStore[sessionId];
+        const accountNumber = user.accountNumber;
+
+        // Check if user has head admin access
+        const hasAccess = await hasAdminAccess(accountNumber, 'headAdmin');
+        if (!hasAccess) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Head admin access required' });
+        }
+
+        // Update target user's role to admin
+        const targetUser = await User.findOneAndUpdate(
+            { accountNumber: targetAccountNumber },
+            { $set: { adminRole: 'admin' } },
+            { new: true }
+        );
+
+        if (!targetUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            message: `Admin permissions granted to ${targetUser.username}`,
+            user: { username: targetUser.username, accountNumber: targetUser.accountNumber, adminRole: targetUser.adminRole }
+        });
+    } catch (error) {
+        console.error('Error granting admin permissions:', error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+// Route for head admin to revoke admin permissions
+router.post('/revokeAdmin', async (req, res) => {
+    const { targetAccountNumber } = req.body;
+    const sessionId = req.cookies.TNWID;
+
+    try {
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const user = sessionStore[sessionId];
+        const accountNumber = user.accountNumber;
+
+        // Check if user has head admin access
+        const hasAccess = await hasAdminAccess(accountNumber, 'headAdmin');
+        if (!hasAccess) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Head admin access required' });
+        }
+
+        // Update target user's role to regular user
+        const targetUser = await User.findOneAndUpdate(
+            { accountNumber: targetAccountNumber },
+            { $set: { adminRole: 'user' } },
+            { new: true }
+        );
+
+        if (!targetUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            message: `Admin permissions revoked from ${targetUser.username}`,
+            user: { username: targetUser.username, accountNumber: targetUser.accountNumber, adminRole: targetUser.adminRole }
+        });
+    } catch (error) {
+        console.error('Error revoking admin permissions:', error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+// Route to get all users with their admin roles (for head admin)
+router.get('/getUsersWithRoles', async (req, res) => {
+    const sessionId = req.cookies.TNWID;
+
+    try {
+        if (!sessionId || !sessionStore[sessionId]) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const user = sessionStore[sessionId];
+        const accountNumber = user.accountNumber;
+
+        // Check if user has head admin access
+        const hasAccess = await hasAdminAccess(accountNumber, 'headAdmin');
+        if (!hasAccess) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Head admin access required' });
+        }
+
+        // Fetch all users with their roles
+        const users = await User.find({}, 'username accountNumber adminRole').sort({ adminRole: -1, username: 1 });
+        
+        return res.status(200).json({ success: true, users });
+    } catch (error) {
+        console.error('Error fetching users with roles:', error);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });

@@ -4,7 +4,7 @@ const { deleteUserAndData,updateUserPassword, updateData, fixProfile, fixPosts, 
 const initDatabase = async () => {
     try {
         await connectToDB();
-        // await updateUserPassword('4833354984','Gabriel098')
+        await updateData('1175952300','username','kInGkOnG');
             } catch (err) {
         console.error('DATABASE INITIALIZATION ERROR', err);
     }

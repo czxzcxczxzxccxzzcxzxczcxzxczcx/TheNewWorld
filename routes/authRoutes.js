@@ -147,20 +147,56 @@ router.post('/login', async (req, res) => {
     }
     
     try {
-        const user = await User.findOne({ 
-            username: { $regex: new RegExp(`^${fullName}$`, 'i') } 
-        });
+        // First try exact case-sensitive match to handle duplicate usernames
+        let user = await User.findOne({ username: fullName });
+        
+        // If no exact match, try case-insensitive but check for duplicates
+        if (!user) {
+            const potentialUsers = await User.find({ 
+                username: { $regex: new RegExp(`^${fullName}$`, 'i') } 
+            });
+            
+            if (potentialUsers.length === 1) {
+                // Only one case-insensitive match, safe to use
+                user = potentialUsers[0];
+            } else if (potentialUsers.length > 1) {
+                // Multiple matches - ambiguous login attempt
+                return res.json({ 
+                    success: false, 
+                    message: 'Multiple accounts found with similar usernames. Please use exact case.',
+                    field: 'fullName'
+                });
+            }
+        }
 
         if (user) {
             const isMatch = await comparePassword(password, user.password);
             if (isMatch) {
+                // Verify user data before creating session
+                const verifiedUser = await User.findOne({ 
+                    accountNumber: user.accountNumber,
+                    username: user.username  // Use exact username, not regex
+                });
+                
+                if (!verifiedUser) {
+                    return res.json({ 
+                        success: false, 
+                        message: 'User verification failed',
+                        field: 'general'
+                    });
+                }
+                
                 const sessionId = crypto.randomBytes(16).toString('hex'); 
-                sessionStore[sessionId] = {userId: user._id, username: user.username, accountNumber: user.accountNumber,};
+                sessionStore[sessionId] = {
+                    userId: verifiedUser._id, 
+                    username: verifiedUser.username, 
+                    accountNumber: verifiedUser.accountNumber
+                };
                 
                 res.cookie('TNWID', sessionId, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000,  sameSite: 'Strict', });
                 res.json({ success: true, message: 'Login successful' });
 
-                console.log(`Server Login:\t\tSuccessful by ${user.username} (${user.accountNumber})`);
+                console.log(`Server Login:\t\tSuccessful by ${verifiedUser.username} (${verifiedUser.accountNumber})`);
             } else {
                 res.json({ 
                     success: false, 

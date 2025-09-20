@@ -115,14 +115,23 @@ router.post('/updateSettings', async (req, res) => {
             if (!/^[a-zA-Z0-9_]+$/.test(username)) {
                 return res.status(400).json({ success: false, message: 'Username must be alphanumeric or underscores' });
             }
-            // Check if username is taken by another user (case-insensitive)
+            // Enhanced duplicate username logic
             const user = sessionStore[sessionId];
             const accountNumber = user.accountNumber;
-            const existingUser = await User.findOne({ 
-                username: { $regex: new RegExp(`^${username}$`, 'i') } 
-            });
-            if (existingUser && existingUser.accountNumber !== accountNumber) {
-                return res.status(400).json({ success: false, message: 'Username is already taken' });
+            // Find all users with the same username (case-insensitive)
+            const potentialUsers = await User.find({ username: { $regex: new RegExp(`^${username}$`, 'i') } });
+            if (potentialUsers.length > 1) {
+                // If more than one user has this username (case-insensitive)
+                // Only allow if the user is keeping their own exact username (case-sensitive)
+                const isOwnExact = potentialUsers.some(u => u.accountNumber === accountNumber && u.username === username);
+                if (!isOwnExact) {
+                    return res.status(400).json({ success: false, message: 'Multiple accounts exist with this username (different cases). Please choose a unique username.' });
+                }
+            } else if (potentialUsers.length === 1) {
+                // If one user exists, make sure it's either the current user or not taken
+                if (potentialUsers[0].accountNumber !== accountNumber) {
+                    return res.status(400).json({ success: false, message: 'Username is already taken' });
+                }
             }
 
             await User.findOneAndUpdate(

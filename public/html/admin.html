@@ -40,6 +40,23 @@
                 <input class="adminTextBox" id="postId" placeholder="accountNumber">
                 <button type="submit" class="adminButton" id="updatePost">Delete User</button>
             </div>
+
+            <!-- Admin Management Section (Head Admin Only) -->
+            <div id="adminManagementSection" style="display: none;">
+                <h2 style="color: #fff; text-align: center; margin: 20px 0;">Admin Management</h2>
+                <div class="textAndButton">
+                    <input class="adminTextBox" id="grantAdminAccountNumber" placeholder="Account Number">
+                    <button type="submit" class="adminButton" id="grantAdminButton">Grant Admin</button>
+                </div>
+                <div class="textAndButton">
+                    <input class="adminTextBox" id="revokeAdminAccountNumber" placeholder="Account Number">
+                    <button type="submit" class="adminButton" id="revokeAdminButton">Revoke Admin</button>
+                </div>
+                <div class="textAndButton">
+                    <button type="submit" class="adminButton" id="viewUsersWithRoles">View All Users & Roles</button>
+                </div>
+            </div>
+
             <div class="buttons">
                 <button type="submit" class="adminButton" id="fixUserData">Fix User Data</button>
                 <button type="submit" class="adminButton" id="fixPostData">Fix Post Data</button>
