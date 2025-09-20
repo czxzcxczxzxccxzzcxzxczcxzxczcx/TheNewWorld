@@ -225,6 +225,54 @@ router.get('/getFollowers/:userId', async (req, res) => {
     }
 });
 
+// Route to remove a follower (secure endpoint)
+router.post('/removeFollower', async (req, res) => {
+    const { followerAccountNumber } = req.body;
+    const currentUserAccountNumber = req.session.user.accountNumber;
+
+    try {
+        // Validate input
+        if (!followerAccountNumber) {
+            return res.status(400).json({ success: false, message: 'Follower account number is required' });
+        }
+
+        // Find the current user
+        const currentUser = await User.findOne({ accountNumber: currentUserAccountNumber });
+        if (!currentUser) {
+            return res.status(404).json({ success: false, message: 'Current user not found' });
+        }
+
+        // Find the follower user
+        const followerUser = await User.findOne({ accountNumber: followerAccountNumber });
+        if (!followerUser) {
+            return res.status(404).json({ success: false, message: 'Follower user not found' });
+        }
+
+        // Check if the follower is actually following the current user
+        if (!currentUser.followers.includes(followerAccountNumber)) {
+            return res.status(400).json({ success: false, message: 'This user is not following you' });
+        }
+
+        // Remove the follower from current user's followers list
+        await User.updateOne(
+            { accountNumber: currentUserAccountNumber },
+            { $pull: { followers: followerAccountNumber } }
+        );
+
+        // Remove the current user from the follower's following list
+        await User.updateOne(
+            { accountNumber: followerAccountNumber },
+            { $pull: { following: currentUserAccountNumber } }
+        );
+
+        console.log(`User ${currentUserAccountNumber} removed follower ${followerAccountNumber}`);
+        res.json({ success: true, message: 'Follower removed successfully' });
+    } catch (error) {
+        console.error('Error removing follower:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 // Route to get user data by account number
 router.post('/getUser', async (req, res) => {
     const { accountNumber } = req.body;

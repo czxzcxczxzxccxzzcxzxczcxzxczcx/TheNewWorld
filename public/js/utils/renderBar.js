@@ -10,28 +10,90 @@ export function renderBar() {
                     <img class="logoImg" src="/src/TNW.png" alt="Logo" />
                     <h1 class="logo" id="checkPost">The New World</h1>
                 </div>
-                <div class="buttons">
-                    <a href="/home">
-                        <h1>Home</h1>
-                    </a>
-                    <a id="createPostButton">
-                        <h1>Create Post</h1>
-                    </a>
-                    <a href="/messages">
-                        <h1>Messages</h1>
-                    </a>
-                    <a href="" id="profileButton">
-                        <h1>My Profile</h1>
-                    </a>
-                    <a href="/settings" id="settingsButton">
-                        <h1>Settings</h1>
-                    </a>
-                    <a id="logoutButton" href="">
-                        <h1>Logout</h1>
-                    </a>
-                    <a id="adminPanelButton" href="/admin">
-                        <h1>Admin</h1>
-                    </a>
+                <div class="nav-controls">
+                    <!-- Search Button -->
+                    <div class="nav-search-container" id="navSearchContainer">
+                        <button class="nav-icon-btn" id="searchToggle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Expandable Search Bar -->
+                        <div class="nav-search-panel" id="navSearchPanel">
+                            <div class="search-options">
+                                <button class="search-type-btn active" data-type="posts">Posts</button>
+                                <button class="search-type-btn" data-type="users">Users</button>
+                            </div>
+                            <input type="text" id="navSearchInput" placeholder="Search..." />
+                            <div class="nav-search-results" id="navSearchResults"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Menu Button -->
+                    <div class="nav-menu-container" id="navMenuContainer">
+                        <button class="nav-icon-btn" id="menuToggle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                        </button>
+                        
+                        <!-- Expandable Menu Panel -->
+                        <div class="nav-menu-panel" id="navMenuPanel">
+                            <a href="/home" class="nav-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                                </svg>
+                                <span>Home</span>
+                            </a>
+                            <a id="createPostButton" class="nav-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+                                    <circle cx="12" cy="13" r="3"></circle>
+                                </svg>
+                                <span>Create Post</span>
+                            </a>
+                            <a href="/messages" class="nav-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                <span>Messages</span>
+                            </a>
+                            <a href="" id="profileButton" class="nav-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="/settings" id="settingsButton" class="nav-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                </svg>
+                                <span>Settings</span>
+                            </a>
+                            <a id="adminPanelButton" href="/admin" class="nav-menu-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                                <span>Admin Panel</span>
+                            </a>
+                            <a id="logoutButton" href="" class="nav-menu-item logout">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16,17 21,12 16,7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </ul>
         </div>
@@ -41,6 +103,9 @@ export function renderBar() {
     const barContainer = document.createElement('div');
     barContainer.innerHTML = barHTML;
     body.insertBefore(barContainer, body.firstChild);
+    
+    // Initialize dynamic navigation functionality
+    initializeNavControls();
 
     // Add scroll event handling for the navbar
 //     let lastScrollTop = 0;
@@ -66,6 +131,136 @@ export function renderBar() {
         
 //         lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 //     }, { passive: true }); // Passive for better performance
+}
+
+function initializeNavControls() {
+    const searchContainer = document.getElementById('navSearchContainer');
+    const searchPanel = document.getElementById('navSearchPanel');
+    const searchInput = document.getElementById('navSearchInput');
+    const searchResults = document.getElementById('navSearchResults');
+    const searchTypeBtns = document.querySelectorAll('.search-type-btn');
+    
+    const menuContainer = document.getElementById('navMenuContainer');
+    const menuPanel = document.getElementById('navMenuPanel');
+    
+    let searchTimeout;
+    let currentSearchType = 'posts';
+    
+    // Search functionality
+    if (searchContainer && searchPanel) {
+        // Mouse enter search container
+        searchContainer.addEventListener('mouseenter', () => {
+            searchPanel.classList.add('active');
+            searchInput.focus();
+        });
+        
+        // Mouse leave search container
+        searchContainer.addEventListener('mouseleave', () => {
+            searchPanel.classList.remove('active');
+            searchResults.innerHTML = '';
+            searchInput.value = '';
+        });
+        
+        // Search type button handling
+        searchTypeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                searchTypeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSearchType = btn.dataset.type;
+                searchInput.placeholder = `Search ${currentSearchType}...`;
+                if (searchInput.value.trim()) {
+                    performSearch(searchInput.value.trim(), currentSearchType);
+                }
+            });
+        });
+        
+        // Search input handling
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length >= 2) {
+                searchTimeout = setTimeout(() => {
+                    performSearch(query, currentSearchType);
+                }, 300);
+            } else {
+                searchResults.innerHTML = '';
+            }
+        });
+        
+        // Prevent search panel from closing when clicking inside it
+        searchPanel.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+    
+    // Menu functionality
+    if (menuContainer && menuPanel) {
+        // Mouse enter menu container
+        menuContainer.addEventListener('mouseenter', () => {
+            menuPanel.classList.add('active');
+        });
+        
+        // Mouse leave menu container
+        menuContainer.addEventListener('mouseleave', () => {
+            menuPanel.classList.remove('active');
+        });
+        
+        // Prevent menu panel from closing when clicking inside it
+        menuPanel.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+}
+
+async function performSearch(query, type) {
+    const searchResults = document.getElementById('navSearchResults');
+    if (!searchResults) return;
+    
+    try {
+        searchResults.innerHTML = '<div class="search-loading">Searching...</div>';
+        
+        const endpoint = type === 'posts' ? '/api/searchPosts' : '/api/searchUsers';
+        console.log(`Searching ${type} with query: "${query}" at endpoint: ${endpoint}`);
+        
+        const data = await apiRequest(endpoint, 'POST', { data: query });
+        console.log('Search response:', data);
+        
+        if (data.success) {
+            const results = type === 'posts' ? data.posts : data.users;
+            
+            if (results && results.length > 0) {
+                const resultsHTML = results.slice(0, 5).map(item => {
+                    if (type === 'posts') {
+                        return `
+                            <div class="search-result-item" onclick="window.location.href='/post/${item.postId}'">
+                                <div class="search-result-title">${item.title || 'Untitled'}</div>
+                                <div class="search-result-meta">by @${item.username || 'Unknown'} • ${new Date(item.date || item.createdAt).toLocaleDateString()}</div>
+                                <div class="search-result-content">${(item.content || '').substring(0, 100)}${(item.content || '').length > 100 ? '...' : ''}</div>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div class="search-result-item" onclick="window.location.href='/profile/${item.accountNumber}'">
+                                <div class="search-result-title">@${item.username}</div>
+                                <div class="search-result-meta">Account #${item.accountNumber}</div>
+                                <div class="search-result-content">${item.bio || 'No bio available'}</div>
+                            </div>
+                        `;
+                    }
+                }).join('');
+                
+                searchResults.innerHTML = resultsHTML;
+            } else {
+                searchResults.innerHTML = `<div class="search-no-results">No ${type} found</div>`;
+            }
+        } else {
+            searchResults.innerHTML = `<div class="search-no-results">No ${type} found</div>`;
+        }
+    } catch (error) {
+        console.error('Search error:', error);
+        searchResults.innerHTML = '<div class="search-error">Search failed</div>';
+    }
 }
 
 export function initializeGlobalButtons(accountNumber) {

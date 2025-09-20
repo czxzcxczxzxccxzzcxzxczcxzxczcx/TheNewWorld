@@ -10,65 +10,141 @@
     <link rel="stylesheet" type="text/css" href="styles.css">
     <script type="module" src="/js/admin.js" defer></script>
 
-    <title>The New World</title>
+    <title>The New World - Admin Panel</title>
 </head>
 
 <body>
-    <div class="adminPanel">
-        <div class="adminDiv">
-            <h1>The New World Admin Panel</h1>
-            <div class="textAndButton">
-                <input class="adminTextBox" id="accountNumber" placeholder="accountNumber">
-                <input class="adminTextBox" id="userDataType" placeholder="userDataType">
-                <input class="adminTextBox" id="userDataValue" placeholder="userDataValue">
-                <button type="submit" class="adminButton" id="updateData">Update User</button>
+    <div class="modernAdminPanel">
+        <header class="adminHeader">
+            <h1>🛡️ Admin Control Panel</h1>
+            <div class="adminUserInfo">
+                <span id="adminUserDisplay">Loading...</span>
+                <span id="adminRoleBadge" class="roleBadge">Admin</span>
             </div>
-            <div class="textAndButton">
-                <input class="adminTextBox" id="postId" placeholder="postId">
-                <input class="adminTextBox" id="postDataType" placeholder="postDataType">
-                <input class="adminTextBox" id="postDataValue" placeholder="postDataValue">
-                <button type="submit" class="adminButton" id="updatePost">Update Post</button>
-            </div>
+        </header>
 
-            <div class="textAndButton">
-                <input class="adminTextBox" id="postId" placeholder="accountNumber">
-                <input class="adminTextBox" id="postDataType" placeholder="newPassword">
-                <button type="submit" class="adminButton" id="updatePost">Update Password</button>
-            </div>
+        <nav class="adminTabs">
+            <button class="adminTab active" data-tab="users">👥 Users</button>
+            <button class="adminTab" data-tab="posts">📝 Posts</button>
+            <button class="adminTab" data-tab="comments">💬 Comments</button>
+            <button class="adminTab" data-tab="messages">📩 Messages</button>
+            <button class="adminTab" data-tab="permissions" id="permissionsTab" style="display: none;">🔑 Permissions</button>
+        </nav>
 
-            <div class="textAndButton">
-                <input class="adminTextBox" id="postId" placeholder="accountNumber">
-                <button type="submit" class="adminButton" id="updatePost">Delete User</button>
-            </div>
-
-            <!-- Admin Management Section (Head Admin Only) -->
-            <div id="adminManagementSection" style="display: none;">
-                <h2 style="color: #fff; text-align: center; margin: 20px 0;">Admin Management</h2>
-                <div class="textAndButton">
-                    <input class="adminTextBox" id="grantAdminAccountNumber" placeholder="Account Number">
-                    <button type="submit" class="adminButton" id="grantAdminButton">Grant Admin</button>
+        <main class="adminContent">
+            <!-- Users Tab -->
+            <section class="adminTabContent active" id="usersTab">
+                <div class="adminSearch">
+                    <input type="text" id="userSearch" placeholder="Search users by username, ID, or email...">
+                    <button id="userSearchBtn">🔍 Search</button>
                 </div>
-                <div class="textAndButton">
-                    <input class="adminTextBox" id="revokeAdminAccountNumber" placeholder="Account Number">
-                    <button type="submit" class="adminButton" id="revokeAdminButton">Revoke Admin</button>
+                
+                <div class="adminActions">
+                    <button id="loadAllUsers" class="actionBtn">📋 Load All Users</button>
+                    <button id="createUser" class="actionBtn">➕ Create User</button>
                 </div>
-                <div class="textAndButton">
-                    <button type="submit" class="adminButton" id="viewUsersWithRoles">View All Users & Roles</button>
-                </div>
-            </div>
+                
+                <div id="userResults" class="resultsContainer"></div>
+            </section>
 
-            <div class="buttons">
-                <button type="submit" class="adminButton" id="fixUserData">Fix User Data</button>
-                <button type="submit" class="adminButton" id="fixPostData">Fix Post Data</button>
-                <button type="submit" class="adminButton" id="viewPosts">View Posts</button>
-                <button type="submit" class="adminButton" id="viewUsers">View Users</button>
+            <!-- Posts Tab -->
+            <section class="adminTabContent" id="postsTab">
+                <div class="adminSearch">
+                    <input type="text" id="postSearch" placeholder="Search posts by content, ID, or author...">
+                    <button id="postSearchBtn">🔍 Search</button>
+                </div>
+                
+                <div class="adminActions">
+                    <button id="loadAllPosts" class="actionBtn">📋 Load All Posts</button>
+                </div>
+                
+                <div id="postResults" class="resultsContainer"></div>
+            </section>
+
+            <!-- Comments Tab -->
+            <section class="adminTabContent" id="commentsTab">
+                <div class="adminSearch">
+                    <input type="text" id="commentSearch" placeholder="Search comments by content, ID, or author...">
+                    <button id="commentSearchBtn">🔍 Search</button>
+                </div>
+                
+                <div class="adminActions">
+                    <button id="loadAllComments" class="actionBtn">📋 Load All Comments</button>
+                </div>
+                
+                <div id="commentResults" class="resultsContainer"></div>
+            </section>
+
+            <!-- Messages Tab -->
+            <section class="adminTabContent" id="messagesTab">
+                <div class="adminSearch">
+                    <input type="text" id="messageSearch" placeholder="Search messages by content, ID, or sender...">
+                    <button id="messageSearchBtn">🔍 Search</button>
+                </div>
+                
+                <div class="adminActions">
+                    <button id="loadAllMessages" class="actionBtn">📋 Load All Messages</button>
+                </div>
+                
+                <div id="messageResults" class="resultsContainer"></div>
+            </section>
+
+            <!-- Permissions Tab (Head Admin Only) -->
+            <section class="adminTabContent" id="permissionsTab">
+                <div class="permissionsSection">
+                    <h3>👑 Admin Management</h3>
+                    <div class="adminActions">
+                        <button id="loadUsersWithRoles" class="actionBtn">📋 View All User Roles</button>
+                    </div>
+                    
+                    <div class="permissionControls">
+                        <div class="permissionGroup">
+                            <h4>Grant Admin Permission</h4>
+                            <input type="text" id="grantAdminInput" placeholder="Account Number or Username">
+                            <button id="grantAdminBtn" class="actionBtn grant">🛡️ Grant Admin</button>
+                        </div>
+                        
+                        <div class="permissionGroup">
+                            <h4>Revoke Admin Permission</h4>
+                            <input type="text" id="revokeAdminInput" placeholder="Account Number or Username">
+                            <button id="revokeAdminBtn" class="actionBtn revoke">❌ Revoke Admin</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Edit Modal -->
+        <div id="editModal" class="modal">
+            <div class="modalContent">
+                <div class="modalHeader">
+                    <h3 id="modalTitle">Edit Item</h3>
+                    <button id="closeModal" class="closeBtn">✕</button>
+                </div>
+                <div class="modalBody">
+                    <div id="editForm"></div>
+                </div>
+                <div class="modalFooter">
+                    <button id="saveChanges" class="actionBtn">💾 Save Changes</button>
+                    <button id="cancelEdit" class="actionBtn secondary">❌ Cancel</button>
+                </div>
             </div>
-            <!-- <div class="spaceDiv"></div> -->
-            <div class="buttons">
-                <button type="submit" class="adminButton" id="viewMessages">View Messages</button>
-                <button type="submit" class="adminButton" id="fixPostData">Coming Soon</button>
-                <button type="submit" class="adminButton" id="viewPosts">Coming Soon</button>
-                <button type="submit" class="adminButton" id="viewUsers">Coming Soon</button>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteModal" class="modal">
+            <div class="modalContent">
+                <div class="modalHeader">
+                    <h3>⚠️ Confirm Delete</h3>
+                    <button id="closeDeleteModal" class="closeBtn">✕</button>
+                </div>
+                <div class="modalBody">
+                    <p id="deleteMessage">Are you sure you want to delete this item?</p>
+                </div>
+                <div class="modalFooter">
+                    <button id="confirmDelete" class="actionBtn danger">🗑️ Delete</button>
+                    <button id="cancelDelete" class="actionBtn secondary">❌ Cancel</button>
+                </div>
             </div>
         </div>
     </div>

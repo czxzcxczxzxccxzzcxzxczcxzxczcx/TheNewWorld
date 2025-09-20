@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const accountNumber = profileAccountNumber;
                 const pfp = data.pfp;
 
-                if (userAccountNumber === accountNumber) {
+                if (parseInt(userAccountNumber) === parseInt(accountNumber)) {
                     gebid('profileEdit').style.display = "block";
                     gebid('followButton').style.display = "none";
                 } else {
@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    if (userAccountNumber !== profileAccountNumber) {
+    if (parseInt(userAccountNumber) !== parseInt(profileAccountNumber)) {
         const openDMButton = document.createElement('button');
         openDMButton.className = 'profileButton';
         openDMButton.id = 'openDMButton';
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         event.preventDefault();
         
         // Security check: Only allow editing own profile
-        if (userAccountNumber !== parseInt(profileAccountNumber)) {
+        if (parseInt(userAccountNumber) !== parseInt(profileAccountNumber)) {
             alert('You can only edit your own profile!');
             return;
         }
@@ -306,7 +306,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (!isHolding) {
                 // Regular click behavior - check if editable for file upload
                 const isEditable = gebid("bio").isContentEditable;
-                if (isEditable && userAccountNumber === parseInt(profileAccountNumber)) {
+                if (isEditable && parseInt(userAccountNumber) === parseInt(profileAccountNumber)) {
                     pfpFileInput.value = '';
                     pfpFileInput.click();
                 }
@@ -343,7 +343,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (!isHolding) {
                 // Regular tap behavior - check if editable for file upload
                 const isEditable = gebid("bio").isContentEditable;
-                if (isEditable && userAccountNumber === parseInt(profileAccountNumber)) {
+                if (isEditable && parseInt(userAccountNumber) === parseInt(profileAccountNumber)) {
                     pfpFileInput.value = '';
                     pfpFileInput.click();
                 }

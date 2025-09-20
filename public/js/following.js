@@ -47,20 +47,28 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 if (accountNumber == profileAccountNumber) { 
                     followingPanel.innerHTML = `
-                    <img class="pfp homeHover" id="${user.accountNumber}"  src="${user.pfp}" alt="Profile Picture"/>
-                    <h1>@${user.username} </h1>
+                    <img class="pfp homeHover clickable-profile" src="${user.pfp}" alt="Profile Picture" data-account-number="${user.accountNumber}"/>
+                    <h1 class="clickable-profile" data-account-number="${user.accountNumber}">@${user.username}</h1>
                     <button class="followingButton" data-account-number="${user.accountNumber}">Unfollow</button>
                 `;
                 } else {
                     followingPanel.innerHTML = `
-                    <img class="pfp homeHover"  src="${user.pfp}" alt="Profile Picture"/>
-                    <h1>@${user.username} (${user.accountNumber})</h1>
+                    <img class="pfp homeHover clickable-profile" src="${user.pfp}" alt="Profile Picture" data-account-number="${user.accountNumber}"/>
+                    <h1 class="clickable-profile" data-account-number="${user.accountNumber}">@${user.username}</h1>
                 `;
                 }
                 // document.getElementById("2369255378").addEventListener("click", async function (event) {
                 //     window.location.href = `/profile/${user.accountNumber}`;  
                 // });
                 homePanel.appendChild(followingPanel);
+            });
+
+            // Add event listeners for clickable profiles
+            document.querySelectorAll(".clickable-profile").forEach(element => {
+                element.addEventListener("click", function() {
+                    const targetAccountNumber = this.getAttribute("data-account-number");
+                    window.location.href = `/profile/${targetAccountNumber}`;
+                });
             });
 
             // Add event listeners to the unfollow buttons
