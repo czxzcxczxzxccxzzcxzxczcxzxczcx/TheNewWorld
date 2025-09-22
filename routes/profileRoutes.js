@@ -32,11 +32,11 @@ router.post('/follow', async (req, res) => {
 
     try {
         // Verify the sender's session
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const sender = sessionStore[sessionId]; // Get sender's user data from session
+        const sender = await sessionStore.get(sessionId); // Get sender's user data from session
         const senderAccountNumber = sender.accountNumber;
 
         // Ensure sender and recipient are not the same
@@ -107,7 +107,7 @@ router.post('/updateSettings', async (req, res) => {
     const { bio, pfp, username } = req.body;
     const sessionId = req.cookies.TNWID;
     try {
-        if (sessionId && sessionStore[sessionId]) {
+        if (sessionId && await sessionStore.get(sessionId)) {
             // Username validation (same as /newAccount in authRoutes.js)
             if (!username || typeof username !== 'string' || username.trim().length < 3 || username.trim().length > 20) {
                 return res.status(400).json({ success: false, message: 'Username must be 3-20 characters' });
@@ -116,7 +116,13 @@ router.post('/updateSettings', async (req, res) => {
                 return res.status(400).json({ success: false, message: 'Username must be alphanumeric or underscores' });
             }
             // Enhanced duplicate username logic
-            const user = sessionStore[sessionId];
+            const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
             const accountNumber = user.accountNumber;
             // Find all users with the same username (case-insensitive)
             const potentialUsers = await User.find({ username: { $regex: new RegExp(`^${username}$`, 'i') } });
@@ -156,11 +162,11 @@ router.get('/isFollowed/:recipientAccountNumber', async (req, res) => {
 
     try {
         // Verify the sender's session
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const sender = sessionStore[sessionId]; // Get sender's user data from session
+        const sender = await sessionStore.get(sessionId); // Get sender's user data from session
         const senderAccountNumber = sender.accountNumber;
 
         // Find the sender in the database
@@ -232,12 +238,18 @@ router.post('/removeFollower', async (req, res) => {
     
     // Check authentication using the same pattern as other endpoints
     const sessionId = req.cookies.TNWID;
-    if (!sessionId || !sessionStore[sessionId]) {
+    if (!sessionId) {
         console.log('No valid session found');
         return res.status(401).json({ success: false, message: 'Authentication required' });
     }
     
-    const user = sessionStore[sessionId]; // Get user's data from session
+    const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        } // Get user's data from session
     const currentUserAccountNumber = user.accountNumber;
     console.log('Current user:', currentUserAccountNumber, 'Removing follower:', followerAccountNumber);
 
@@ -312,20 +324,17 @@ router.post('/getUser', async (req, res) => {
 
 // Route to get notifications for the current user
 router.get('/getNotifications', async (req, res) => {
-    const sessionId = req.cookies.TNWID; // Get session ID from cookies
-
     try {
-        // Verify the user's session
-        if (!sessionId || !sessionStore[sessionId]) {
-            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        // req.accountNumber should be set by requireAuth middleware if you want to pass it
+        // Otherwise, fetch from session if needed, but session is already validated
+        // For now, let's fetch from session for compatibility
+        const sessionId = req.cookies.TNWID;
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
         }
-
-        const user = sessionStore[sessionId]; // Get user's data from session
         const accountNumber = user.accountNumber;
-
-        // Fetch notifications for the user
         const notifications = await Notification.find({ to: accountNumber }).sort({ sentAt: -1 });
-
         res.json({ success: true, notifications });
     } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -338,10 +347,16 @@ router.post('/setNotificationShown', async (req, res) => {
     const { notificationId } = req.body;
     const sessionId = req.cookies.TNWID;
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
         // Find the notification and ensure it belongs to this user
         const notification = await Notification.findOne({ notificationId });
@@ -365,10 +380,16 @@ router.post('/changePassword', async (req, res) => {
     const { newPassword } = req.body;
     const sessionId = req.cookies.TNWID;
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
         if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
             return res.status(400).json({ success: false, message: 'Password must be at least 6 characters.' });
@@ -386,7 +407,7 @@ router.post('/changeUsername', async (req, res) => {
     const { newUsername } = req.body;
     const sessionId = req.cookies.TNWID;
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
         if (!newUsername || typeof newUsername !== 'string' || newUsername.trim().length < 3 || newUsername.trim().length > 20) {
@@ -402,7 +423,13 @@ router.post('/changeUsername', async (req, res) => {
         if (existingUser) {
             return res.status(400).json({ success: false, message: 'Username is already taken' });
         }
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
         await User.findOneAndUpdate(
             { accountNumber },
@@ -424,11 +451,17 @@ router.post('/changePasswordSecure', async (req, res) => {
     const sessionId = req.cookies.TNWID;
     
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         // Validate inputs
@@ -469,11 +502,17 @@ router.post('/deleteAccount', async (req, res) => {
     const sessionId = req.cookies.TNWID;
     
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         // Get user from database
@@ -523,7 +562,7 @@ router.post('/deleteAccount', async (req, res) => {
         await User.deleteOne({ accountNumber });
 
         // Clear session
-        delete sessionStore[sessionId];
+        delete await sessionStore.get(sessionId);
 
         // Clear session cookie
         res.clearCookie('TNWID');
@@ -532,6 +571,67 @@ router.post('/deleteAccount', async (req, res) => {
 
     } catch (error) {
         console.error('Error deleting account:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+// Get user's theme preference
+router.get('/theme', async (req, res) => {
+    const sessionId = req.cookies.TNWID;
+
+    try {
+        if (!sessionId) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const sender = await sessionStore.get(sessionId);
+        const user = await User.findOne({ accountNumber: sender.accountNumber });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        return res.json({ success: true, theme: user.theme || 'auto' });
+
+    } catch (error) {
+        console.error('Error fetching theme:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+// Update user's theme preference
+router.post('/theme', async (req, res) => {
+    const { theme } = req.body;
+    const sessionId = req.cookies.TNWID;
+
+    try {
+        if (!sessionId) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        // Validate theme value
+        const validThemes = ['light', 'dark', 'auto'];
+        if (!validThemes.includes(theme)) {
+            return res.status(400).json({ success: false, message: 'Invalid theme value' });
+        }
+
+        const sender = await sessionStore.get(sessionId);
+        const user = await User.findOneAndUpdate(
+            { accountNumber: sender.accountNumber },
+            { theme: theme },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Note: Session theme will be updated on next login or can be updated via session store if needed
+
+        return res.json({ success: true, message: 'Theme updated successfully', theme: user.theme });
+
+    } catch (error) {
+        console.error('Error updating theme:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });

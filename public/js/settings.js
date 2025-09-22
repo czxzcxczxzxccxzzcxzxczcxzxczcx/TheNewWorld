@@ -1,5 +1,5 @@
 import { apiRequest } from './utils/apiRequest.js';
-import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
+import { renderBar, initializeGlobalButtons, applyTheme, initializeTheme } from './utils/renderBar.js';
 
 // Initialize navigation
 renderBar();
@@ -15,6 +15,8 @@ class SettingsManager {
             await this.loadUserData();
             this.setupEventListeners();
             this.updateUI();
+            // Apply theme immediately after loading user data
+            this.applyUserTheme();
         } catch (error) {
             console.error('Failed to initialize settings:', error);
             window.location.href = '/';
@@ -23,11 +25,12 @@ class SettingsManager {
 
     async loadUserData() {
         const data = await apiRequest('/api/getUserInfo', 'GET');
+        
         if (data.success) {
             this.user = data.user;
             initializeGlobalButtons(this.user.accountNumber);
         } else {
-            throw new Error('Failed to load user data');
+            throw new Error('Failed to load user data: ' + data.message);
         }
     }
 
@@ -36,6 +39,10 @@ class SettingsManager {
         document.getElementById('currentUsername').textContent = `@${this.user.username}`;
         document.getElementById('currentBio').textContent = this.user.bio || 'No bio set';
         document.getElementById('currentProfilePicture').src = this.user.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
+    }
+
+    applyUserTheme() {
+        initializeTheme(this.user);
     }
 
     setupEventListeners() {
@@ -55,6 +62,9 @@ class SettingsManager {
 
         // Account deletion
         document.getElementById('deleteAccount').addEventListener('click', () => this.showDeleteAccountModal());
+
+        // Theme management
+        this.setupThemeSelector();
     }
 
     createModal(title, subtitle = '') {
@@ -410,6 +420,71 @@ class SettingsManager {
         } catch (error) {
             this.showErrorMessage('Failed to delete account');
         }
+    }
+
+    // Theme Management Methods
+    setupThemeSelector() {
+        const themeOptions = document.querySelectorAll('.themeOption');
+        
+        // Set initial active state based on user's theme
+        const currentTheme = this.user.theme || 'auto';
+        themeOptions.forEach(option => {
+            const theme = option.dataset.theme;
+            if (theme === currentTheme) {
+                option.classList.add('active');
+            } else {
+                option.classList.remove('active');
+            }
+        });
+
+        // Apply current theme
+        applyTheme(currentTheme);
+
+        // Add click handlers
+        themeOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.preventDefault();
+                const theme = option.dataset.theme;
+                this.selectTheme(theme);
+            });
+        });
+    }
+
+    async selectTheme(theme) {
+        try {
+            // Update UI immediately
+            this.updateActiveTheme(theme);
+            applyTheme(theme);
+
+            // Save to server
+            const response = await apiRequest('/api/theme', 'POST', { theme });
+            
+            if (response.success) {
+                this.user.theme = theme;
+                localStorage.setItem('theme', theme);
+                this.showToast(`Switched to ${theme === 'auto' ? 'Auto Mode (follows system preference)' : theme.charAt(0).toUpperCase() + theme.slice(1) + ' Mode'}`, 'success');
+            } else {
+                throw new Error('Failed to save theme');
+            }
+        } catch (error) {
+            console.error('Failed to change theme:', error);
+            // Fallback to localStorage
+            localStorage.setItem('theme', theme);
+            this.user.theme = theme;
+            this.showToast(`Theme changed to ${theme} (saved locally)`, 'info');
+        }
+    }
+
+    updateActiveTheme(selectedTheme) {
+        const themeOptions = document.querySelectorAll('.themeOption');
+        themeOptions.forEach(option => {
+            const theme = option.dataset.theme;
+            if (theme === selectedTheme) {
+                option.classList.add('active');
+            } else {
+                option.classList.remove('active');
+            }
+        });
     }
 
     showSuccessMessage(message) {

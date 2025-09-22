@@ -13,7 +13,8 @@ const userSchema = new mongoose.Schema({
     liked: { type: [String], default: [] },
     reposts: { type: [String], default: [] },
     openDM: { type: [String], default: [] },
-    adminRole: { type: String, enum: ['user', 'admin', 'headAdmin'], default: 'user' }
+    adminRole: { type: String, enum: ['user', 'admin', 'headAdmin'], default: 'user' },
+    theme: { type: String, enum: ['light', 'dark', 'auto'], default: 'light' }
 });
 
 module.exports = userSchema;

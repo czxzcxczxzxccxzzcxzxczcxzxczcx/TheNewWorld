@@ -26,11 +26,11 @@ router.post('/sendMessage', async (req, res) => {
 
     try {
         // Verify the sender's session
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const sender = sessionStore[sessionId];
+        const sender = await sessionStore.get(sessionId);
         const from = sender.accountNumber;
 
         // Validate sender and recipient
@@ -85,11 +85,17 @@ router.delete('/deleteMessage/:messageId', async (req, res) => {
 
     try {
         // Verify the user's session
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         // Find the message by ID
@@ -129,11 +135,11 @@ router.post('/addOpenDM', async (req, res) => {
 
     try {
         // Verify the sender's session
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const sender = sessionStore[sessionId];
+        const sender = await sessionStore.get(sessionId);
         const senderAccountNumber = sender.accountNumber;
 
         // Validate recipient
@@ -162,11 +168,11 @@ router.post('/getOpenDMs', async (req, res) => {
 
     try {
         // Verify the sender's session
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const sender = sessionStore[sessionId];
+        const sender = await sessionStore.get(sessionId);
         const senderAccountNumber = sender.accountNumber;
 
         // Retrieve the sender's openDM array
@@ -209,11 +215,11 @@ router.post('/getIncomingDMs', async (req, res) => {
 
     try {
         // Verify the sender's session
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const recipient = sessionStore[sessionId];
+        const recipient = await sessionStore.get(sessionId);
         const recipientAccountNumber = recipient.accountNumber;
 
         // Find users who have the requesting user in their openDM array
@@ -262,11 +268,11 @@ router.post('/removeOpenDM', async (req, res) => {
 
     try {
         // Verify the sender's session
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const sender = sessionStore[sessionId];
+        const sender = await sessionStore.get(sessionId);
         const senderAccountNumber = sender.accountNumber;
 
         // Validate recipient

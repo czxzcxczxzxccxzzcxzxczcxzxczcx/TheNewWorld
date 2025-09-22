@@ -289,3 +289,51 @@ export function initializeGlobalButtons(accountNumber) {
         });
     }
 }
+
+// Global Theme Manager
+export function applyTheme(theme) {
+    const html = document.documentElement;
+    
+    // Remove existing theme classes
+    html.classList.remove('theme-light', 'theme-dark', 'theme-auto', 'auto-light', 'auto-dark');
+    
+    // Apply new theme
+    html.classList.add(`theme-${theme}`);
+    
+    // Handle auto theme
+    if (theme === 'auto') {
+        handleAutoTheme();
+    }
+    
+    console.log('Theme applied:', theme);
+}
+
+function handleAutoTheme() {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleChange = (e) => {
+        const html = document.documentElement;
+        if (e.matches) {
+            html.classList.add('auto-dark');
+            html.classList.remove('auto-light');
+        } else {
+            html.classList.add('auto-light');
+            html.classList.remove('auto-dark');
+        }
+    };
+
+    // Initial check
+    handleChange(mediaQuery);
+    
+    // Listen for changes if not already listening
+    if (!window.themeMediaListener) {
+        mediaQuery.addEventListener('change', handleChange);
+        window.themeMediaListener = true;
+    }
+}
+
+// Initialize theme from user data
+export async function initializeTheme(userData) {
+    const userTheme = userData?.theme || 'auto';
+    applyTheme(userTheme);
+}

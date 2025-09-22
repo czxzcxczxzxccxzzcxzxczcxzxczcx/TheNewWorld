@@ -84,8 +84,11 @@ router.post('/deleteComment', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (sessionId && sessionStore[sessionId]) {
-            const user = sessionStore[sessionId];
+        if (sessionId) {
+            const user = await sessionStore.get(sessionId);
+            if (!user) {
+                return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+            }
             const accountNumber = user.accountNumber;
 
             const existingComment = await Comment.findOne({ commentId });

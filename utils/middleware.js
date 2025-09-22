@@ -8,43 +8,51 @@ const setupRoutes = require('./setupRoutes');
 const { initDatabase } = require('./database/initDatabase');
 const setupSocket = require('./socket');
 const { Server } = require('socket.io');
+const sessionStore = require('./database/sessionStore');
+const { User } = require('./database/database');
 
 const server = require('http').createServer(app);
 const io = new Server(server, {cors: {origin: '*',methods: ['GET', 'POST']}});
 
 async function requireAuth(req, res, next) {
     const sessionId = req.cookies.TNWID;
-    const sessionStore = require('./database/sessionStore');
-    const { User } = require('./database/database');
     
-    if (!sessionId || !sessionStore[sessionId]) {
+    if (!sessionId) {
         return res.status(401).json({ success: false, message: 'Not authenticated' });
     }
     
     try {
-        // Get session data
-        const sessionData = sessionStore[sessionId];
+        // Get session data from database
+        const sessionData = await sessionStore.get(sessionId);
+        
+        if (!sessionData) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         
         // Verify session data against database
         const user = await User.findOne({ accountNumber: sessionData.accountNumber });
         
         if (!user) {
             // User doesn't exist in database, invalidate session
-            delete sessionStore[sessionId];
+            await sessionStore.delete(sessionId);
             return res.status(401).json({ success: false, message: 'Invalid session - user not found' });
         }
         
-        // Verify both account number and username match exactly
-        if (user.accountNumber !== sessionData.accountNumber || user.username !== sessionData.username) {
+        // Convert both account numbers to numbers for comparison to handle type mismatches
+        const dbAccountNumber = Number(user.accountNumber);
+        const sessionAccountNumber = Number(sessionData.accountNumber);
+        
+        // Verify both account number and username match exactly (with type conversion for account numbers)
+        if (dbAccountNumber !== sessionAccountNumber || user.username !== sessionData.username) {
             // Session data doesn't match database, invalidate session
-            delete sessionStore[sessionId];
+            await sessionStore.delete(sessionId);
             return res.status(401).json({ success: false, message: 'Invalid session - user data mismatch' });
         }
         
         // Authentication successful
         next();
     } catch (error) {
-        console.error('Authentication error:', error);
+        console.error('[AUTH] Authentication error:', error);
         return res.status(500).json({ success: false, message: 'Authentication error' });
     }
 }
@@ -59,5 +67,10 @@ app.use(passport.session());
 
 initDatabase();
 setupSocket(io);
+
+// Set up periodic session cleanup (run every hour)
+setInterval(async () => {
+    await sessionStore.cleanupExpired();
+}, 60 * 60 * 1000); // 1 hour
 
 module.exports = { app, server, setupRoutes, express, requireAuth, io };

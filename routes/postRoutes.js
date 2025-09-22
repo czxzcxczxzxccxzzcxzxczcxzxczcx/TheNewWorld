@@ -55,8 +55,11 @@ router.post('/deletePost', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (sessionId && sessionStore[sessionId]) {
-            const user = sessionStore[sessionId];
+        if (sessionId) {
+            const user = await sessionStore.get(sessionId);
+            if (!user) {
+                return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+            }
             const accountNumber = user.accountNumber;
 
             // Find the post by postId in the Posts collection
@@ -129,10 +132,13 @@ router.post('/getPost', async (req, res) => {
 
 router.post('/likePost', async (req, res) => {
     const sessionId = req.cookies.TNWID;
-    if (!(sessionId && sessionStore[sessionId])) {
+    if (!sessionId) {
         return res.status(401).json({ success: false, message: 'Not authenticated' });
     }
-    const user = sessionStore[sessionId];
+    const user = await sessionStore.get(sessionId);
+    if (!user) {
+        return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+    }
     const accountNumber = user.accountNumber;
     const { postId } = req.body;
     try {
@@ -221,10 +227,10 @@ router.post('/checkRepost', async (req, res) => {
 // Route to repost or remove repost of a post
 router.post('/repost', async (req, res) => {
     const sessionId = req.cookies.TNWID;
-    if (!(sessionId && sessionStore[sessionId])) {
+    if (!(sessionId && await sessionStore.get(sessionId))) {
         return res.status(401).json({ success: false, message: 'Not authenticated' });
     }
-    const userSession = sessionStore[sessionId];
+    const userSession = await sessionStore.get(sessionId);
     const accountNumber = userSession.accountNumber;
     const { postId } = req.body;
     try {
@@ -282,10 +288,13 @@ router.post('/repost', async (req, res) => {
 // Creates a new post
 router.post('/createPost', createPostLimiter, async (req, res) => {
     const sessionId = req.cookies.TNWID;
-    if (!(sessionId && sessionStore[sessionId])) {
+    if (!(sessionId && await sessionStore.get(sessionId))) {
         return res.status(401).json({ success: false, message: 'Not authenticated' });
     }
-    const user = sessionStore[sessionId];
+    const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
     const accountNumber = user.accountNumber;
     const { title, content, imageUrl } = req.body;
     try {
@@ -382,8 +391,11 @@ router.post('/changePostData', async (req, res) => {
 
     const sessionId = req.cookies.TNWID;  
   
-    if (sessionId && sessionStore[sessionId]) {
-      const user = sessionStore[sessionId];  
+    if (sessionId) {
+      const user = await sessionStore.get(sessionId);
+      if (!user) {
+        return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+      }  
       
       try {
         const post = await Post.findOne({ postId });

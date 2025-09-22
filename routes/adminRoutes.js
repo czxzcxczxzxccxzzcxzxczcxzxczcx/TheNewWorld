@@ -3,6 +3,12 @@ const { Post, User, fixPosts, fixProfile } = require('../utils/database/database
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 const router = express.Router();
 
+// Helper function to get user from session
+async function getUserFromSession(sessionId) {
+    if (!sessionId) return null;
+    return await sessionStore.get(sessionId);
+}
+
 // Helper function to check if user has admin access
 async function hasAdminAccess(accountNumber, requiredRole = 'admin') {
     try {
@@ -26,11 +32,20 @@ router.post('/updateData', async (req, res) => {
 
     try {
         // Verify if the session ID exists in the session store
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId]; // Get user from session store
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        } // Get user from session store
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         // Check if user has admin access
@@ -61,12 +76,12 @@ router.post('/fixPostData', async (req, res) => {
     const sessionId = req.cookies.TNWID; // Retrieve session ID from cookies
 
     try {
-        // Verify if the session ID exists in the session store
-        if (!sessionId || !sessionStore[sessionId]) {
+        // Get user from session store
+        const user = await getUserFromSession(sessionId);
+        if (!user) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId]; // Get user from session store
         const accountNumber = user.accountNumber;
 
         // Check if user has admin access
@@ -86,12 +101,12 @@ router.post('/fixUserData', async (req, res) => {
     const sessionId = req.cookies.TNWID; // Retrieve session ID from cookies
 
     try {
-        // Verify if the session ID exists in the session store
-        if (!sessionId || !sessionStore[sessionId]) {
+        // Get user from session store
+        const user = await getUserFromSession(sessionId);
+        if (!user) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId]; // Get user from session store
         const accountNumber = user.accountNumber;
 
         // Check if user has admin access
@@ -113,11 +128,17 @@ router.post('/updatePost', async (req, res) => {
 
     try {
         // Verify if the session ID exists in the session store
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId]; // Get user from session store
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        } // Get user from session store
         const accountNumber = user.accountNumber;
 
         // Check if user has admin access
@@ -148,12 +169,12 @@ router.get('/verify', async (req, res) => {
     const sessionId = req.cookies.TNWID;  
 
     try {
-        // Verify if the session ID exists in the session store
-        if (!sessionId || !sessionStore[sessionId]) {
+        // Get user from session store
+        const user = await getUserFromSession(sessionId);
+        if (!user) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId]; // Get user from session store
         const accountNumber = user.accountNumber;
 
         // Check if user has admin access
@@ -174,11 +195,17 @@ router.get('/getAllUsers', async (req, res) => {
 
     try {
         // Verify if the session ID exists in the session store
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId]; // Get user from session store
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        } // Get user from session store
         const accountNumber = user.accountNumber;
 
         // Check if user has admin access
@@ -201,11 +228,17 @@ router.get('/getAllPosts', async (req, res) => {
 
     try {
         // Verify if the session ID exists in the session store
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId]; // Get user from session store
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        } // Get user from session store
         const accountNumber = user.accountNumber;
 
         // Check if user has admin access
@@ -228,11 +261,17 @@ router.get('/getAllMessages', async (req, res) => {
 
     try {
         // Verify if the session ID exists in the session store
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId]; // Get user from session store
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        } // Get user from session store
         const accountNumber = user.accountNumber;
 
         // Check if user has admin access
@@ -257,11 +296,17 @@ router.post('/grantAdmin', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         // Check if user has head admin access
@@ -298,11 +343,17 @@ router.post('/revokeAdmin', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         // Check if user has head admin access
@@ -338,11 +389,17 @@ router.get('/getUsersWithRoles', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         // Check if user has head admin access
@@ -367,11 +424,17 @@ router.post('/admin/searchUsers', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');
@@ -401,11 +464,17 @@ router.post('/admin/searchPosts', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');
@@ -439,11 +508,17 @@ router.post('/admin/searchComments', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');
@@ -478,11 +553,17 @@ router.post('/admin/searchMessages', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');
@@ -518,11 +599,17 @@ router.get('/getAllComments', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');
@@ -545,11 +632,17 @@ router.post('/admin/updateUser', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');
@@ -587,11 +680,17 @@ router.post('/admin/updatePost', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');
@@ -621,11 +720,17 @@ router.post('/admin/updateComment', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');
@@ -656,11 +761,17 @@ router.post('/admin/updateMessage', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');
@@ -692,11 +803,17 @@ router.post('/admin/deleteUser', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'headAdmin');
@@ -722,11 +839,17 @@ router.post('/admin/deletePost', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');
@@ -752,11 +875,17 @@ router.post('/admin/deleteComment', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');
@@ -783,11 +912,17 @@ router.post('/admin/deleteMessage', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
     try {
-        if (!sessionId || !sessionStore[sessionId]) {
+        if (!sessionId) {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const user = sessionStore[sessionId];
+        const user = await sessionStore.get(sessionId);
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
         const accountNumber = user.accountNumber;
 
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');

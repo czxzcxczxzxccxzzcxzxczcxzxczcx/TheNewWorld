@@ -6,6 +6,7 @@ const postSchema = require('./schemas/postSchema');
 const commentSchema = require('./schemas/commentSchema');
 const messageSchema = require('./schemas/messageSchema');
 const notificationSchema = require('./schemas/notificationSchema');
+const sessionSchema = require('./schemas/sessionSchema');
 
 const dbURI = process.env.DB_URI;
 
@@ -14,6 +15,7 @@ const Post = mongoose.model('Post', postSchema);
 const Comment = mongoose.model('Comment', commentSchema);
 const Message = mongoose.model('Message', messageSchema);
 const Notification = mongoose.model('Notification', notificationSchema);
+const Session = mongoose.model('Session', sessionSchema);
 
 const connectToDB = async () => {
     try {
@@ -28,4 +30,4 @@ const connectToDB = async () => {
     }
 };
 
-module.exports = { connectToDB, User, Post, Comment, Message, Notification };
+module.exports = { connectToDB, User, Post, Comment, Message, Notification, Session };

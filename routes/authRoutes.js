@@ -91,12 +91,13 @@ router.post(
             // Save the new user to the database
             await newUser.save();
 
-            // Store session information
-            sessionStore[sessionId] = {
+            // Store session information in database
+            await sessionStore.create(sessionId, {
                 userId: newUser._id,
                 username: newUser.username,
                 accountNumber: newUser.accountNumber,
-            };
+                theme: newUser.theme || 'auto',
+            });
 
             // Set cookie and respond with success
             res.cookie('TNWID', sessionId, {
@@ -187,11 +188,12 @@ router.post('/login', async (req, res) => {
                 }
                 
                 const sessionId = crypto.randomBytes(16).toString('hex'); 
-                sessionStore[sessionId] = {
+                await sessionStore.create(sessionId, {
                     userId: verifiedUser._id, 
                     username: verifiedUser.username, 
-                    accountNumber: verifiedUser.accountNumber
-                };
+                    accountNumber: verifiedUser.accountNumber,
+                    theme: verifiedUser.theme || 'auto'
+                });
                 
                 res.cookie('TNWID', sessionId, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000,  sameSite: 'Strict', });
                 res.json({ success: true, message: 'Login successful' });
@@ -221,26 +223,64 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/getUserInfo', (req, res) => {
+router.get('/getUserInfo', async (req, res) => {
     const sessionId = req.cookies.TNWID;  
 
-    if (sessionId && sessionStore[sessionId]) {
-        const user = sessionStore[sessionId];  
-        res.json({ success: true, user });
-    } else {
-        res.status(200).json({ success: false, message: 'Not authenticated' });
+    if (!sessionId) {
+        return res.status(200).json({ success: false, message: 'Not authenticated' });
+    }
+
+    try {
+        const sessionData = await sessionStore.get(sessionId);
+        if (!sessionData) {
+            return res.status(200).json({ success: false, message: 'Not authenticated' });
+        }
+
+        // Get full user data from database
+        const user = await User.findOne({ accountNumber: sessionData.accountNumber });
+        if (!user) {
+            return res.status(200).json({ success: false, message: 'User not found' });
+        }
+
+        // Validate session data matches user data (same as requireAuth middleware)
+        const dbAccountNumber = Number(user.accountNumber);
+        const sessionAccountNumber = Number(sessionData.accountNumber);
+        
+        if (dbAccountNumber !== sessionAccountNumber || user.username !== sessionData.username) {
+            // Session data doesn't match database, invalidate session
+            await sessionStore.delete(sessionId);
+            return res.status(200).json({ success: false, message: 'Invalid session' });
+        }
+
+        // Return full user data (excluding sensitive information like password)
+        const userInfo = {
+            _id: user._id,
+            username: user.username,
+            accountNumber: user.accountNumber,
+            bio: user.bio,
+            followers: user.followers,
+            following: user.following,
+            posts: user.posts,
+            pfp: user.pfp,
+            theme: user.theme
+        };
+
+        res.json({ success: true, user: userInfo });
+    } catch (error) {
+        console.error('Error fetching user info:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
 
 
 // Logs the user out
-router.post('/logout', (req, res) => {
-    res.clearCookie('TNWID', {httpOnly: true, secure: process.env.NODE_ENV === 'production',  sameSite: 'Strict',});
-
+router.post('/logout', async (req, res) => {
     const sessionId = req.cookies.TNWID;
 
-    if (sessionId && sessionStore[sessionId]) {
-        delete sessionStore[sessionId];
+    res.clearCookie('TNWID', {httpOnly: true, secure: process.env.NODE_ENV === 'production',  sameSite: 'Strict',});
+
+    if (sessionId) {
+        await sessionStore.delete(sessionId);
     }
 
     res.json({ success: true, message: 'Logged out successfully' });
@@ -251,14 +291,15 @@ router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 
 
 // Google OAuth callback route
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
+  async (req, res) => {
     // Set up session and cookie as with local login
     const sessionId = crypto.randomBytes(16).toString('hex');
-    sessionStore[sessionId] = {
+    await sessionStore.create(sessionId, {
       userId: req.user._id,
       username: req.user.username,
       accountNumber: req.user.accountNumber,
-    };
+      theme: req.user.theme || 'auto',
+    });
     res.cookie('TNWID', sessionId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
