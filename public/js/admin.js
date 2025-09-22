@@ -1,7 +1,8 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
 
-renderBar();
+// Don't render the navigation bar on admin panel
+// renderBar();
 
 class AdminPanel {
     constructor() {
@@ -48,6 +49,11 @@ class AdminPanel {
     }
 
     setupEventListeners() {
+        // Back to home button
+        document.getElementById('backToHome')?.addEventListener('click', () => {
+            window.location.href = '/home';
+        });
+
         // Tab switching
         document.querySelectorAll('.adminTab').forEach(tab => {
             tab.addEventListener('click', (e) => {

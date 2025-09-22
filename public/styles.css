@@ -1558,9 +1558,9 @@ body.panel-open::before {
 
 .adminDiv .adminButton {
   padding: var(--space-sm) var(--space-md);
-  background: var(--accent-blue);
-  color: white;
-  border: none;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   font-weight: 600;
   cursor: pointer;
@@ -1568,7 +1568,8 @@ body.panel-open::before {
 }
 
 .adminDiv .adminButton:hover {
-  background: var(--accent-blue-hover);
+  background: var(--hover-bg);
+  border-color: var(--border-color-light);
 }
 
 .adminDiv .buttons {
@@ -1592,6 +1593,15 @@ body.panel-open::before {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Hide the main navigation bar on admin panel */
+.modernAdminPanel ~ .bar {
+  display: none;
+}
+
+body:has(.modernAdminPanel) .bar {
+  display: none;
+}
+
 .adminHeader {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
@@ -1605,11 +1615,39 @@ body.panel-open::before {
   z-index: 100;
 }
 
+.adminHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.backHomeBtn {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.backHomeBtn:hover {
+  background: var(--hover-bg);
+  border-color: var(--border-color-light);
+  transform: translateY(-1px);
+}
+
 .adminHeader h1 {
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #58a6ff;
+  color: var(--text-primary);
 }
 
 .adminUserInfo {
@@ -1663,9 +1701,9 @@ body.panel-open::before {
 }
 
 .adminTab.active {
-  color: #58a6ff;
-  border-bottom-color: #58a6ff;
-  background: rgba(88, 166, 255, 0.1);
+  color: var(--text-primary);
+  border-bottom-color: var(--text-primary);
+  background: var(--hover-bg);
 }
 
 .adminContent {
@@ -1741,15 +1779,15 @@ body.panel-open::before {
 
 .adminSearch input:focus {
   outline: none;
-  border-color: #58a6ff;
-  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+  border-color: var(--border-color-light);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
 
 .adminSearch button {
   padding: 12px 20px;
-  background: linear-gradient(45deg, #58a6ff, #4dabf7);
-  color: white;
-  border: none;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
@@ -1758,7 +1796,8 @@ body.panel-open::before {
 
 .adminSearch button:hover {
   transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(88, 166, 255, 0.3);
+  background: var(--hover-bg);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .adminActions {
@@ -1783,8 +1822,9 @@ body.panel-open::before {
 }
 
 .actionBtn:not(.secondary):not(.danger):not(.grant):not(.revoke) {
-  background: linear-gradient(45deg, #238636, #2ea043);
-  color: white;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
 .actionBtn.secondary {
@@ -1799,8 +1839,9 @@ body.panel-open::before {
 }
 
 .actionBtn.grant {
-  background: linear-gradient(45deg, #1f6feb, #388bfd);
-  color: white;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
 .actionBtn.revoke {
@@ -1838,7 +1879,7 @@ body.panel-open::before {
 
 .resultTitle {
   font-weight: 600;
-  color: #58a6ff;
+  color: var(--text-primary);
   font-size: 1.1rem;
 }
 
@@ -1857,8 +1898,9 @@ body.panel-open::before {
 }
 
 .editBtn {
-  background: #1f6feb;
-  color: white;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
 .deleteBtn {
@@ -1938,7 +1980,7 @@ body.panel-open::before {
 
 .modalHeader h3 {
   margin: 0;
-  color: #58a6ff;
+  color: var(--text-primary);
 }
 
 .closeBtn {
@@ -2015,8 +2057,8 @@ body.panel-open::before {
 .formGroup textarea:focus,
 .formGroup select:focus {
   outline: none;
-  border-color: #58a6ff;
-  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+  border-color: var(--border-color-light);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
 
 .formGroup textarea {
@@ -2037,7 +2079,7 @@ body.panel-open::before {
 
 .permissionsSection h3 {
   margin-top: 0;
-  color: #ffd700;
+  color: var(--text-primary);
   text-align: center;
 }
 
