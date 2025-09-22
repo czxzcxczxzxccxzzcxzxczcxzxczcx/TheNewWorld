@@ -685,9 +685,10 @@ body.panel-open::before {
   color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 1rem;
   text-align: center;
-  padding: var(--space-sm);
+  padding: var(--space-md);
+  margin-top: var(--space-lg);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 8px;
   position: relative;
