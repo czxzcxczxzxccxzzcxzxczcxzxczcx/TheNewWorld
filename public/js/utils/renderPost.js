@@ -343,9 +343,9 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
                         const response = await apiRequest('/api/deletePost', 'POST', { postId: post.postId });
                         if (response.success) {
                             // Add smooth removal animation
-                            postDiv.style.transform = 'scale(0.95)';
+                            postDiv.style.transform = 'scale(0.98)';
                             postDiv.style.opacity = '0';
-                            postDiv.style.transition = 'all 0.3s ease';
+                            postDiv.style.transition = 'all 0.4s ease';
                             setTimeout(() => postDiv.remove(), 300);
                         } else {
                             alert('Failed to delete post.');

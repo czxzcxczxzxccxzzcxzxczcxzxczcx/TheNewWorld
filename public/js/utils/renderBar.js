@@ -82,7 +82,7 @@ export function renderBar() {
                                 </svg>
                                 <span>Settings</span>
                             </a>
-                            <a id="adminPanelButton" href="/admin" class="nav-menu-item">
+                            <a id="adminPanelButton" href="/admin" class="nav-menu-item" style="display: none;">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                                 </svg>
@@ -138,6 +138,24 @@ export function renderBar() {
 }
 
 function initializeNavControls() {
+    // Logo click handlers - redirect to home page
+    const logoImg = document.querySelector('.logoImg');
+    const logoText = document.getElementById('checkPost');
+    
+    if (logoImg) {
+        logoImg.addEventListener('click', () => {
+            window.location.href = '/home';
+        });
+        logoImg.style.cursor = 'pointer';
+    }
+    
+    if (logoText) {
+        logoText.addEventListener('click', () => {
+            window.location.href = '/home';
+        });
+        logoText.style.cursor = 'pointer';
+    }
+    
     const searchContainer = document.getElementById('navSearchContainer');
     const searchPanel = document.getElementById('navSearchPanel');
     const searchInput = document.getElementById('navSearchInput');
@@ -268,6 +286,7 @@ async function performSearch(query, type) {
 }
 
 export function initializeGlobalButtons(accountNumber) {
+    console.log('Initializing global buttons for account:', accountNumber);
     const logoutButton = document.getElementById("logoutButton");
     if (logoutButton) {
         logoutButton.addEventListener("click", async function (event) {
@@ -292,6 +311,28 @@ export function initializeGlobalButtons(accountNumber) {
             }
         });
     }
+
+    // Check admin access and show/hide admin button
+    apiRequest('/api/verify', 'GET')
+        .then(data => {
+            console.log('Admin verification response:', data);
+            if (data.success) {
+                const adminButton = document.getElementById('adminPanelButton');
+                console.log('Admin button found:', adminButton);
+                if (adminButton) {
+                    adminButton.style.display = 'flex'; // Show admin button with flex display to match other nav items
+                    console.log('Admin button display set to flex');
+                } else {
+                    console.log('Admin button not found in DOM');
+                }
+            } else {
+                console.log('Admin access denied:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error verifying admin access:', error);
+            // Keep admin button hidden if verification fails
+        });
 }
 
 // Global Theme Manager

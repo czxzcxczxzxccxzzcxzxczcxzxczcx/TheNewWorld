@@ -68,16 +68,5 @@ document.addEventListener("DOMContentLoaded", async function () {
         postContainer.innerHTML = '<div class="error-message">Error loading post</div>';
     }
 
-    // Add verification check for admin panel
-    try {
-        const verifyData = await apiRequest('/api/verify', 'GET');
-        if (verifyData.success) {
-            const adminButton = document.getElementById('adminPanelButton');
-            if (adminButton) {
-                adminButton.style.display = 'block';
-            }
-        }
-    } catch (error) {
-        console.error('Error verifying admin access:', error);
-    }
+    // Admin verification is now handled globally in renderBar.js
 });
