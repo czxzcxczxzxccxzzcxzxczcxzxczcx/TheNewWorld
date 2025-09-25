@@ -7,6 +7,25 @@
 <link rel="icon" type="image/x-icon" href="/src/TNW.png">
 
         <link rel="stylesheet" type="text/css" href="styles.css">
+        <script>
+            // Apply theme immediately to prevent flash
+            (function() {
+                const savedTheme = localStorage.getItem('theme') || 'auto';
+                const html = document.documentElement;
+                
+                html.classList.remove('theme-light', 'theme-dark', 'theme-auto', 'auto-light', 'auto-dark');
+                html.classList.add(`theme-${savedTheme}`);
+                
+                if (savedTheme === 'auto') {
+                    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                    if (mediaQuery.matches) {
+                        html.classList.add('auto-dark');
+                    } else {
+                        html.classList.add('auto-light');
+                    }
+                }
+            })();
+        </script>
         <script type="module" src="/js/search.js" defer></script>
 
         <title>The New World</title>

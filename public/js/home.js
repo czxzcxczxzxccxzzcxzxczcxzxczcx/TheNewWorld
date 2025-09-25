@@ -1,7 +1,7 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderPost,  changeEdit } from './utils/renderPost.js';
 import { initializeCreatePost } from './utils/createPostHandler.js';
-import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
+import { renderBar, initializeGlobalButtons, initializeTheme } from './utils/renderBar.js';
 
 renderBar();
 
@@ -101,6 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 accountNumber = user.accountNumber;
                 initializeGlobalButtons(accountNumber); // Initialize global buttons
                 initializeCreatePost(user.accountNumber);
+                initializeTheme(user); // Initialize theme from user data
             } else {
                 window.location.href = '/';
             }

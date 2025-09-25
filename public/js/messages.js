@@ -1,7 +1,7 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderOpenDMUsers, renderUserSearchResults, setupUserSearchOnEnter } from './utils/renderMessage.js';
 import { initializeCreatePost } from './utils/createPostHandler.js';
-import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
+import { renderBar, initializeGlobalButtons, initializeTheme } from './utils/renderBar.js';
 
 renderBar();
 
@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         fetchAndRenderOpenDMs(accountNumber);
         initializeCreatePost(user.accountNumber);
         initializeGlobalButtons(accountNumber);
+        initializeTheme(user); // Initialize theme from user data
     } else {
         window.location.href = '/';
     }

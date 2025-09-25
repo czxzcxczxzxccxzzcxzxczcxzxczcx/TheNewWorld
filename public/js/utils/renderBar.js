@@ -3,6 +3,10 @@ import { apiRequest } from './apiRequest.js';
 export function renderBar() {
     console.log("DO NOT SEND ANYONE INFORMATION FROM THIS CONSOLE OR UI FOR IT MAY POSE A GREAT SECURITY RISK TOWARD YOU")
 
+    // Initialize theme from localStorage or default to auto
+    const savedTheme = localStorage.getItem('theme') || 'auto';
+    applyTheme(savedTheme);
+
     const barHTML = `
         <div class="bar">
             <ul>
