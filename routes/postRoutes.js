@@ -296,7 +296,7 @@ router.post('/createPost', createPostLimiter, async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid or expired session' });
         }
     const accountNumber = user.accountNumber;
-    const { title, content, imageUrl } = req.body;
+    const { title, content, imageUrl, poll } = req.body;
     try {
         const dbUser = await User.findOne({ accountNumber });
 
@@ -306,17 +306,52 @@ router.post('/createPost', createPostLimiter, async (req, res) => {
 
         const postId = await generateUniquePostId();
         
+        // Validate that we have either content or a poll
+        const hasContent = content && content.trim();
+        const hasPoll = poll && poll.isEnabled && poll.options && poll.options.length >= 2;
+        
+        if (!hasContent && !hasPoll) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Post must have either content or a poll' 
+            });
+        }
+
         // Create post data object with optional imageUrl
         const postData = { 
             postId: postId, 
             title: title, 
-            content: content, 
+            content: content || '', // Allow empty content if poll exists
             accountNumber: dbUser.accountNumber 
         };
         
         // Add imageUrl to post if it exists
         if (imageUrl) {
             postData.imageUrl = imageUrl;
+        }
+        
+        // Add poll data if it exists
+        if (poll && poll.isEnabled && poll.options && poll.options.length >= 2) {
+            // Validate poll options
+            const validOptions = poll.options.filter(option => option.text && option.text.trim());
+            if (validOptions.length >= 2 && validOptions.length <= 10) {
+                postData.poll = {
+                    isEnabled: true,
+                    question: poll.question || '',
+                    options: validOptions.map(option => ({
+                        text: option.text.trim(),
+                        votes: []
+                    })),
+                    allowMultipleVotes: poll.allowMultipleVotes || false,
+                    endsAt: poll.duration ? new Date(Date.now() + poll.duration * 24 * 60 * 60 * 1000) : null,
+                    totalVotes: 0
+                };
+            } else {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Poll must have between 2 and 10 valid options' 
+                });
+            }
         }
         
         const newPost = new Post(postData);
@@ -451,6 +486,123 @@ router.post('/getUserReposts', async (req, res) => {
     } catch (error) {
         console.error('Error fetching reposts:', error);
         res.status(500).json({ success: false, message: "Error fetching reposts" });
+    }
+});
+
+// Route to vote on a poll
+router.post('/votePoll', async (req, res) => {
+    const sessionId = req.cookies.TNWID;
+    if (!sessionId) {
+        return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+    
+    const user = await sessionStore.get(sessionId);
+    if (!user) {
+        return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+    }
+    
+    const accountNumber = user.accountNumber;
+    const { postId, optionIndex } = req.body;
+
+    try {
+        const post = await Post.findOne({ postId });
+        if (!post) {
+            return res.status(404).json({ success: false, message: 'Post not found' });
+        }
+
+        if (!post.poll || !post.poll.isEnabled) {
+            return res.status(400).json({ success: false, message: 'This post does not have an active poll' });
+        }
+
+        // Check if poll has ended
+        if (post.poll.endsAt && new Date() > post.poll.endsAt) {
+            return res.status(400).json({ success: false, message: 'This poll has ended' });
+        }
+
+        // Validate option index
+        if (optionIndex < 0 || optionIndex >= post.poll.options.length) {
+            return res.status(400).json({ success: false, message: 'Invalid poll option' });
+        }
+
+        // Check if user has already voted
+        const hasVotedOnOption = post.poll.options[optionIndex].votes.includes(accountNumber);
+        const hasVotedAnywhere = post.poll.options.some(option => option.votes.includes(accountNumber));
+
+        if (!post.poll.allowMultipleVotes && hasVotedAnywhere && !hasVotedOnOption) {
+            return res.status(400).json({ success: false, message: 'You can only vote once on this poll' });
+        }
+
+        if (hasVotedOnOption) {
+            // Remove vote (toggle)
+            post.poll.options[optionIndex].votes = post.poll.options[optionIndex].votes.filter(
+                vote => vote.toString() !== accountNumber.toString()
+            );
+            post.poll.totalVotes -= 1;
+        } else {
+            // If not allowing multiple votes, remove any existing vote first
+            if (!post.poll.allowMultipleVotes && hasVotedAnywhere) {
+                post.poll.options.forEach(option => {
+                    const voteIndex = option.votes.findIndex(vote => vote.toString() === accountNumber.toString());
+                    if (voteIndex !== -1) {
+                        option.votes.splice(voteIndex, 1);
+                        post.poll.totalVotes -= 1;
+                    }
+                });
+            }
+            
+            // Add new vote
+            post.poll.options[optionIndex].votes.push(accountNumber);
+            post.poll.totalVotes += 1;
+        }
+
+        await post.save();
+
+        // Generate notification for post owner (if different user)
+        if (post.accountNumber !== accountNumber && !hasVotedOnOption) {
+            const voterUser = await User.findOne({ accountNumber });
+            if (voterUser) {
+                await createNotification({
+                    from: accountNumber,
+                    to: post.accountNumber,
+                    content: `${voterUser.username} voted on your poll.`,
+                });
+            }
+        }
+
+        res.status(200).json({ 
+            success: true, 
+            message: hasVotedOnOption ? 'Vote removed' : 'Vote recorded',
+            poll: post.poll
+        });
+
+    } catch (error) {
+        console.error('Error voting on poll:', error);
+        res.status(500).json({ success: false, message: 'Error processing vote' });
+    }
+});
+
+// Route to get poll results
+router.get('/pollResults/:postId', async (req, res) => {
+    const { postId } = req.params;
+
+    try {
+        const post = await Post.findOne({ postId });
+        if (!post) {
+            return res.status(404).json({ success: false, message: 'Post not found' });
+        }
+
+        if (!post.poll || !post.poll.isEnabled) {
+            return res.status(400).json({ success: false, message: 'This post does not have a poll' });
+        }
+
+        res.status(200).json({ 
+            success: true, 
+            poll: post.poll 
+        });
+
+    } catch (error) {
+        console.error('Error getting poll results:', error);
+        res.status(500).json({ success: false, message: 'Error getting poll results' });
     }
 });
 

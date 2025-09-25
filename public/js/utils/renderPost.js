@@ -311,8 +311,18 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     buttonsDiv.appendChild(toggleCommentsButton); 
 
 
-    const processedContent = processContent(post.content || 'test');
-    contentP.innerHTML = processedContent; // Use innerHTML to allow anchor tags and images
+    const processedContent = processContent(post.content || '');
+    if (processedContent.trim()) {
+        contentP.innerHTML = processedContent; // Use innerHTML to allow anchor tags and images
+    } else {
+        contentP.style.display = 'none'; // Hide empty content
+    }
+    
+    // Render poll if it exists
+    if (post.poll && post.poll.isEnabled) {
+        const pollDiv = renderPoll(post.poll, post.postId, fromAccountNumber);
+        postBodyDiv.appendChild(pollDiv);
+    }
     
     // Note: imageUrl field is now handled within the content processing via <url> syntax
     // This prevents duplicate images from being displayed
@@ -813,4 +823,171 @@ function setupLongPressToOpenPost(postElement, postId) {
             clearTimeout(longPressTimer);
         }
     });
+}
+
+// Function to render a poll
+function renderPoll(poll, postId, userAccountNumber) {
+    const pollDiv = createElementWithClass('div', 'poll-container');
+    pollDiv.style.cssText = `
+        margin: 15px 0;
+        padding: 15px;
+        border: 1px solid var(--border-color, #333);
+        border-radius: 8px;
+        background: var(--card-bg, rgba(255,255,255,0.05));
+    `;
+
+    // Poll question
+    if (poll.question && poll.question.trim()) {
+        const questionDiv = createElementWithClass('div', 'poll-question');
+        questionDiv.textContent = poll.question;
+        questionDiv.style.cssText = `
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-primary, #fff);
+            font-size: 16px;
+        `;
+        pollDiv.appendChild(questionDiv);
+    }
+
+    // Check if poll has ended
+    const hasEnded = poll.endsAt && new Date() > new Date(poll.endsAt);
+    
+    // Poll options
+    const optionsDiv = createElementWithClass('div', 'poll-options');
+    poll.options.forEach((option, index) => {
+        const optionDiv = createElementWithClass('div', 'poll-option');
+        const percentage = poll.totalVotes > 0 ? Math.round((option.votes.length / poll.totalVotes) * 100) : 0;
+        const hasVoted = option.votes.includes(userAccountNumber);
+        const hasVotedAnywhere = poll.options.some(opt => opt.votes.includes(userAccountNumber));
+
+        optionDiv.style.cssText = `
+            margin: 8px 0;
+            padding: 12px;
+            border: 1px solid ${hasVoted ? '#007bff' : 'var(--border-color, #333)'};
+            border-radius: 6px;
+            cursor: ${hasEnded ? 'default' : 'pointer'};
+            position: relative;
+            background: var(--secondary-bg, #1a1a1a);
+            transition: all 0.2s ease;
+            overflow: hidden;
+        `;
+
+        // Progress bar background
+        const progressBar = createElementWithClass('div', 'poll-progress');
+        progressBar.style.cssText = `
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: ${percentage}%;
+            background: ${hasVoted ? '#007bff' : '#333'};
+            opacity: 0.3;
+            transition: width 0.3s ease;
+            z-index: 1;
+        `;
+        optionDiv.appendChild(progressBar);
+
+        // Option content
+        const contentDiv = createElementWithClass('div', 'poll-option-content');
+        contentDiv.style.cssText = `
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        `;
+
+        const textSpan = createElementWithClass('span', 'poll-option-text');
+        textSpan.textContent = option.text;
+        textSpan.style.color = 'var(--text-primary, #fff)';
+
+        const statsSpan = createElementWithClass('span', 'poll-option-stats');
+        statsSpan.textContent = `${percentage}% (${option.votes.length})`;
+        statsSpan.style.cssText = `
+            font-size: 12px;
+            color: var(--text-secondary, #888);
+            font-weight: bold;
+        `;
+
+        contentDiv.appendChild(textSpan);
+        contentDiv.appendChild(statsSpan);
+        optionDiv.appendChild(contentDiv);
+
+        // Add voting functionality
+        if (!hasEnded) {
+            optionDiv.addEventListener('click', async () => {
+                try {
+                    const response = await apiRequest('/api/votePoll', 'POST', {
+                        postId: postId,
+                        optionIndex: index
+                    });
+
+                    if (response.success) {
+                        // Update the poll display with new data
+                        const newPollDiv = renderPoll(response.poll, postId, userAccountNumber);
+                        pollDiv.replaceWith(newPollDiv);
+                    } else {
+                        alert(response.message || 'Failed to vote');
+                    }
+                } catch (error) {
+                    console.error('Error voting on poll:', error);
+                    alert('Error voting on poll');
+                }
+            });
+
+            optionDiv.addEventListener('mouseenter', () => {
+                if (!hasVoted) {
+                    optionDiv.style.borderColor = '#007bff';
+                    optionDiv.style.background = 'var(--hover-bg, #2a2a2a)';
+                }
+            });
+
+            optionDiv.addEventListener('mouseleave', () => {
+                if (!hasVoted) {
+                    optionDiv.style.borderColor = 'var(--border-color, #333)';
+                    optionDiv.style.background = 'var(--secondary-bg, #1a1a1a)';
+                }
+            });
+        }
+
+        optionsDiv.appendChild(optionDiv);
+    });
+
+    pollDiv.appendChild(optionsDiv);
+
+    // Poll footer with stats and end time
+    const footerDiv = createElementWithClass('div', 'poll-footer');
+    footerDiv.style.cssText = `
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border-color, #333);
+        font-size: 12px;
+        color: var(--text-secondary, #888);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    `;
+
+    const statsText = createElementWithClass('span');
+    const voteText = poll.totalVotes === 1 ? 'vote' : 'votes';
+    const multiVoteText = poll.allowMultipleVotes ? ' • Multiple votes allowed' : '';
+    statsText.textContent = `${poll.totalVotes} ${voteText}${multiVoteText}`;
+
+    const endTimeText = createElementWithClass('span');
+    if (hasEnded) {
+        endTimeText.textContent = 'Poll ended';
+        endTimeText.style.color = '#dc3545';
+    } else if (poll.endsAt) {
+        const timeLeft = new Date(poll.endsAt) - new Date();
+        const daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
+        endTimeText.textContent = `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`;
+    }
+
+    footerDiv.appendChild(statsText);
+    if (endTimeText.textContent) {
+        footerDiv.appendChild(endTimeText);
+    }
+    pollDiv.appendChild(footerDiv);
+
+    return pollDiv;
 }

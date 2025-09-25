@@ -11,7 +11,46 @@ export function initializeCreatePost(accountNumber) {
             
             <textarea class="bodyInput" id="bodyText" type="text" placeholder="Body"></textarea>
             <div id="postPreview" style="min-height:30px;margin-bottom:10px;"></div>
-            <button id="createPost" type="submit" class="postPanelButton">Create Post</button>
+            
+            <!-- Poll Section -->
+            <div id="pollSection" style="display: none; margin: 15px 0; padding: 15px; border: 1px solid #333; border-radius: 8px; background: rgba(255,255,255,0.05);">
+                <h3 style="margin: 0 0 10px 0; color: #fff;">Create Poll</h3>
+                <input type="text" id="pollQuestion" placeholder="Ask a question..." style="width: 100%; padding: 8px; margin-bottom: 10px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff;">
+                
+                <div id="pollOptions">
+                    <input type="text" class="poll-option" placeholder="Option 1" style="width: 100%; padding: 8px; margin-bottom: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff;">
+                    <input type="text" class="poll-option" placeholder="Option 2" style="width: 100%; padding: 8px; margin-bottom: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff;">
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin: 10px 0;">
+                    <button type="button" id="addPollOption" style="padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">+ Add Option</button>
+                    <button type="button" id="removePollOption" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">- Remove</button>
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <label style="display: flex; align-items: center; color: #fff; font-size: 14px;">
+                        <input type="checkbox" id="allowMultipleVotes" style="margin-right: 5px;">
+                        Allow multiple votes
+                    </label>
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <label style="color: #fff; font-size: 14px;">Poll Duration:</label>
+                    <select id="pollDuration" style="margin-left: 10px; padding: 4px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff;">
+                        <option value="">No end time</option>
+                        <option value="1">1 day</option>
+                        <option value="3">3 days</option>
+                        <option value="7">1 week</option>
+                        <option value="30">1 month</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <button id="createPost" type="submit" class="postPanelButton">Create Post</button>
+                <button id="togglePoll" type="button" style="padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">📊 Add Poll</button>
+            </div>
+            
             <div class="imageUploading">
                 <input type="file" id="imageInput" accept="image/*" style="display: none;" />
                 <button id="uploadBtn" type="button">Upload Image</button>
@@ -30,6 +69,48 @@ export function initializeCreatePost(accountNumber) {
             createPostDiv.style.display = createPostDiv.style.display === 'none' ? 'block' : 'none';
         });
     }
+
+    // Poll functionality
+    let pollEnabled = false;
+    
+    document.getElementById('togglePoll').addEventListener('click', function() {
+        pollEnabled = !pollEnabled;
+        const pollSection = document.getElementById('pollSection');
+        const toggleButton = document.getElementById('togglePoll');
+        
+        if (pollEnabled) {
+            pollSection.style.display = 'block';
+            toggleButton.textContent = '❌ Remove Poll';
+            toggleButton.style.background = '#dc3545';
+        } else {
+            pollSection.style.display = 'none';
+            toggleButton.textContent = '📊 Add Poll';
+            toggleButton.style.background = '#28a745';
+        }
+    });
+
+    document.getElementById('addPollOption').addEventListener('click', function() {
+        const pollOptions = document.getElementById('pollOptions');
+        const optionCount = pollOptions.children.length;
+        
+        if (optionCount < 10) {
+            const newOption = document.createElement('input');
+            newOption.type = 'text';
+            newOption.className = 'poll-option';
+            newOption.placeholder = `Option ${optionCount + 1}`;
+            newOption.style.cssText = 'width: 100%; padding: 8px; margin-bottom: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff;';
+            pollOptions.appendChild(newOption);
+        }
+    });
+
+    document.getElementById('removePollOption').addEventListener('click', function() {
+        const pollOptions = document.getElementById('pollOptions');
+        const optionCount = pollOptions.children.length;
+        
+        if (optionCount > 2) {
+            pollOptions.removeChild(pollOptions.lastChild);
+        }
+    });
 
     // Connect the button to the hidden file input
     document.getElementById('uploadBtn').addEventListener('click', function(event) {
@@ -82,12 +163,42 @@ export function initializeCreatePost(accountNumber) {
         // const title = document.getElementById('titleText').value;
         const title = " ";
         const content = document.getElementById('bodyText').value;
-        // Image URL is now handled within the content via <url> syntax, no separate field needed
         
-        // Allow posts with just images or regular text content
-        if (title && content.trim()) {
+        // Prepare poll data if enabled
+        let pollData = null;
+        if (pollEnabled) {
+            const pollQuestion = document.getElementById('pollQuestion').value;
+            const pollOptionInputs = document.querySelectorAll('.poll-option');
+            const pollOptions = Array.from(pollOptionInputs)
+                .map(input => ({ text: input.value.trim() }))
+                .filter(option => option.text);
+            
+            const allowMultipleVotes = document.getElementById('allowMultipleVotes').checked;
+            const pollDuration = document.getElementById('pollDuration').value;
+            
+            if (pollOptions.length >= 2) {
+                pollData = {
+                    isEnabled: true,
+                    question: pollQuestion,
+                    options: pollOptions,
+                    allowMultipleVotes: allowMultipleVotes,
+                    duration: pollDuration ? parseInt(pollDuration) : null
+                };
+            } else {
+                alert('Please add at least 2 poll options.');
+                return;
+            }
+        }
+        
+        // Validate content - allow posts with poll only, content only, or both
+        if ((content && content.trim()) || pollData) {
             try {
-                const data = await apiRequest('/api/createPost', 'POST', { accountNumber, title, content });
+                const postData = { accountNumber, title, content };
+                if (pollData) {
+                    postData.poll = pollData;
+                }
+                
+                const data = await apiRequest('/api/createPost', 'POST', postData);
                 if (data.success) {
                     window.location.href = `/profile/${accountNumber}`;
                 }
@@ -95,7 +206,7 @@ export function initializeCreatePost(accountNumber) {
                 console.error('Error creating post:', error);
             }
         } else {
-            alert('Please add some content to your post.');
+            alert('Please add some content or create a poll.');
         }
     });
 
