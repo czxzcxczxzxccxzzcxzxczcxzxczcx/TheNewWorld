@@ -15,34 +15,47 @@ Key Skills Demonstrated
   - Responsive UI: Smooth UX across both mobile and desktop platforms
 
 Features
-  - Post Management: Create, edit, delete, and preview posts
-  - Image Embedding: Auto-embed images via URL or AWS CDN uploads
-  - Comments: Leave, edit, and delete comments on posts
-  - Reposts & Likes: Engage with content via social interactions
-  - Search: Find users or posts with advanced search bars
-  - Mentions: Mention users using @username in posts
-  - Notifications: Get notified for relevant user activity
-  - Direct Messaging: Real-time private chat with WebSocket updates
-  - Profiles: Public user pages accessible via ID or @username
-  - Account Settings: Change username or password
-  - 404 Page: Custom not-found error page for invalid URLs
-  - Admin Panel: Manage user data, passwords, and more
-  - Donations: Integrated Stripe payment system
-  - Authentication: Google OAuth + cookie-based login system
-  - Form Validation: Express-validator for secure sign-ups
-  - Responsive Design: Decent mobile & polished PC UI support
+  - Post Management: Create, edit, delete, and preview posts with live content preview
+  - Interactive Polls: Create polls with 2-10 options, multiple vote support, time limits, and real-time voting
+  - Enhanced Post Editing: Edit posts with poll management, image uploads, and live preview functionality
+  - Image Embedding: Auto-embed images via URL syntax or AWS S3 CDN uploads with CloudFront delivery
+  - Comments: Leave, edit, and delete comments on posts with nested interaction
+  - Reposts & Likes: Engage with content via social interactions with real-time updates
+  - Search: Find users or posts with advanced search functionality and filtering
+  - Mentions: Mention users using @username in posts with automatic linking
+  - Notifications: Get real-time notifications for poll votes, likes, comments, and user interactions
+  - Direct Messaging: Real-time private chat with WebSocket updates and message deletion
+  - User Profiles: Public user pages accessible via account number or @username with follower systems
+  - Following System: Follow/unfollow users with dedicated followers and following pages
+  - Account Settings: Change username, password, and profile information
+  - Admin Panel: Comprehensive admin dashboard to manage users, posts, comments, messages, and grant/revoke admin permissions
+  - Payment Integration: Stripe-powered donation system with secure checkout sessions
+  - Authentication: Multi-provider system with Google OAuth and traditional cookie-based login
+  - Form Validation: Express-validator for secure sign-ups and input sanitization
+  - Real-time Features: Socket.io integration for live messaging, notifications, and poll updates
+  - Responsive Design: Mobile-optimized and polished desktop UI with modern CSS styling
+  - 404 Error Handling: Custom not-found pages for invalid URLs and routes
+  - Content Processing: Smart URL detection, image auto-embedding, and mention processing
 
 Technologies Used
-  - Node.js, Express – Server-side logic and routing
-  - MongoDB, Mongoose – NoSQL database and ORM
-  - bcrypt – Password hashing
-  - cookie-parser – Cookie handling
-  - express-validator – Form & input validation
-  - passport – Google OAuth authentication
-  - socket.io – Real-time bi-directional communication
-  - stripe – Payment gateway integration
-  - dotenv – Secure environment configuration
-  - AWS – CDN-based image upload and hosting
+  - Node.js, Express – Server-side runtime and web framework for API routing and middleware
+  - MongoDB, Mongoose – NoSQL database with ODM for data modeling and validation
+  - bcrypt – Cryptographic password hashing and salt generation
+  - cookie-parser – HTTP cookie parsing and session management
+  - express-validator – Server-side input validation and sanitization
+  - express-rate-limit – API rate limiting and DDoS protection
+  - passport, passport-google-oauth20 – Authentication middleware with Google OAuth 2.0 integration
+  - socket.io – Real-time bidirectional WebSocket communication for messaging and live updates
+  - stripe – Secure payment processing and checkout session management
+  - dotenv – Environment variable configuration and secret management
+  - AWS S3 – Cloud storage for image uploads with programmatic access
+  - AWS CloudFront – Global CDN for fast image delivery and caching
+  - connect-mongo – MongoDB session store for persistent login sessions
+  - cors – Cross-Origin Resource Sharing configuration
+  - multer – Multipart form data handling for file uploads
+  - JavaScript ES6+ – Modern JavaScript with modules, async/await, and destructuring
+  - HTML5, CSS3 – Semantic markup and responsive styling with CSS custom properties
+  - CSS Grid & Flexbox – Modern layout systems for responsive design
 
 Getting Started Locally
   1) Clone the repository
