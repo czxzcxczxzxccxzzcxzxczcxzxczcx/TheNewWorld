@@ -422,37 +422,96 @@ router.post('/getUserPosts', async (req, res) => {
 
 
 router.post('/changePostData', async (req, res) => {
-    const { postId, title, content } = req.body;
+    const { postId, title, content, poll } = req.body;
 
     const sessionId = req.cookies.TNWID;  
   
-    if (sessionId) {
-      const user = await sessionStore.get(sessionId);
-      if (!user) {
-        return res.status(401).json({ success: false, message: 'Invalid or expired session' });
-      }  
-      
-      try {
-        const post = await Post.findOne({ postId });
+    if (!sessionId) {
+      return res.status(401).json({ success: false, message: 'No session found' });
+    }
+
+    const user = await sessionStore.get(sessionId);
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+    }  
+    
+    try {
+      const post = await Post.findOne({ postId });
+
+      if (!post) {
+        return res.status(404).json({ success: false, message: 'Post not found' });
+      }
+
+      if (String(post.accountNumber) !== String(user.accountNumber)) {
+        return res.status(403).json({ 
+          success: false, 
+          message: 'You are not authorized to update this post',
+          debug: {
+            postOwner: post.accountNumber,
+            currentUser: user.accountNumber
+          }
+        });
+      }
   
-        if (!post) {
-          return res.status(404).json({ success: false, message: 'Post not found' });
-        }
-  
-        if (post.accountNumber !== user.accountNumber) {
-          return res.status(403).json({ success: false, message: 'You are not authorized to update this post' });
-        }
-  
+        // Update basic post data
         post.title = title || post.title;
         post.content = content || post.content;
+        
+        // Handle poll updates
+        if (poll !== undefined) {
+          if (poll && poll.isEnabled) {
+            // Validate poll options
+            if (!poll.options || poll.options.length < 2) {
+              return res.status(400).json({ success: false, message: 'Poll must have at least 2 options' });
+            }
+            
+            // If this is a new poll or poll structure is changing, reset votes
+            const isNewPoll = !post.poll || !post.poll.isEnabled;
+            const pollStructureChanged = post.poll && post.poll.isEnabled && 
+              (post.poll.options.length !== poll.options.length || 
+               !post.poll.options.every((option, index) => 
+                 option.text === poll.options[index].text));
+            
+            if (isNewPoll || pollStructureChanged) {
+              // Create new poll with empty votes
+              post.poll = {
+                isEnabled: true,
+                question: poll.question || '',
+                options: poll.options.map(option => ({
+                  text: option.text,
+                  votes: []
+                })),
+                allowMultipleVotes: poll.allowMultipleVotes || false,
+                duration: poll.duration || null,
+                endDate: poll.duration ? new Date(Date.now() + poll.duration * 24 * 60 * 60 * 1000) : null,
+                createdAt: new Date()
+              };
+            } else {
+              // Update existing poll but preserve votes
+              if (post.poll) {
+                post.poll.question = poll.question || post.poll.question;
+                post.poll.allowMultipleVotes = poll.allowMultipleVotes !== undefined ? poll.allowMultipleVotes : post.poll.allowMultipleVotes;
+                post.poll.duration = poll.duration !== undefined ? poll.duration : post.poll.duration;
+                if (poll.duration) {
+                  post.poll.endDate = new Date(Date.now() + poll.duration * 24 * 60 * 60 * 1000);
+                } else {
+                  post.poll.endDate = null;
+                }
+              }
+            }
+          } else {
+            // Remove poll
+            post.poll = {
+              isEnabled: false
+            };
+          }
+        }
+        
         await post.save();
   
         res.json({ success: true, message: 'Post updated successfully', post });
-      } catch (error) {
-        res.status(500).json({ success: false, message: 'Error updating post' });
-      }
-    } else {
-      res.status(401).json({ success: false, message: 'Not authenticated' });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Error updating post: ' + error.message });
     }
   });
 
@@ -503,6 +562,12 @@ router.post('/votePoll', async (req, res) => {
     
     const accountNumber = user.accountNumber;
     const { postId, optionIndex } = req.body;
+    
+    // Ensure optionIndex is a number
+    const numericOptionIndex = parseInt(optionIndex);
+    if (isNaN(numericOptionIndex)) {
+        return res.status(400).json({ success: false, message: 'Invalid option index format' });
+    }
 
     try {
         const post = await Post.findOne({ postId });
@@ -514,32 +579,35 @@ router.post('/votePoll', async (req, res) => {
             return res.status(400).json({ success: false, message: 'This post does not have an active poll' });
         }
 
+        if (!post.poll.options || !Array.isArray(post.poll.options)) {
+            return res.status(400).json({ success: false, message: 'Poll options are not properly configured' });
+        }
+
         // Check if poll has ended
         if (post.poll.endsAt && new Date() > post.poll.endsAt) {
             return res.status(400).json({ success: false, message: 'This poll has ended' });
         }
 
         // Validate option index
-        if (optionIndex < 0 || optionIndex >= post.poll.options.length) {
+        if (numericOptionIndex < 0 || numericOptionIndex >= post.poll.options.length) {
             return res.status(400).json({ success: false, message: 'Invalid poll option' });
         }
 
         // Check if user has already voted
-        const hasVotedOnOption = post.poll.options[optionIndex].votes.includes(accountNumber);
+        const hasVotedOnOption = post.poll.options[numericOptionIndex].votes.includes(accountNumber);
         const hasVotedAnywhere = post.poll.options.some(option => option.votes.includes(accountNumber));
 
-        if (!post.poll.allowMultipleVotes && hasVotedAnywhere && !hasVotedOnOption) {
-            return res.status(400).json({ success: false, message: 'You can only vote once on this poll' });
-        }
+        // Allow vote changes - if user clicks on a different option, move their vote
+        // Only prevent multiple votes if they're trying to vote on multiple options simultaneously
 
         if (hasVotedOnOption) {
-            // Remove vote (toggle)
-            post.poll.options[optionIndex].votes = post.poll.options[optionIndex].votes.filter(
+            // Remove vote from this option (toggle off)
+            post.poll.options[numericOptionIndex].votes = post.poll.options[numericOptionIndex].votes.filter(
                 vote => vote.toString() !== accountNumber.toString()
             );
             post.poll.totalVotes -= 1;
         } else {
-            // If not allowing multiple votes, remove any existing vote first
+            // If not allowing multiple votes, remove any existing vote from other options first
             if (!post.poll.allowMultipleVotes && hasVotedAnywhere) {
                 post.poll.options.forEach(option => {
                     const voteIndex = option.votes.findIndex(vote => vote.toString() === accountNumber.toString());
@@ -550,8 +618,8 @@ router.post('/votePoll', async (req, res) => {
                 });
             }
             
-            // Add new vote
-            post.poll.options[optionIndex].votes.push(accountNumber);
+            // Add new vote to the selected option
+            post.poll.options[numericOptionIndex].votes.push(accountNumber);
             post.poll.totalVotes += 1;
         }
 

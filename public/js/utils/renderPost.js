@@ -621,6 +621,15 @@ export async function updatePost(postId, title, content) {
     }
 }
 
+export async function updatePostWithPoll(postData) {
+    try {
+        const data = await apiRequest('/api/changePostData', 'POST', postData);
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export function changeProfileEdit(edit, text, border, cE, tE, eE) {
     cE.contentEditable = edit;
     tE.contentEditable = edit;
@@ -634,56 +643,338 @@ export function setupEditButton(parent, post, titleElement, contentElement) {
     editButton.textContent = 'Edit';
     editButton.setAttribute('data-id', post.postId);
 
+    let editContainer = null;
+    let pollEnabled = false;
+
     editButton.addEventListener('click', () => {
         const isEditable = contentElement.isContentEditable;
 
         if (isEditable) {
-            // Exiting edit mode - save changes and reprocess content
-            changeProfileEdit(false, 'Edit', '', contentElement, titleElement, editButton);
-            
-            // Get the raw text content from the editable element
-            const rawContent = contentElement.textContent || contentElement.innerText || '';
-            
-            updatePost(post.postId, titleElement.textContent, rawContent);
-
-            // Process the content to convert <url> back to images and handle formatting
-            const processedContent = processContent(rawContent);
-            contentElement.innerHTML = processedContent;
+            // Exiting edit mode - save changes
+            exitEditMode();
         } else {
-            // Entering edit mode - convert rendered content back to editable format
-            let editableContent = '';
-            
-            // Start with the original post content if available
-            if (post.content) {
-                editableContent = post.content;
-            } else {
-                // If no original content, try to reverse-engineer from the HTML
-                let html = contentElement.innerHTML;
-                
-                // Convert images back to <url> format for editing
-                html = html.replace(/<img[^>]*src=["']([^"']+)["'][^>]*>/gi, function(match, url) { 
-                    return `<${url}>`;
-                });
-                
-                // Remove line breaks that were converted to <br> tags
-                html = html.replace(/<br\s*\/?>/gi, '\n');
-                
-                // Handle HTML entities
-                html = html.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-                
-                editableContent = html;
-            }
-            
-            // If the post had a separate imageUrl field (legacy posts), add it to content for editing
-            if (post.imageUrl && !editableContent.includes(post.imageUrl)) {
-                editableContent += (editableContent ? '\n' : '') + `<${post.imageUrl}>`;
-            }
-            
-            // Set the editable content as plain text
-            contentElement.textContent = editableContent;
-            changeProfileEdit(true, 'Save Post', '1px dashed #ccc', contentElement, titleElement, editButton);
+            // Entering edit mode - create enhanced edit interface
+            enterEditMode();
         }
     });
+
+    function enterEditMode() {
+        // Create enhanced edit container
+        editContainer = document.createElement('div');
+        editContainer.className = 'post-edit-container';
+        editContainer.style.cssText = `
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        `;
+
+        // Get current content
+        let editableContent = '';
+        if (post.content) {
+            editableContent = post.content;
+        } else {
+            let html = contentElement.innerHTML;
+            html = html.replace(/<img[^>]*src=["']([^"']+)["'][^>]*>/gi, function(match, url) { 
+                return `<${url}>`;
+            });
+            html = html.replace(/<br\s*\/?>/gi, '\n');
+            html = html.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+            editableContent = html;
+        }
+
+        if (post.imageUrl && !editableContent.includes(post.imageUrl)) {
+            editableContent += (editableContent ? '\n' : '') + `<${post.imageUrl}>`;
+        }
+
+        // Set up poll state
+        pollEnabled = post.poll && post.poll.isEnabled;
+
+        editContainer.innerHTML = `
+            <textarea id="editContentArea">${editableContent}</textarea>
+
+            <div id="editPreview">
+                <div class="preview-label">Preview:</div>
+                <div id="editPreviewContent"></div>
+            </div>
+
+            <div id="editPollSection" style="display: ${pollEnabled ? 'block' : 'none'};">
+                <h3>Edit Poll</h3>
+                <input type="text" id="editPollQuestion" placeholder="Ask a question..." value="${pollEnabled ? (post.poll.question || '') : ''}">
+                
+                <div id="editPollOptions">
+                    ${pollEnabled ? generatePollOptionsHTML(post.poll) : generateDefaultPollOptionsHTML()}
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" id="editAddPollOption" class="poll-option-btn add-option-btn">+ Add Option</button>
+                    <button type="button" id="editRemovePollOption" class="poll-option-btn remove-option-btn">- Remove</button>
+                </div>
+                
+                <label class="checkbox-label">
+                    <input type="checkbox" id="editAllowMultipleVotes" ${pollEnabled && post.poll.allowMultipleVotes ? 'checked' : ''}>
+                    Allow multiple votes
+                </label>
+                
+                <label class="duration-label">
+                    Poll Duration:
+                    <select id="editPollDuration">
+                        <option value="">No end time</option>
+                        <option value="1" ${pollEnabled && post.poll.duration === 1 ? 'selected' : ''}>1 day</option>
+                        <option value="3" ${pollEnabled && post.poll.duration === 3 ? 'selected' : ''}>3 days</option>
+                        <option value="7" ${pollEnabled && post.poll.duration === 7 ? 'selected' : ''}>1 week</option>
+                        <option value="30" ${pollEnabled && post.poll.duration === 30 ? 'selected' : ''}>1 month</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="button-group">
+                <button id="editSavePost" type="button" class="save-btn">💾 Save Changes</button>
+                <button id="editCancelPost" type="button" class="cancel-btn">❌ Cancel</button>
+                <button id="editTogglePoll" type="button" class="poll-btn ${pollEnabled ? 'remove' : ''}">${pollEnabled ? '❌ Remove Poll' : '📊 Add Poll'}</button>
+                <button id="editUploadBtn" type="button" class="upload-btn">📷 Upload Image</button>
+            </div>
+
+            <input type="file" id="editImageInput" accept="image/*" style="display: none;" />
+            <div id="editUploadResult" class="upload-result"></div>
+        `;
+
+        // Replace original content with edit container
+        contentElement.style.display = 'none';
+        contentElement.parentNode.insertBefore(editContainer, contentElement.nextSibling);
+
+        // Update button state
+        editButton.textContent = 'Cancel Edit';
+        titleElement.contentEditable = true;
+        titleElement.style.border = '1px dashed #ccc';
+
+        // Set up event listeners after DOM is updated
+        setTimeout(() => {
+            setupEditEventListeners();
+            updateEditPreview();
+        }, 100);
+    }
+
+    function exitEditMode() {
+        if (editContainer) {
+            editContainer.remove();
+            editContainer = null;
+        }
+        
+        contentElement.style.display = '';
+        editButton.textContent = 'Edit';
+        titleElement.contentEditable = false;
+        titleElement.style.border = '';
+    }
+
+    function setupEditEventListeners() {
+        const contentArea = document.getElementById('editContentArea');
+        const saveButton = document.getElementById('editSavePost');
+        const cancelButton = document.getElementById('editCancelPost');
+        const togglePollButton = document.getElementById('editTogglePoll');
+        const uploadButton = document.getElementById('editUploadBtn');
+        const imageInput = document.getElementById('editImageInput');
+
+        if (!contentArea || !saveButton || !cancelButton || !togglePollButton || !uploadButton || !imageInput) {
+            return;
+        }
+
+        // Preview update
+        contentArea.addEventListener('input', updateEditPreview);
+
+        // Save changes
+        saveButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            savePostChanges();
+        });
+
+        // Cancel editing
+        cancelButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            exitEditMode();
+        });
+
+        // Poll toggle
+        togglePollButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            pollEnabled = !pollEnabled;
+            const pollSection = document.getElementById('editPollSection');
+            
+            if (pollEnabled) {
+                pollSection.style.display = 'block';
+                togglePollButton.textContent = '❌ Remove Poll';
+                togglePollButton.classList.remove('poll-btn');
+                togglePollButton.classList.add('poll-btn', 'remove');
+            } else {
+                pollSection.style.display = 'none';
+                togglePollButton.textContent = '📊 Add Poll';
+                togglePollButton.classList.remove('remove');
+                togglePollButton.classList.add('poll-btn');
+            }
+        });
+
+        // Poll option management
+        document.getElementById('editAddPollOption').addEventListener('click', function() {
+            const pollOptions = document.getElementById('editPollOptions');
+            const optionCount = pollOptions.children.length;
+            
+            if (optionCount < 10) {
+                const newOption = document.createElement('input');
+                newOption.type = 'text';
+                newOption.className = 'poll-option';
+                newOption.placeholder = `Option ${optionCount + 1}`;
+                pollOptions.appendChild(newOption);
+            }
+        });
+
+        document.getElementById('editRemovePollOption').addEventListener('click', function() {
+            const pollOptions = document.getElementById('editPollOptions');
+            if (pollOptions.children.length > 2) {
+                pollOptions.removeChild(pollOptions.lastChild);
+            }
+        });
+
+        // Image upload
+        uploadButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            imageInput.click();
+        });
+
+        imageInput.addEventListener('change', async function() {
+            const uploadResult = document.getElementById('editUploadResult');
+            if (!imageInput.files.length) {
+                uploadResult.textContent = 'No image selected';
+                return;
+            }
+            
+            const file = imageInput.files[0];
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                const data = await apiRequest('/api/uploadPostImage', 'POST', formData, true);
+                if (data.success) {
+                    uploadResult.textContent = 'Image uploaded successfully!';
+                    uploadResult.style.color = 'green';
+                    
+                    // Insert image URL into content area
+                    if (contentArea.value && !contentArea.value.endsWith('\n')) {
+                        contentArea.value += '\n';
+                    }
+                    contentArea.value += `<${data.imageUrl}>\n`;
+                    updateEditPreview();
+                } else {
+                    uploadResult.textContent = data.message;
+                    uploadResult.style.color = 'red';
+                }
+            } catch (err) {
+                uploadResult.textContent = 'Upload failed.';
+                uploadResult.style.color = 'red';
+            }
+        });
+    }
+
+    function updateEditPreview() {
+        const contentArea = document.getElementById('editContentArea');
+        const previewContent = document.getElementById('editPreviewContent');
+        
+        if (contentArea && previewContent) {
+            previewContent.innerHTML = processContent(contentArea.value);
+        }
+    }
+
+    async function savePostChanges() {
+        const contentArea = document.getElementById('editContentArea');
+        if (!contentArea) {
+            return;
+        }
+        
+        const newContent = contentArea.value;
+        const newTitle = titleElement.textContent;
+
+        // Prepare poll data if enabled
+        let pollData = null;
+        if (pollEnabled) {
+            const pollQuestion = document.getElementById('editPollQuestion').value;
+            const pollOptionInputs = document.querySelectorAll('#editPollOptions .poll-option');
+            const pollOptions = Array.from(pollOptionInputs)
+                .map(input => ({ text: input.value.trim() }))
+                .filter(option => option.text);
+            
+            const allowMultipleVotes = document.getElementById('editAllowMultipleVotes').checked;
+            const pollDuration = document.getElementById('editPollDuration').value;
+            
+            if (pollOptions.length >= 2) {
+                pollData = {
+                    isEnabled: true,
+                    question: pollQuestion,
+                    options: pollOptions,
+                    allowMultipleVotes: allowMultipleVotes,
+                    duration: pollDuration ? parseInt(pollDuration) : null
+                };
+            } else if (pollEnabled) {
+                alert('Please add at least 2 poll options or remove the poll.');
+                return;
+            }
+        }
+
+        try {
+            const requestData = { 
+                postId: post.postId, 
+                title: newTitle, 
+                content: newContent 
+            };
+            
+            if (pollData) {
+                requestData.poll = pollData;
+            }
+
+            const data = await updatePostWithPoll(requestData);
+            if (data.success) {
+                // Update the post object
+                post.content = newContent;
+                post.title = newTitle;
+                if (pollData) {
+                    post.poll = pollData;
+                } else {
+                    post.poll = { isEnabled: false };
+                }
+
+                // Update the display
+                const processedContent = processContent(newContent);
+                contentElement.innerHTML = processedContent;
+                
+                exitEditMode();
+                alert('Post updated successfully');
+                
+                // Refresh the page to show updated poll
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                alert('Failed to update post: ' + data.message);
+            }
+        } catch (error) {
+            alert('Error updating post: ' + (error.message || 'Unknown error'));
+        }
+    }
+
+    function generatePollOptionsHTML(poll) {
+        if (!poll || !poll.options) return generateDefaultPollOptionsHTML();
+        
+        return poll.options.map((option, index) => 
+            `<input type="text" class="poll-option" placeholder="Option ${index + 1}" value="${option.text || ''}">`
+        ).join('');
+    }
+
+    function generateDefaultPollOptionsHTML() {
+        return `
+            <input type="text" class="poll-option" placeholder="Option 1">
+            <input type="text" class="poll-option" placeholder="Option 2">
+        `;
+    }
+
     parent.appendChild(editButton);
 }
 
@@ -927,11 +1218,17 @@ function renderPoll(poll, postId, userAccountNumber) {
                         const newPollDiv = renderPoll(response.poll, postId, userAccountNumber);
                         pollDiv.replaceWith(newPollDiv);
                     } else {
+                        console.error('Vote failed:', response);
                         alert(response.message || 'Failed to vote');
                     }
                 } catch (error) {
                     console.error('Error voting on poll:', error);
-                    alert('Error voting on poll');
+                    // Try to get more details from the error
+                    if (error.message && error.message.includes('400')) {
+                        alert('Bad request - check console for details');
+                    } else {
+                        alert('Error voting on poll');
+                    }
                 }
             });
 

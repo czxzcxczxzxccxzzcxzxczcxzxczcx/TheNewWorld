@@ -19,6 +19,17 @@ export async function apiRequest(url, method = 'GET', body = null, isFormData = 
         
         // Check if response is ok
         if (!response.ok) {
+            // For 4xx errors, try to parse the JSON error response
+            if (response.status >= 400 && response.status < 500) {
+                try {
+                    const errorText = await response.text();
+                    const errorData = JSON.parse(errorText);
+                    return errorData; // Return the error data instead of throwing
+                } catch (parseError) {
+                    // If we can't parse the error response, fall back to generic error
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            }
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         

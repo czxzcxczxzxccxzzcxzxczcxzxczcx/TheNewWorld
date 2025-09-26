@@ -3677,3 +3677,206 @@ textarea:focus-visible {
   outline: none;
   border-color: var(--accent-blue);
 }
+
+/* Enhanced Post Edit Interface */
+.post-edit-container {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 12px !important;
+  margin: 8px 0 !important;
+}
+
+.post-edit-container textarea {
+  width: 100% !important;
+  min-height: 80px !important;
+  padding: 8px !important;
+  margin: 0 0 8px 0 !important;
+  background: var(--bg-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-primary) !important;
+  font-family: inherit !important;
+  font-size: 0.9rem !important;
+  resize: vertical !important;
+  box-sizing: border-box !important;
+}
+
+.post-edit-container textarea:focus {
+  outline: none !important;
+  border-color: var(--accent-blue) !important;
+}
+
+#editPreview {
+  min-height: 40px !important;
+  margin: 8px 0 !important;
+  padding: 8px !important;
+  background: var(--bg-primary) !important;
+  border-radius: var(--radius-sm) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+#editPreview .preview-label {
+  color: var(--text-muted) !important;
+  font-size: 0.75rem !important;
+  margin-bottom: var(--space-xs) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+#editPollSection {
+  background: var(--bg-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 10px !important;
+  margin: 8px 0 !important;
+}
+
+#editPollSection h3 {
+  margin: 0 0 8px 0 !important;
+  color: var(--text-primary) !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+}
+
+#editPollSection input[type="text"] {
+  width: 100% !important;
+  padding: 6px !important;
+  margin-bottom: 6px !important;
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-primary) !important;
+  font-size: 0.9rem !important;
+  box-sizing: border-box !important;
+}
+
+#editPollSection input[type="text"]:focus {
+  outline: none !important;
+  border-color: var(--accent-blue) !important;
+}
+
+#editPollSection select {
+  padding: var(--space-xs) !important;
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-primary) !important;
+  font-size: 0.9rem !important;
+}
+
+#editPollSection select:focus {
+  outline: none !important;
+  border-color: var(--accent-blue) !important;
+}
+
+.post-edit-container .button-group {
+  display: flex !important;
+  gap: 6px !important;
+  margin: 10px 0 !important;
+  flex-wrap: wrap !important;
+}
+
+.post-edit-container button {
+  padding: 6px 10px !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  cursor: pointer !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.post-edit-container .save-btn {
+  background: var(--accent-green) !important;
+  color: white !important;
+}
+
+.post-edit-container .save-btn:hover {
+  background: #1e7e34 !important;
+}
+
+.post-edit-container .cancel-btn {
+  background: var(--text-muted) !important;
+  color: white !important;
+}
+
+.post-edit-container .cancel-btn:hover {
+  background: #545b62 !important;
+}
+
+.post-edit-container .poll-btn {
+  background: var(--accent-green) !important;
+  color: white !important;
+}
+
+.post-edit-container .poll-btn:hover {
+  background: #1e7e34 !important;
+}
+
+.post-edit-container .poll-btn.remove {
+  background: #dc3545 !important;
+}
+
+.post-edit-container .poll-btn.remove:hover {
+  background: #c82333 !important;
+}
+
+.post-edit-container .upload-btn {
+  background: var(--accent-blue) !important;
+  color: white !important;
+}
+
+.post-edit-container .upload-btn:hover {
+  background: #0056b3 !important;
+}
+
+.post-edit-container .poll-option-btn {
+  padding: var(--space-xs) !important;
+  font-size: 0.8rem !important;
+}
+
+.post-edit-container .add-option-btn {
+  background: var(--accent-blue) !important;
+  color: white !important;
+}
+
+.post-edit-container .add-option-btn:hover {
+  background: #0056b3 !important;
+}
+
+.post-edit-container .remove-option-btn {
+  background: #dc3545 !important;
+  color: white !important;
+}
+
+.post-edit-container .remove-option-btn:hover {
+  background: #c82333 !important;
+}
+
+.post-edit-container .upload-result {
+  margin-top: 4px !important;
+  font-size: 0.8rem !important;
+}
+
+.post-edit-container .checkbox-label {
+  display: flex !important;
+  align-items: center !important;
+  color: var(--text-primary) !important;
+  font-size: 0.9rem !important;
+  margin: 6px 0 !important;
+}
+
+.post-edit-container .checkbox-label input {
+  margin-right: 6px !important;
+}
+
+.post-edit-container .duration-label {
+  color: var(--text-primary) !important;
+  font-size: 0.9rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin: 6px 0 !important;
+}
