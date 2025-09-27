@@ -60,7 +60,7 @@ router.post('/createComment', async (req, res) => {
                 content: `${user.username} commented on your post.`,
             });
 
-            console.log('Notification created:', notification); // Print the notification data
+
         }
 
         res.status(201).json({

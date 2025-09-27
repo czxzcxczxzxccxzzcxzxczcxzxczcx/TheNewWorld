@@ -1,7 +1,8 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderPost, changeEdit } from './utils/renderPost.js';
 import { initializeCreatePost } from './utils/createPostHandler.js';
-import { renderBar, initializeGlobalButtons, initializeTheme } from './utils/renderBar.js';
+import { renderBar } from './utils/renderBar.js';
+import { initializeAuth } from './utils/auth.js';
 
 renderBar();
 
@@ -10,40 +11,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     const gebid = id => document.getElementById(id);
     let userAccountNumber;
 
-    // Fetch user info to initialize create post and global buttons
-    apiRequest('/api/getUserInfo', 'GET')
-        .then(data => {
-            if (data.success) {
-                const user = data.user;
-                initializeCreatePost(user.accountNumber);
-                initializeGlobalButtons(user.accountNumber); // Initialize global buttons
-                initializeTheme(user); // Initialize theme from user data
-            } else {
-                window.location.href = '/';
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching user info:", error);
-        });
-
-
-
-
-    // Fetch user info and then set up the page
-    async function fetchUserInfoAndSetupPage() {
+    // Setup page with current user info
+    async function setupPageWithAuth() {
         try {
-            const data = await apiRequest('/api/getUserInfo', 'GET');
-            if (data.success) {
-                const user = data.user;
-                userAccountNumber = user.accountNumber; // Set userAccountNumber
-
-                // Call setupPage only after userAccountNumber is set
-                setupPage();
-            } else {
-                window.location.href = '/';
-            }
+            const user = await initializeAuth();
+            userAccountNumber = user.accountNumber;
+            initializeCreatePost(user.accountNumber);
+            setupPage();
         } catch (error) {
-            console.error("Error fetching user info:", error);
+            console.error("Error setting up page:", error);
         }
     }
 
@@ -369,5 +345,5 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     }
 
-    fetchUserInfoAndSetupPage();
+    setupPageWithAuth();
 });

@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
     reposts: { type: [String], default: [] },
     openDM: { type: [String], default: [] },
     adminRole: { type: String, enum: ['user', 'admin', 'headAdmin'], default: 'user' },
+    verified: { type: Boolean, default: false },
     theme: { type: String, enum: ['light', 'dark', 'auto'], default: 'light' }
 });
 

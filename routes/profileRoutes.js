@@ -62,13 +62,13 @@ router.post('/follow', async (req, res) => {
                 follower && senderAccountNumber && follower.toString() !== senderAccountNumber.toString()
             );
 
-            // console.log('Unfollowing:', { senderUser, recipientUser });
+
 
             // Save the updated documents
             await senderUser.save();
             await recipientUser.save();
 
-            // console.log('After unfollow:', { senderUser, recipientUser });
+
 
             return res.json({ success: true, message: 'Unfollowed successfully' });
         } else {
@@ -76,7 +76,7 @@ router.post('/follow', async (req, res) => {
             senderUser.following.push(recipientAccountNumber);
             recipientUser.followers.push(senderAccountNumber);
 
-            // console.log('Following:', { senderUser, recipientUser });
+
 
             // Save the updated documents
             await senderUser.save();
@@ -92,7 +92,7 @@ router.post('/follow', async (req, res) => {
 
             }
 
-            // console.log('After follow:', { senderUser, recipientUser });
+
 
             return res.json({ success: true, message: 'Followed successfully' });
         }
@@ -233,13 +233,13 @@ router.get('/getFollowers/:userId', async (req, res) => {
 
 // Route to remove a follower (secure endpoint)
 router.post('/removeFollower', async (req, res) => {
-    console.log('removeFollower endpoint called');
+
     const { followerAccountNumber } = req.body;
     
     // Check authentication using the same pattern as other endpoints
     const sessionId = req.cookies.TNWID;
     if (!sessionId) {
-        console.log('No valid session found');
+
         return res.status(401).json({ success: false, message: 'Authentication required' });
     }
     
@@ -251,7 +251,7 @@ router.post('/removeFollower', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid or expired session' });
         } // Get user's data from session
     const currentUserAccountNumber = user.accountNumber;
-    console.log('Current user:', currentUserAccountNumber, 'Removing follower:', followerAccountNumber);
+
 
     try {
         // Validate input

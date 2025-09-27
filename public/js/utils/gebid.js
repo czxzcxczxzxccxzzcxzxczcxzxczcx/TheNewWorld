@@ -1,0 +1,1 @@
+export const gebid = document.getElementById.bind(document);

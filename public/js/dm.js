@@ -1,5 +1,7 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
+import { initializeAuth, AuthManager } from './utils/auth.js';
+import { gebid } from './utils/gebid.js';
 
 renderBar();
 let socket;
@@ -21,12 +23,11 @@ async function loadSocketIO() {
 document.addEventListener("DOMContentLoaded", async function () {
     const homePanel = document.getElementById("messagePanel");
     const recipientAccountNumber = window.location.pathname.split('/')[2];
-    var gebid = document.getElementById.bind(document);
+    // gebid is now imported from utils/gebid.js
     let accountNumber;
 
-    const data = await apiRequest('/api/getUserInfo', 'GET');
-    if (data.success) {
-        const user = data.user;
+    try {
+        const user = await initializeAuth();
         accountNumber = user.accountNumber;
 
         // Load socket.io-client from CDN and initialize socket
@@ -72,9 +73,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         fetchRecipientInfo(recipientAccountNumber);
         fetchAndRenderMessages(accountNumber, recipientAccountNumber);
-         initializeGlobalButtons(accountNumber);
-    } else {
-        window.location.href = '/';
+        initializeGlobalButtons(accountNumber);
+    } catch (error) {
+        console.error("Error initializing auth:", error);
     }
 
     async function fetchRecipientInfo(recipientAccountNumber) {

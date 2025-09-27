@@ -1,10 +1,10 @@
 import { apiRequest } from './apiRequest.js';
 
 export function renderBar() {
-    console.log("DO NOT SEND ANYONE INFORMATION FROM THIS CONSOLE OR UI FOR IT MAY POSE A GREAT SECURITY RISK TOWARD YOU")
+    console.log("WARNING WARNING WARNING WARNING WARNING WARNING WARNING\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\nThis is your browser's developer console. If someone told you to paste something here, it could be a scam.\n\nNever share anything from this console unless you understand exactly what it does");
 
     // Initialize theme from localStorage or default to auto
-    const savedTheme = localStorage.getItem('theme') || 'auto';
+    const savedTheme = localStorage.getItem('theme');
     applyTheme(savedTheme);
 
     const barHTML = `
@@ -243,10 +243,7 @@ async function performSearch(query, type) {
         searchResults.innerHTML = '<div class="search-loading">Searching...</div>';
         
         const endpoint = type === 'posts' ? '/api/searchPosts' : '/api/searchUsers';
-        console.log(`Searching ${type} with query: "${query}" at endpoint: ${endpoint}`);
-        
         const data = await apiRequest(endpoint, 'POST', { data: query });
-        console.log('Search response:', data);
         
         if (data.success) {
             const results = type === 'posts' ? data.posts : data.users;
@@ -286,7 +283,7 @@ async function performSearch(query, type) {
 }
 
 export function initializeGlobalButtons(accountNumber) {
-    console.log('Initializing global buttons for account:', accountNumber);
+
     const logoutButton = document.getElementById("logoutButton");
     if (logoutButton) {
         logoutButton.addEventListener("click", async function (event) {
@@ -315,18 +312,17 @@ export function initializeGlobalButtons(accountNumber) {
     // Check admin access and show/hide admin button
     apiRequest('/api/verify', 'GET')
         .then(data => {
-            console.log('Admin verification response:', data);
-            if (data.success) {
+            if (data.success && data.adminRole) {
                 const adminButton = document.getElementById('adminPanelButton');
-                console.log('Admin button found:', adminButton);
                 if (adminButton) {
                     adminButton.style.display = 'flex'; // Show admin button with flex display to match other nav items
-                    console.log('Admin button display set to flex');
-                } else {
-                    console.log('Admin button not found in DOM');
                 }
             } else {
-                console.log('Admin access denied:', data.message);
+                // Hide admin button if user is not an admin
+                const adminButton = document.getElementById('adminPanelButton');
+                if (adminButton) {
+                    adminButton.style.display = 'none';
+                }
             }
         })
         .catch(error => {
@@ -350,7 +346,7 @@ export function applyTheme(theme) {
         handleAutoTheme();
     }
     
-    console.log('Theme applied:', theme);
+
 }
 
 function handleAutoTheme() {

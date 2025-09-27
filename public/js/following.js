@@ -1,24 +1,21 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { initializeGlobalButtons } from './utils/renderBar.js';
+import { initializeAuth, AuthManager } from './utils/auth.js';
+import { gebid } from './utils/gebid.js';
 
 document.addEventListener("DOMContentLoaded", async function () {
     const homePanel = document.getElementById("homePanel");
     const profileAccountNumber = window.location.pathname.split('/')[2];
-    var gebid = document.getElementById.bind(document);
+    // gebid is now imported from utils/gebid.js
 
     let accountNumber;
 
 
     async function fetchUserInfo() {
         try {
-            const data = await apiRequest('/api/getUserInfo', 'GET');
-            if (data.success) {
-                const user = data.user;
-                accountNumber = user.accountNumber;
-                initializeGlobalButtons(accountNumber); // Initialize global buttons
-            } else {
-                window.location.href = '/';
-            }
+            const user = await initializeAuth();
+            accountNumber = user.accountNumber;
+            initializeGlobalButtons(accountNumber); // Initialize global buttons
         } catch (error) {
             console.error("Error fetching user info:", error);
             window.location.href = '/';

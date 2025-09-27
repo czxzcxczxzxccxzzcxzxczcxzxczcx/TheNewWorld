@@ -1,27 +1,48 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=no">
-        <link rel="stylesheet" href="/styles.css">
-<link rel="icon" type="image/x-icon" href="/src/TNW.png">
 
-        <script type="module" src="/js/dm.js" defer></script>
-        <title>The New World</title>
-    </head>
-    <body>
-       
-        <div class="dm" id="dmContainer"> 
-             <div class ="dmTop">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" type="image/x-icon" href="/src/TNW.png">
+    <script>
+        // Apply theme immediately to prevent flash
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'auto';
+            const html = document.documentElement;
+
+            html.classList.remove('theme-light', 'theme-dark', 'theme-auto', 'auto-light', 'auto-dark');
+            html.classList.add(`theme-${savedTheme}`);
+
+            if (savedTheme === 'auto') {
+                const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                if (mediaQuery.matches) {
+                    html.classList.add('auto-dark');
+                } else {
+                    html.classList.add('auto-light');
+                }
+            }
+        })();
+    </script>
+    <script type="module" src="/js/dm.js" defer></script>
+    <title>The New World</title>
+</head>
+
+<body>
+
+    <div class="dm" id="dmContainer">
+        <div class="dmTop">
             <img id="profileImage" src="/src/default.png" alt="Profile Image"></img>
             <h1 id="profileName">Profile Name</h1>
             <a id="back" href="/messages">X</a>
         </div>
-        <div id="messagePanel" class="homePanel"> 
-        
-         </div>
-        </div>
+        <div id="messagePanel" class="homePanel">
 
-       
-    </body>
+        </div>
+    </div>
+
+
+</body>
+
 </html>

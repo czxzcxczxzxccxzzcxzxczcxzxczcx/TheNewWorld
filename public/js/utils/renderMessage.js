@@ -17,7 +17,7 @@ export function renderOpenDMUsers(opendmData, containerElementId) {
     });
 
     opendmData.forEach(user => {
-                console.log(user);
+
 
         const userElement = createElementWithClass('div', 'dmUser');
         const userImage = createElementWithClass('img', 'dmUserImage');
@@ -73,7 +73,7 @@ export function renderOpenDMUsers(opendmData, containerElementId) {
 export function renderUserSearchResults(users, containerElementId) {
     const container = document.getElementById('homePanel');
     if (!container) return;
-    console.log("rendering user search results")
+
     container.innerHTML = '';
     if (!users || users.length === 0) {
         const noUser = createElementWithClass('p', 'noDMMessage');
@@ -149,7 +149,7 @@ export function setupUserSearchOnEnter(inputId, containerElementId) {
                 ));
                 if (res.success && Array.isArray(res.users)) {
                     renderUserSearchResults(res.users, containerElementId);
-                    console.log("searching for users");
+
                 } else {
                     renderUserSearchResults([], containerElementId);
                 }

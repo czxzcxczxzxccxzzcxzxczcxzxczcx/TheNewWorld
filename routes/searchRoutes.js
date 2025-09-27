@@ -12,11 +12,11 @@ router.post('/searchPosts', async (req, res) => {
     }
 
     try {
-        console.log('Searching posts with query:', data);
+
         
         // First check total posts count
         const totalPosts = await Post.countDocuments();
-        console.log(`Total posts in database: ${totalPosts}`);
+
         
         const posts = await Post.find({
             $or: [
@@ -25,7 +25,7 @@ router.post('/searchPosts', async (req, res) => {
             ]
         }).limit(10);
 
-        console.log(`Found ${posts.length} matching posts for query: "${data}"`);
+
 
         // Get usernames for the posts
         const postsWithUsernames = await Promise.all(posts.map(async (post) => {

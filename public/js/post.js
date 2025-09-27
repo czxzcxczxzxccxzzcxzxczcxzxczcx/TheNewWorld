@@ -1,6 +1,7 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderPost } from './utils/renderPost.js';
 import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
+import { initializeAuth, AuthManager } from './utils/auth.js';
 
 renderBar();
 
@@ -18,14 +19,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Get current user info for authentication and interaction features
     try {
-        const userData = await apiRequest('/api/getUserInfo', 'GET');
-        if (userData.success) {
-            const user = userData.user;
-            accountNumber = user.accountNumber;
-            initializeGlobalButtons(accountNumber);
-        }
+        const user = await initializeAuth();
+        accountNumber = user.accountNumber;
+        initializeGlobalButtons(accountNumber);
     } catch (error) {
-        console.error('Error fetching user info:', error);
+        console.error('Error initializing auth:', error);
         // Continue without user info - guest viewing
     }
 

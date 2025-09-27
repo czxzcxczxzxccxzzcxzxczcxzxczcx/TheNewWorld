@@ -1,42 +1,62 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=no">
-        <link rel="stylesheet" href="/styles.css">
-<link rel="icon" type="image/x-icon" href="/src/TNW.png">
 
-        <script type="module" src="/js/following.js" defer></script>
-        <title>The New World</title>
-    </head>
-    <body>
-        <div class="bar">
-            <ul>
-                <h1 class="logo" id="checkPost">The New World</h1>
-                <div class="buttons">
-                    <a href="/home">
-                        <h1>Home</h1>
-                    </a>
-                    <a href="/createPost" >
-                        <h1>Create Post</h1>
-                    </a>
-                    <a href="/messages" >
-                        <h1>Messages</h1>
-                    </a>
-                    <a href="" id="profileButton">
-                        <h1>My Profile</h1>
-                    </a>
-                    <a id="logoutButton"href="">
-                        <h1>Logout</h1>
-                    </a>
-                    <a id="adminPanelButton" href="/admin">
-                        <h1>Admin</h1>
-                    </a>
-                </div>
-            </ul>
-        </div>
-        <div id="homePanel" class="homePanel"> 
-            <!-- <div class="followingPanel">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" type="image/x-icon" href="/src/TNW.png">
+    <script>
+        // Apply theme immediately to prevent flash
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'auto';
+            const html = document.documentElement;
+
+            html.classList.remove('theme-light', 'theme-dark', 'theme-auto', 'auto-light', 'auto-dark');
+            html.classList.add(`theme-${savedTheme}`);
+
+            if (savedTheme === 'auto') {
+                const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                if (mediaQuery.matches) {
+                    html.classList.add('auto-dark');
+                } else {
+                    html.classList.add('auto-light');
+                }
+            }
+        })();
+    </script>
+    <script type="module" src="/js/following.js" defer></script>
+    <title>The New World</title>
+</head>
+
+<body>
+    <div class="bar">
+        <ul>
+            <h1 class="logo" id="checkPost">The New World</h1>
+            <div class="buttons">
+                <a href="/home">
+                    <h1>Home</h1>
+                </a>
+                <a href="/createPost">
+                    <h1>Create Post</h1>
+                </a>
+                <a href="/messages">
+                    <h1>Messages</h1>
+                </a>
+                <a href="" id="profileButton">
+                    <h1>My Profile</h1>
+                </a>
+                <a id="logoutButton" href="">
+                    <h1>Logout</h1>
+                </a>
+                <a id="adminPanelButton" href="/admin">
+                    <h1>Admin</h1>
+                </a>
+            </div>
+        </ul>
+    </div>
+    <div id="homePanel" class="homePanel">
+        <!-- <div class="followingPanel">
                 <img class="pfp" src=""/>
                 
                 <h1>@77 (8218391231)</h1>
@@ -60,6 +80,7 @@
                 <h1>@77 (8218391231)</h1>
                 <button class="followingButton">Unfollow</button>
             </div> -->
-        </div>
-    </body>
+    </div>
+</body>
+
 </html>

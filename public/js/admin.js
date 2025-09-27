@@ -1,5 +1,6 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
+import { initializeAuth, AuthManager } from './utils/auth.js';
 
 // Don't render the navigation bar on admin panel
 // renderBar();
@@ -21,13 +22,11 @@ class AdminPanel {
 
     async loadUserInfo() {
         try {
-            const data = await apiRequest('/api/getUserInfo', 'GET');
-            if (data.success) {
-                const user = data.user;
-                initializeGlobalButtons(user.accountNumber);
-                
-                // Get user profile to check admin role
-                const profile = await apiRequest(`/api/get/profile/${user.accountNumber}`, 'GET');
+            const user = await initializeAuth();
+            initializeGlobalButtons(user.accountNumber);
+            
+            // Get user profile to check admin role
+            const profile = await apiRequest(`/api/get/profile/${user.accountNumber}`, 'GET');
                 this.userRole = profile.adminRole || 'admin';
                 
                 document.getElementById('adminUserDisplay').textContent = `${user.username} (#${user.accountNumber})`;
@@ -39,9 +38,6 @@ class AdminPanel {
                 if (this.userRole === 'headAdmin') {
                     document.getElementById('permissionsTab').style.display = 'block';
                 }
-            } else {
-                window.location.href = '/';
-            }
         } catch (error) {
             console.error("Error loading user info:", error);
             window.location.href = '/';
@@ -290,6 +286,10 @@ class AdminPanel {
                     <div class="fieldValue">${item.adminRole || 'user'}</div>
                 </div>
                 <div class="resultField">
+                    <div class="fieldLabel">Verified</div>
+                    <div class="fieldValue">${item.verified ? '✅ Yes' : '❌ No'}</div>
+                </div>
+                <div class="resultField">
                     <div class="fieldLabel">Followers</div>
                     <div class="fieldValue">${item.followers?.length || 0}</div>
                 </div>
@@ -413,6 +413,12 @@ class AdminPanel {
                         ${this.userRole === 'headAdmin' ? `<option value="headAdmin" ${item.adminRole === 'headAdmin' ? 'selected' : ''}>Head Admin</option>` : ''}
                     </select>
                 </div>
+                <div class="formGroup">
+                    <label>
+                        <input type="checkbox" id="edit_verified" ${item.verified ? 'checked' : ''}>
+                        Verified Badge
+                    </label>
+                </div>
             `,
             posts: (item) => `
                 <div class="formGroup">
@@ -490,7 +496,8 @@ class AdminPanel {
             users: () => ({
                 username: document.getElementById('edit_username').value,
                 bio: document.getElementById('edit_bio').value,
-                adminRole: document.getElementById('edit_adminRole').value
+                adminRole: document.getElementById('edit_adminRole').value,
+                verified: document.getElementById('edit_verified').checked
             }),
             posts: () => ({
                 title: document.getElementById('edit_title').value,

@@ -1,8 +1,9 @@
 import { renderPost } from './utils/renderPost.js';
-import { apiRequest } from './utils/apiRequest.js'; // Import apiRequest for AJAX requests
+import { apiRequest } from './utils/apiRequest.js';
 import { initializeCreatePost } from './utils/createPostHandler.js';
 import { renderUsers } from './utils/renderUser.js';
-import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
+import { renderBar } from './utils/renderBar.js';
+import { initializeAuth } from './utils/auth.js';
 
 renderBar();
 
@@ -18,18 +19,12 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    apiRequest('/api/getUserInfo', 'GET')
-        .then(data => {
-            if (data.success) {
-                const user = data.user;
-                initializeCreatePost(user.accountNumber);
-                initializeGlobalButtons(user.accountNumber);
-            } else {
-                window.location.href = '/';
-            }
+    initializeAuth()
+        .then(user => {
+            initializeCreatePost(user.accountNumber);
         })
         .catch(error => {
-            console.error("Error fetching user info:", error);
+            console.error("Error initializing auth:", error);
         });
 
     // Function to perform search

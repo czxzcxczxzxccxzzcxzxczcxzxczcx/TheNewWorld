@@ -610,7 +610,7 @@ export async function updatePost(postId, title, content) {
     try {
         const data = await apiRequest('/api/changePostData', 'POST', { postId, title, content });
         if (data.success) {
-            console.log('Post updated successfully');
+
             alert('Post updated successfully');
         } else {
             console.error('Failed to update post');

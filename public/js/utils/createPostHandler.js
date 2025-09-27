@@ -167,14 +167,15 @@ export function initializeCreatePost(accountNumber) {
         // Prepare poll data if enabled
         let pollData = null;
         if (pollEnabled) {
-            const pollQuestion = document.getElementById('pollQuestion').value;
+            const pollQuestion = document.getElementById('pollQuestion')?.value || '';
             const pollOptionInputs = document.querySelectorAll('.poll-option');
             const pollOptions = Array.from(pollOptionInputs)
+                .filter(input => input && typeof input.value === 'string') // Ensure input has a valid value property
                 .map(input => ({ text: input.value.trim() }))
                 .filter(option => option.text);
             
-            const allowMultipleVotes = document.getElementById('allowMultipleVotes').checked;
-            const pollDuration = document.getElementById('pollDuration').value;
+            const allowMultipleVotes = document.getElementById('allowMultipleVotes')?.checked || false;
+            const pollDuration = document.getElementById('pollDuration')?.value;
             
             if (pollOptions.length >= 2) {
                 pollData = {

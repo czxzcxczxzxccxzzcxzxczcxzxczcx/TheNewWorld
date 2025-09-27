@@ -1,20 +1,63 @@
 <!DOCTYPE html>
-
 <html lang='en'>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=no">
-<link rel="icon" type="image/x-icon" href="/src/TNW.png">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/src/TNW.png">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script type="module" src="/js/notFound.js" defer></script>
+    <title>404 - Page Not Found | The New World</title>
+</head>
 
-        <link rel="stylesheet" type="text/css" href="styles.css">
-        <script type="module" src="/js/notFound.js" defer></script>
-
-        <title>The New World</title>
-    </head>
-
-    <body>
-        
-        <h1 class="notFound"> 404 PAGE NOT FOUND</h1>
-    </body>
-
+<body>
+    <div class="container">
+        <div class="not-found-wrapper">
+            <div class="not-found-content">
+                <!-- Animated 404 -->
+                <div class="error-code">
+                    <span class="four">4</span>
+                    <span class="zero">0</span>
+                    <span class="four">4</span>
+                </div>
+                
+                <!-- Logo and message -->
+                <div class="not-found-message">
+                    <img src="/src/TNW.png" alt="The New World Logo" class="not-found-logo">
+                    <h1 class="not-found-title">Oops! Page Not Found</h1>
+                    <p class="not-found-description">
+                        The page you're looking for seems to have wandered off into the void. 
+                        Don't worry, even in The New World, sometimes paths lead to unexplored territories.
+                    </p>
+                </div>
+                
+                <!-- Action buttons -->
+                <div class="not-found-actions">
+                    <button id="goHome" class="action-btn primary">
+                        🏠 Go Home
+                    </button>
+                    <button id="goBack" class="action-btn secondary">
+                        ← Go Back
+                    </button>
+                    <button id="reportIssue" class="action-btn tertiary">
+                        📧 Report Issue
+                    </button>
+                </div>
+                
+                <!-- Fun facts -->
+                <div class="fun-fact">
+                    <p class="fun-fact-text">
+                        💡 <strong>Fun Fact:</strong> This 404 error is helping you discover new parts of The New World!
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Animated background elements -->
+            <div class="bg-animation">
+                <div class="floating-element"></div>
+                <div class="floating-element"></div>
+                <div class="floating-element"></div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>

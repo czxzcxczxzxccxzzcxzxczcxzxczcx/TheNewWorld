@@ -177,12 +177,28 @@ router.get('/verify', async (req, res) => {
 
         const accountNumber = user.accountNumber;
 
+        // Get user's admin role from database
+        const dbUser = await User.findOne({ accountNumber });
+        if (!dbUser) {
+            return res.status(401).json({ success: false, message: 'User not found' });
+        }
+
+        const adminRole = dbUser.adminRole || 'user';
+        
         // Check if user has admin access
         const hasAccess = await hasAdminAccess(accountNumber, 'admin');
         if (hasAccess) {
-            return res.status(200).json({ success: true, message: 'Admin access verified' });
+            return res.status(200).json({ 
+                success: true, 
+                adminRole: adminRole,
+                message: 'Admin access verified' 
+            });
         } else {
-            return res.status(200).json({ success: false, message: 'Admin access denied' });
+            return res.status(200).json({ 
+                success: false, 
+                adminRole: adminRole,
+                message: 'Admin access denied' 
+            });
         }
     } catch (error) {
         console.error('Error verifying admin access:', error);
@@ -628,7 +644,7 @@ router.get('/getAllComments', async (req, res) => {
 
 // Update endpoints for the modern admin panel
 router.post('/admin/updateUser', async (req, res) => {
-    const { id, username, bio, adminRole } = req.body;
+    const { id, username, bio, adminRole, verified } = req.body;
     const sessionId = req.cookies.TNWID;
 
     try {
@@ -660,7 +676,7 @@ router.post('/admin/updateUser', async (req, res) => {
 
         const updatedUser = await User.findOneAndUpdate(
             { accountNumber: id },
-            { $set: { username, bio, adminRole } },
+            { $set: { username, bio, adminRole, verified: verified === true } },
             { new: true }
         );
 

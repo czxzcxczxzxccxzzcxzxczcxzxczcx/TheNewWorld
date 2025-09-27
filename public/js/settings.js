@@ -1,5 +1,6 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderBar, initializeGlobalButtons, applyTheme, initializeTheme } from './utils/renderBar.js';
+import { initializeAuth, AuthManager } from './utils/auth.js';
 
 // Initialize navigation
 renderBar();
@@ -24,14 +25,8 @@ class SettingsManager {
     }
 
     async loadUserData() {
-        const data = await apiRequest('/api/getUserInfo', 'GET');
-        
-        if (data.success) {
-            this.user = data.user;
-            initializeGlobalButtons(this.user.accountNumber);
-        } else {
-            throw new Error('Failed to load user data: ' + data.message);
-        }
+        this.user = await initializeAuth();
+        initializeGlobalButtons(this.user.accountNumber);
     }
 
     updateUI() {

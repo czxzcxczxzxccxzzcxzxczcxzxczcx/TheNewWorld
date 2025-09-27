@@ -1,7 +1,8 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderPost,  changeEdit } from './utils/renderPost.js';
 import { initializeCreatePost } from './utils/createPostHandler.js';
-import { renderBar, initializeGlobalButtons, initializeTheme } from './utils/renderBar.js';
+import { renderBar } from './utils/renderBar.js';
+import { initializeAuth } from './utils/auth.js';
 
 renderBar();
 
@@ -80,26 +81,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Admin verification is now handled globally in renderBar.js
-    
-    // Fetch user info and initialize global buttons
-    apiRequest('/api/getUserInfo', 'GET')
-        .then(data => {
-            if (data.success) {
-                const user = data.user;
-                accountNumber = user.accountNumber;
-                initializeGlobalButtons(accountNumber); // Initialize global buttons
-                initializeCreatePost(user.accountNumber);
-                initializeTheme(user); // Initialize theme from user data
-            } else {
-                window.location.href = '/';
-            }
+    // Initialize authentication and setup
+    initializeAuth()
+        .then(user => {
+            accountNumber = user.accountNumber;
+            initializeCreatePost(user.accountNumber);
+            // Fetch and render posts and notifications
+            renderPosts();
+            renderNotifications();
         })
         .catch(error => {
-            console.error("Error fetching user info:", error);
+            console.error("Error initializing auth:", error);
         });
-
-    // Fetch and render posts and notifications
-    renderPosts();
-    renderNotifications();
 });

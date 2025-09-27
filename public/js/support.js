@@ -1,5 +1,7 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
+import { initializeAuth, AuthManager } from './utils/auth.js';
+import { gebid } from './utils/gebid.js';
 
 renderBar();
 
@@ -20,23 +22,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     let accountNumber;
-    var gebid = document.getElementById.bind(document);
+    // gebid is now imported from utils/gebid.js
     const button = gebid("donate");
     const amountInput = gebid("amount");
     const donationForm = gebid("donationForm");
-    apiRequest('/api/getUserInfo', 'GET')
-        .then(data => {
-            if (data.success) {
-                const user = data.user;
-                accountNumber = user.accountNumber;
-                initializeGlobalButtons(accountNumber); // Initialize global buttons
-                initializeCreatePost(user.accountNumber);
-            } else {
-                window.location.href = '/';
-            }
+    initializeAuth()
+        .then(user => {
+            accountNumber = user.accountNumber;
+            initializeGlobalButtons(accountNumber); // Initialize global buttons
         })
         .catch(error => {
-            console.error("Error fetching user info:", error);
+            console.error("Error initializing auth:", error);
         });
 
     if (donationForm) {
