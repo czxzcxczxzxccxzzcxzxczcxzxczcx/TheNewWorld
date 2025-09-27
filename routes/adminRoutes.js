@@ -15,7 +15,7 @@ async function hasAdminAccess(accountNumber, requiredRole = 'admin') {
         const user = await User.findOne({ accountNumber });
         if (!user) return false;
         
-        const roleHierarchy = { user: 0, admin: 1, headAdmin: 2 };
+        const roleHierarchy = { user: 0, moderator: 1, admin: 2, headAdmin: 3 };
         const userLevel = roleHierarchy[user.adminRole] || 0;
         const requiredLevel = roleHierarchy[requiredRole] || 1;
         
@@ -183,23 +183,22 @@ router.get('/verify', async (req, res) => {
             return res.status(401).json({ success: false, message: 'User not found' });
         }
 
-        const adminRole = dbUser.adminRole || 'user';
-        
-        // Check if user has admin access
-        const hasAccess = await hasAdminAccess(accountNumber, 'admin');
-        if (hasAccess) {
-            return res.status(200).json({ 
-                success: true, 
-                adminRole: adminRole,
-                message: 'Admin access verified' 
-            });
-        } else {
-            return res.status(200).json({ 
-                success: false, 
-                adminRole: adminRole,
-                message: 'Admin access denied' 
-            });
-        }
+        const role = dbUser.adminRole || 'user';
+
+        // Check if user has admin access (admin level and above)
+        const adminAccess = await hasAdminAccess(accountNumber, 'admin');
+
+        // Check if user has support access (moderator level and above)
+        const supportAccess = await hasAdminAccess(accountNumber, 'moderator');
+
+        return res.status(200).json({
+            success: true,
+            role,
+            adminRole: role,
+            adminAccess,
+            supportAccess,
+            message: 'Access verified'
+        });
     } catch (error) {
         console.error('Error verifying admin access:', error);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });

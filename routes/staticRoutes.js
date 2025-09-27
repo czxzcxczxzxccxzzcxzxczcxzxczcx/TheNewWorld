@@ -17,6 +17,8 @@ const staticPages = [
     '/support',
     '/settings',
     '/whatisthenewworld',
+    '/supportthenewworld',
+    '/support-panel',
 ];
 
 // Set up routes for static pages

@@ -1,34 +1,132 @@
 <!DOCTYPE html>
-
 <html lang='en'>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=no">
-<link rel="icon" type="image/x-icon" href="/src/TNW.png">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/src/TNW.png">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script type="module" src="/js/support.js" defer></script>
+    <title>Support - The New World</title>
+</head>
 
-        <link rel="stylesheet" type="text/css" href="styles.css">
-        <script type="module" src="/js/support.js" defer></script>
+<body>
+    <div class="container">
+        <div class="support-wrapper">
+            <!-- Header -->
+            <div class="support-header">
+                <img src="/src/TNW.png" alt="The New World Logo" class="support-logo">
+                <h1 class="support-title">Support Center</h1>
+                <p class="support-subtitle">Get help or report issues</p>
+            </div>
 
-        <title>The New World</title>
-    </head>
+            <!-- Navigation Tabs -->
+            <div class="support-nav">
+                <button class="support-tab active" data-tab="create">Create Ticket</button>
+                <button class="support-tab" data-tab="my-tickets">My Tickets</button>
+                <button class="support-tab" data-tab="donate">Support TNW</button>
+            </div>
 
-    <body>
-        <div class="donationPanel">
-            <h1 class="donationTitle">Support The New World</h1>
-            <p class="donationDescription">Help support The New World. Payments handled through Stripe.</p>
-            <form id="donationForm">
-                
-                <div class="inputs">
-                    <label for="amount">Donation Amount:</label>
+            <!-- Create Ticket Tab -->
+            <div class="support-content active" id="create-tab">
+                <div class="create-ticket-panel">
+                    <h2>Create Support Ticket</h2>
+                    <form id="createTicketForm">
+                        <div class="form-group">
+                            <label for="ticketType">Ticket Type</label>
+                            <select id="ticketType" required>
+                                <option value="">Select ticket type...</option>
+                                <option value="bug_report">Bug Report</option>
+                                <option value="user_report">User Report</option>
+                            </select>
+                        </div>
 
-                    <input type="number" id="userSearchInput" name="amount" min="1" required>
-                    <button id="donate" type="submit" class="donateButton">Donate</button>
-                                                            <img class="stripeLogo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Stripe_Logo%2C_revised_2016.svg/2560px-Stripe_Logo%2C_revised_2016.svg.png" alt="Stripe Logo" class="stripeLogo">
+                        <div class="form-group">
+                            <label for="ticketTitle">Title</label>
+                            <input type="text" id="ticketTitle" placeholder="Brief description of the issue" required>
+                        </div>
 
+                        <!-- User Report Fields -->
+                        <div class="form-group" id="userReportSection" style="display: none;">
+                            <label for="reportedUser">Reported User (Account Number)</label>
+                            <input type="text" id="reportedUser" placeholder="Enter account number of user to report">
+                            <small class="help-text">You can find the account number in their profile URL</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ticketDescription">Description</label>
+                            <textarea id="ticketDescription" rows="6" placeholder="Provide detailed information about the issue..." required></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn primary">Create Ticket</button>
+                            <button type="reset" class="btn secondary">Clear Form</button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
 
+            <!-- My Tickets Tab -->
+            <div class="support-content" id="my-tickets-tab">
+                <div class="tickets-panel">
+                    <div class="tickets-header">
+                        <h2>My Support Tickets</h2>
+                        <div class="tickets-filters">
+                            <select id="ticketStatusFilter">
+                                <option value="all">All Status</option>
+                                <option value="open">Open</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="closed">Closed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="tickets-list" id="ticketsList">
+                        <!-- Tickets will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Donate Tab -->
+            <div class="support-content" id="donate-tab">
+                <div class="donation-panel">
+                    <h2>Support The New World</h2>
+                    <p class="donation-description">Help support The New World development. Payments handled through Stripe.</p>
+                    <form id="donationForm">
+                        <div class="form-group">
+                            <label for="donationAmount">Donation Amount ($)</label>
+                            <input type="number" id="donationAmount" name="amount" min="1" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn primary">Donate</button>
+                        </div>
+                        <div class="stripe-info">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Stripe_Logo%2C_revised_2016.svg/2560px-Stripe_Logo%2C_revised_2016.svg.png" alt="Stripe Logo" class="stripe-logo">
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </body>
+    </div>
 
+    <!-- Ticket Modal -->
+    <div class="modal" id="ticketModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTicketTitle"></h3>
+                <button class="close-modal" id="closeTicketModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="ticket-details" id="ticketDetails">
+                    <!-- Ticket details will be loaded here -->
+                </div>
+                <div class="ticket-messages" id="ticketMessages">
+                    <!-- Messages will be loaded here -->
+                </div>
+                <div class="reply-section">
+                    <textarea id="replyMessage" placeholder="Type your reply..." rows="3"></textarea>
+                    <button class="btn primary" id="sendReply">Send Reply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>

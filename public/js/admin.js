@@ -409,6 +409,7 @@ class AdminPanel {
                     <label>Admin Role</label>
                     <select id="edit_adminRole">
                         <option value="user" ${item.adminRole === 'user' ? 'selected' : ''}>User</option>
+                        <option value="moderator" ${item.adminRole === 'moderator' ? 'selected' : ''}>Moderator</option>
                         <option value="admin" ${item.adminRole === 'admin' ? 'selected' : ''}>Admin</option>
                         ${this.userRole === 'headAdmin' ? `<option value="headAdmin" ${item.adminRole === 'headAdmin' ? 'selected' : ''}>Head Admin</option>` : ''}
                     </select>

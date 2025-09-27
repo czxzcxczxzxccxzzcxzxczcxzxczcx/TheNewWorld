@@ -82,6 +82,13 @@ export function renderBar() {
                                 </svg>
                                 <span>Settings</span>
                             </a>
+                            <a id="supportPanelButton" href="/support-panel" class="nav-menu-item" style="display: none;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 9V5a3 3 0 0 0-6 0v4"></path>
+                                    <rect x="2" y="9" width="20" height="11" rx="2" ry="2"></rect>
+                                </svg>
+                                <span>Support Panel</span>
+                            </a>
                             <a id="adminPanelButton" href="/admin" class="nav-menu-item" style="display: none;">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
@@ -309,25 +316,44 @@ export function initializeGlobalButtons(accountNumber) {
         });
     }
 
-    // Check admin access and show/hide admin button
+    // Check admin and support access and show/hide buttons
     apiRequest('/api/verify', 'GET')
         .then(data => {
-            if (data.success && data.adminRole) {
+            if (data.success) {
+                // Handle admin button (only for admins)
                 const adminButton = document.getElementById('adminPanelButton');
                 if (adminButton) {
-                    adminButton.style.display = 'flex'; // Show admin button with flex display to match other nav items
+                    if (data.adminAccess) {
+                        adminButton.style.display = 'flex';
+                    } else {
+                        adminButton.style.display = 'none';
+                    }
+                }
+
+                // Handle support panel button (for moderators and admins)
+                const supportButton = document.getElementById('supportPanelButton');
+                if (supportButton) {
+                    if (data.supportAccess) {
+                        supportButton.style.display = 'flex';
+                    } else {
+                        supportButton.style.display = 'none';
+                    }
                 }
             } else {
-                // Hide admin button if user is not an admin
+                // Hide both buttons if verification fails
                 const adminButton = document.getElementById('adminPanelButton');
-                if (adminButton) {
-                    adminButton.style.display = 'none';
-                }
+                const supportButton = document.getElementById('supportPanelButton');
+                if (adminButton) adminButton.style.display = 'none';
+                if (supportButton) supportButton.style.display = 'none';
             }
         })
         .catch(error => {
-            console.error('Error verifying admin access:', error);
-            // Keep admin button hidden if verification fails
+            console.error('Error verifying access:', error);
+            // Keep buttons hidden if verification fails
+            const adminButton = document.getElementById('adminPanelButton');
+            const supportButton = document.getElementById('supportPanelButton');
+            if (adminButton) adminButton.style.display = 'none';
+            if (supportButton) supportButton.style.display = 'none';
         });
 }
 
