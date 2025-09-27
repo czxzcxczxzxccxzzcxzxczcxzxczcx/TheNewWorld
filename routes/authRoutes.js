@@ -262,7 +262,8 @@ router.get('/getUserInfo', async (req, res) => {
             following: user.following,
             posts: user.posts,
             pfp: user.pfp,
-            theme: user.theme
+            theme: user.theme,
+            verified: !!user.verified
         };
 
         res.json({ success: true, user: userInfo });

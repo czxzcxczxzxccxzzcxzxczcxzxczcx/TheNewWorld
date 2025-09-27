@@ -70,6 +70,7 @@ router.post('/createComment', async (req, res) => {
                 ...newComment.toObject(),
                 username: user.username,
                 pfp: user.pfp,
+                verified: !!user.verified,
             },
         });
     } catch (error) {
@@ -138,6 +139,7 @@ router.post('/getComments', async (req, res) => {
                     comment,
                     username: user?.username || null,
                     pfp: user?.pfp || null,
+                    verified: !!user?.verified,
                 };
             })
         );

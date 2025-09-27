@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.success) {
                 const pfp = data.pfp;
                 
-                renderPost(data.post, data.username, pfp,data.accountNumber,'home',accountNumber);
+                renderPost(data.post, data.username, pfp, data.verified, 'home', accountNumber);
             }
         } catch (error) {
             console.error('Error fetching post:', error);

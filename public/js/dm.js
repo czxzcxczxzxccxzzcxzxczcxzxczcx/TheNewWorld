@@ -2,6 +2,7 @@ import { apiRequest } from './utils/apiRequest.js';
 import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
 import { initializeAuth, AuthManager } from './utils/auth.js';
 import { gebid } from './utils/gebid.js';
+import { setVerifiedUsername } from './utils/verifiedBadge.js';
 
 renderBar();
 let socket;
@@ -89,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const profileName = gebid("profileName");
 
                 profileImage.src = recipient.pfp || "/src/default.png"; // Use default if no image
-                profileName.textContent = recipient.username || "Unknown User";
+                setVerifiedUsername(profileName, recipient.username || "Unknown User", !!recipient.verified);
             } else {
                 console.error("Failed to fetch recipient info:", data.message);
             }

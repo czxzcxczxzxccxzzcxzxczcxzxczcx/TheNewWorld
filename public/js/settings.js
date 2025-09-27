@@ -1,6 +1,7 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderBar, initializeGlobalButtons, applyTheme, initializeTheme } from './utils/renderBar.js';
 import { initializeAuth, AuthManager } from './utils/auth.js';
+import { setVerifiedUsername } from './utils/verifiedBadge.js';
 
 // Initialize navigation
 renderBar();
@@ -31,7 +32,8 @@ class SettingsManager {
 
     updateUI() {
         // Update current values in the UI
-        document.getElementById('currentUsername').textContent = `@${this.user.username}`;
+    const currentUsernameEl = document.getElementById('currentUsername');
+    setVerifiedUsername(currentUsernameEl, this.user.username, !!this.user.verified);
         document.getElementById('currentBio').textContent = this.user.bio || 'No bio set';
         document.getElementById('currentProfilePicture').src = this.user.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
     }

@@ -34,6 +34,8 @@ router.post('/searchPosts', async (req, res) => {
                 return {
                     ...post.toObject(),
                     username: user ? user.username : 'Unknown',
+                    pfp: user ? user.pfp : null,
+                    userVerified: !!user?.verified,
                     date: post.createdAt || new Date()
                 };
             } catch (err) {
@@ -41,6 +43,8 @@ router.post('/searchPosts', async (req, res) => {
                 return {
                     ...post.toObject(),
                     username: 'Unknown',
+                    pfp: null,
+                    userVerified: false,
                     date: post.createdAt || new Date()
                 };
             }
@@ -64,7 +68,7 @@ router.post('/searchUsers', async (req, res) => {
         // Find users whose username starts with the search data, case-insensitive
         const users = await User.find({
             username: { $regex: '^' + data, $options: 'i' }
-        }, 'username pfp accountNumber'); // Only return username and pfp fields
+    }, 'username pfp accountNumber verified bio'); // Only return necessary fields
         res.json({ success: true, users });
     } catch (error) {
         console.error('Error searching users:', error);

@@ -33,9 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (type === 'users') {
             try {
                 const response = await apiRequest('/api/searchUsers', 'POST', { data: query }); // Use POST and send query in body
-                // alert(`Response from search API: ${JSON.stringify(response)}`);
+                searchPanel.innerHTML = '';
                 if (response.success) {
-                    console.log(response.users)
                     renderUsers(response.users, searchPanel); // Render the returned users
                 } else {
                     searchPanel.innerHTML = `<p>No users found.</p>`;
@@ -51,16 +50,11 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await apiRequest('/api/searchPosts', 'POST', { data: query }); // Use POST and send query in body
             if (response.success) {
-                const postsWithUserData = await Promise.all(
-                    response.posts.map(async (post) => {
-                        const userResponse = await apiRequest('/api/getUser', 'POST', { accountNumber: post.accountNumber });
-                        return {
-                            ...post,
-                            username: userResponse?.user?.username || 'Anonymous',
-                            pfp: userResponse?.user?.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png',
-                        };
-                    })
-                );
+                const postsWithUserData = response.posts.map((post) => ({
+                    ...post,
+                    username: post.username || 'Anonymous',
+                    pfp: post.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png',
+                }));
                 displaySearchResults(postsWithUserData); // Display the returned posts with user data
             } else {
                 searchPanel.innerHTML = `<p>No results found.</p>`;
@@ -86,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     post,
                     post.username || 'Anonymous', // Ensure username is passed correctly
                     post.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png', // Ensure pfp is passed correctly
-                    post.accountNumber,
+                    post.userVerified,
                     'search'
                 ); // Render each post
             } catch (error) {

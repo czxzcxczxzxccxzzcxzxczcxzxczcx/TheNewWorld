@@ -12,6 +12,17 @@
   --card-bg-solid: #1c1c1c;
   --card-bg-elevated: linear-gradient(145deg, #212121 0%, #242424 100%);
   --card-bg-elevated-solid: #212121;
+  --navbar-bg: rgba(3, 3, 3, 0.92);
+  --navbar-border: rgba(255, 255, 255, 0.08);
+  --auth-panel-bg: linear-gradient(155deg, rgba(12, 12, 12, 0.96) 0%, rgba(6, 6, 6, 0.88) 100%);
+  --auth-panel-border: rgba(255, 255, 255, 0.12);
+  --auth-panel-shadow: 0 38px 60px -22px rgba(0, 0, 0, 0.65);
+  --auth-panel-glow: rgba(59, 130, 246, 0.28);
+  --auth-input-bg: rgba(15, 15, 15, 0.85);
+  --auth-input-border: rgba(255, 255, 255, 0.12);
+  --auth-input-placeholder: rgba(226, 232, 240, 0.5);
+  --auth-input-focus-bg: rgba(8, 8, 8, 0.95);
+  --auth-toggle-color: rgba(255, 255, 255, 0.7);
   --hover-bg: rgba(255, 255, 255, 0.05);
   --hover-bg-light: rgba(255, 255, 255, 0.03);
   --border-color: rgba(255, 255, 255, 0.08);
@@ -64,6 +75,29 @@
   --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-left: 0.35rem;
+  border-radius: 50%;
+  background: var(--accent-blue, #3b82f6);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: middle;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.no-users-message {
+  color: var(--text-secondary, #d1d5db);
+  text-align: center;
+  padding: var(--space-md, 1rem);
+}
+
 /* Light Theme */
 .theme-light {
   --primary-bg: #ffffff;
@@ -73,6 +107,17 @@
   --card-bg-solid: #ffffff;
   --card-bg-elevated: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
   --card-bg-elevated-solid: #f8fafc;
+  --navbar-bg: rgba(255, 255, 255, 0.95);
+  --navbar-border: rgba(0, 0, 0, 0.06);
+  --auth-panel-bg: linear-gradient(160deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.92) 100%);
+  --auth-panel-border: rgba(15, 23, 42, 0.12);
+  --auth-panel-shadow: 0 32px 60px -24px rgba(15, 23, 42, 0.28);
+  --auth-panel-glow: rgba(59, 130, 246, 0.18);
+  --auth-input-bg: rgba(255, 255, 255, 0.92);
+  --auth-input-border: rgba(15, 23, 42, 0.12);
+  --auth-input-placeholder: rgba(71, 85, 105, 0.65);
+  --auth-input-focus-bg: rgba(255, 255, 255, 1);
+  --auth-toggle-color: rgba(71, 85, 105, 0.85);
   --bg-gradient: radial-gradient(ellipse at top, #f8fafc 0%, #ffffff 100%);
   --hover-bg: rgba(0, 0, 0, 0.08);
   --hover-bg-light: rgba(0, 0, 0, 0.12);
@@ -93,6 +138,17 @@
   --card-bg-solid: #0a0a0a;
   --card-bg-elevated: linear-gradient(145deg, #0d0d0d 0%, #111111 100%);
   --card-bg-elevated-solid: #0d0d0d;
+  --navbar-bg: rgba(5, 5, 5, 0.92);
+  --navbar-border: rgba(255, 255, 255, 0.08);
+  --auth-panel-bg: linear-gradient(155deg, rgba(12, 12, 12, 0.96) 0%, rgba(5, 5, 5, 0.88) 100%);
+  --auth-panel-border: rgba(255, 255, 255, 0.12);
+  --auth-panel-shadow: 0 38px 60px -22px rgba(0, 0, 0, 0.65);
+  --auth-panel-glow: rgba(59, 130, 246, 0.28);
+  --auth-input-bg: rgba(15, 15, 15, 0.85);
+  --auth-input-border: rgba(255, 255, 255, 0.12);
+  --auth-input-placeholder: rgba(226, 232, 240, 0.5);
+  --auth-input-focus-bg: rgba(8, 8, 8, 0.95);
+  --auth-toggle-color: rgba(255, 255, 255, 0.7);
   --bg-gradient: radial-gradient(ellipse at top, #050505 0%, #000000 100%);
   --hover-bg: rgba(255, 255, 255, 0.03);
   --hover-bg-light: rgba(255, 255, 255, 0.06);
@@ -114,6 +170,17 @@
     --card-bg-solid: #ffffff;
     --card-bg-elevated: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
     --card-bg-elevated-solid: #f8fafc;
+  --auth-panel-bg: linear-gradient(160deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.92) 100%);
+  --auth-panel-border: rgba(15, 23, 42, 0.12);
+  --auth-panel-shadow: 0 32px 60px -24px rgba(15, 23, 42, 0.28);
+  --auth-panel-glow: rgba(59, 130, 246, 0.18);
+  --auth-input-bg: rgba(255, 255, 255, 0.92);
+  --auth-input-border: rgba(15, 23, 42, 0.12);
+  --auth-input-placeholder: rgba(71, 85, 105, 0.65);
+  --auth-input-focus-bg: rgba(255, 255, 255, 1);
+  --auth-toggle-color: rgba(71, 85, 105, 0.85);
+  --navbar-bg: rgba(255, 255, 255, 0.95);
+  --navbar-border: rgba(0, 0, 0, 0.06);
     --bg-gradient: radial-gradient(ellipse at top, #f8fafc 0%, #ffffff 100%);
     --hover-bg: rgba(0, 0, 0, 0.08);
     --hover-bg-light: rgba(0, 0, 0, 0.12);
@@ -135,6 +202,17 @@
     --card-bg-solid: #0a0a0a;
     --card-bg-elevated: linear-gradient(145deg, #0d0d0d 0%, #111111 100%);
     --card-bg-elevated-solid: #0d0d0d;
+  --auth-panel-bg: linear-gradient(155deg, rgba(12, 12, 12, 0.96) 0%, rgba(5, 5, 5, 0.88) 100%);
+  --auth-panel-border: rgba(255, 255, 255, 0.12);
+  --auth-panel-shadow: 0 38px 60px -22px rgba(0, 0, 0, 0.65);
+  --auth-panel-glow: rgba(59, 130, 246, 0.28);
+  --auth-input-bg: rgba(15, 15, 15, 0.85);
+  --auth-input-border: rgba(255, 255, 255, 0.12);
+  --auth-input-placeholder: rgba(226, 232, 240, 0.5);
+  --auth-input-focus-bg: rgba(8, 8, 8, 0.95);
+  --auth-toggle-color: rgba(255, 255, 255, 0.7);
+  --navbar-bg: rgba(5, 5, 5, 0.92);
+  --navbar-border: rgba(255, 255, 255, 0.08);
     --bg-gradient: radial-gradient(ellipse at top, #050505 0%, #000000 100%);
     --hover-bg: rgba(255, 255, 255, 0.03);
     --hover-bg-light: rgba(255, 255, 255, 0.06);
@@ -232,9 +310,9 @@ body.panel-open::before {
   left: 0;
   right: 0;
   height: 68px;
-  background: var(--card-bg-elevated-solid);
+  background: var(--navbar-bg);
   backdrop-filter: blur(24px) saturate(180%);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--navbar-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -577,28 +655,124 @@ body.panel-open::before {
   transform: translate(-50%, -50%);
   width: 420px;
   max-width: 90vw;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 24px;
-  padding: 3rem 2.5rem;
+  background: var(--auth-panel-bg);
+  border: 1px solid var(--auth-panel-border);
+  border-radius: 26px;
+  padding: 3.25rem 2.75rem;
   display: none;
   flex-direction: column;
-  box-shadow: var(--shadow-xl);
+  gap: 1.75rem;
+  box-shadow: var(--auth-panel-shadow);
   z-index: 1001;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(28px) saturate(180%);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.panel::before,
+.panel::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.panel::before {
+  inset: -40% 35% 55% -35%;
+  background: radial-gradient(circle at top, var(--auth-panel-glow) 0%, transparent 60%);
+}
+
+.panel::after {
+  inset: 45% -40% -25% 50%;
+  background: radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.22) 0%, transparent 65%);
+}
+
+.panel > * {
+  position: relative;
+  z-index: 1;
 }
 
 .panel h1 {
-  font-size: 2.25rem;
+  font-size: 2.35rem;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin: 0;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  letter-spacing: -0.025em;
+}
+
+.panel-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+}
+
+.panel-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.65rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--purple-accent) 100%);
+  box-shadow: 0 18px 36px rgba(59, 130, 246, 0.28);
+}
+
+.panel-icon.panel-icon-secondary {
+  background: linear-gradient(135deg, var(--purple-accent) 0%, #1d4ed8 100%);
+  box-shadow: 0 18px 36px rgba(124, 58, 237, 0.28);
+}
+
+.panel-subtitle {
+  font-size: 0.98rem;
+  color: var(--text-muted);
+  max-width: 18rem;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.panel-divider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.panel-divider::before,
+.panel-divider::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, transparent 0%, rgba(148, 163, 184, 0.25) 50%, transparent 100%);
+}
+
+.panel-divider span {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.panel-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.panel-toggle-text {
+  font-size: 0.92rem;
+  color: var(--auth-toggle-color);
 }
 
 .panel .status {
@@ -626,7 +800,7 @@ body.panel-open::before {
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .google-login-container a {
@@ -635,44 +809,43 @@ body.panel-open::before {
   justify-content: center;
   gap: var(--space-md);
   padding: 1rem 1.25rem;
-  background: rgba(255, 255, 255, 0.95);
-  color: #1f2937;
-  border-radius: 12px;
+  background: var(--auth-input-bg);
+  color: var(--text-primary);
+  border-radius: 14px;
   text-decoration: none;
   font-weight: 500;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--auth-input-border);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 16px 35px rgba(15, 23, 42, 0.28);
 }
 
 .google-login-container a:hover {
-  background: rgba(255, 255, 255, 1);
-  transform: translateY(-1px);
-  box-shadow: 
-    0 4px 15px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: var(--auth-input-focus-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.3);
 }
 
 .google-login-container img {
   width: 20px;
   height: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
 }
 
-.google-login-container h1 {
+.google-login-container span {
   font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   margin: 0;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 /* Input styles */
 .inputText {
   width: 100%;
   padding: 1rem 1.25rem;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--auth-input-bg);
+  border: 1px solid var(--auth-input-border);
   border-radius: 12px;
   color: var(--text-primary);
   font-size: 1rem;
@@ -684,7 +857,7 @@ body.panel-open::before {
 .inputText:focus {
   outline: none;
   border-color: var(--accent-blue);
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--auth-input-focus-bg);
   box-shadow: 
     0 0 0 3px rgba(59, 130, 246, 0.1),
     0 4px 12px rgba(0, 0, 0, 0.15);
@@ -692,7 +865,7 @@ body.panel-open::before {
 }
 
 .inputText::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--auth-input-placeholder);
   font-weight: 400;
 }
 
@@ -732,13 +905,13 @@ body.panel-open::before {
 .otherInput {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--auth-toggle-color);
   text-decoration: none;
   cursor: pointer;
   font-size: 1rem;
   text-align: center;
-  padding: var(--space-md);
-  margin-top: var(--space-lg);
+  padding: 0.65rem 1rem;
+  margin-top: 0.25rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 8px;
   position: relative;
@@ -746,7 +919,7 @@ body.panel-open::before {
 
 .otherInput:hover {
   color: var(--accent-blue);
-  background: rgba(59, 130, 246, 0.05);
+  background: rgba(59, 130, 246, 0.08);
   transform: translateY(-1px);
 }
 
@@ -760,6 +933,10 @@ body.panel-open::before {
   background: var(--accent-blue);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateX(-50%);
+}
+
+.panel-toggle .otherInput {
+  font-weight: 600;
 }
 
 .otherInput:hover::after {
@@ -2800,12 +2977,22 @@ body:has(.modernAdminPanel) .bar {
   }
 
   .panel {
-    width: 90vw;
-    padding: var(--space-xl);
+    width: 92vw;
+    padding: var(--space-xl) var(--space-lg);
+    gap: var(--space-lg);
+    border-radius: 22px;
   }
 
   .panel form {
     gap: var(--space-md);
+  }
+
+  .panel-heading h1 {
+    font-size: 1.9rem;
+  }
+
+  .panel-subtitle {
+    font-size: 0.9rem;
   }
 
   .postPanel {
@@ -2875,6 +3062,25 @@ body:has(.modernAdminPanel) .bar {
 @media (max-width: 480px) {
   .bar .buttons a h1 {
     font-size: 0.75rem;
+  }
+
+  .panel {
+    padding: var(--space-lg);
+    gap: var(--space-md);
+  }
+
+  .panel-icon {
+    width: 52px;
+    height: 52px;
+    font-size: 1.45rem;
+  }
+
+  .panel-heading h1 {
+    font-size: 1.7rem;
+  }
+
+  .panel-subtitle {
+    font-size: 0.85rem;
   }
 
   .post .postDetails .pfp,

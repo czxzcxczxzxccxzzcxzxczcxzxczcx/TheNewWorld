@@ -10,6 +10,37 @@ document.addEventListener("DOMContentLoaded", async function () {
     let profileAccountNumber = window.location.pathname.split('/')[2];
     const gebid = id => document.getElementById(id);
     let userAccountNumber;
+    let profileVerified = false;
+
+    function updateProfileBadge(isVerified) {
+        const usernameEl = gebid('profileUsername');
+        if (!usernameEl) return;
+
+        if (!isVerified) {
+            const existingBadge = document.getElementById('profileUsernameBadge');
+            if (existingBadge) {
+                existingBadge.remove();
+            }
+            return;
+        }
+
+        // Ensure base text content reflects current username only
+        const currentUsername = usernameEl.textContent.trim();
+        usernameEl.textContent = currentUsername;
+
+        let badge = document.getElementById('profileUsernameBadge');
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.id = 'profileUsernameBadge';
+            badge.className = 'verified-badge';
+            badge.textContent = '✓';
+            badge.title = 'Verified account';
+            badge.setAttribute('aria-label', 'Verified account');
+        }
+
+        usernameEl.appendChild(document.createTextNode(' '));
+        usernameEl.appendChild(badge);
+    }
 
     // Setup page with current user info
     async function setupPageWithAuth() {
@@ -31,6 +62,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const username = data.username;
                 const accountNumber = profileAccountNumber;
                 const pfp = data.pfp;
+                profileVerified = !!data.verified;
 
                 if (parseInt(userAccountNumber) === parseInt(accountNumber)) {
                     gebid('profileEdit').style.display = "block";
@@ -64,7 +96,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
                             data.posts.forEach(post => {
-                                renderPost(post, username, pfp, accountNumber, 'profile', userAccountNumber);
+                                renderPost(post, username, pfp, data.verified, 'profile', userAccountNumber);
                             });
                         }
                     });
@@ -77,7 +109,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                             data.forEach(item => {
                                 const { post, username, pfp } = item;
-                                renderPost(post, username, pfp, post.accountNumber, 'profilePosts', userAccountNumber);
+                                renderPost(post, username, pfp, item.verified, 'profilePosts', userAccountNumber);
                             });
                         }
                     })
@@ -85,7 +117,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                         console.error('Error fetching reposts:', error);
                     });
 
-                gebid('profileUsername').textContent = `${data.username}`;
+                const profileUsernameEl = gebid('profileUsername');
+                profileUsernameEl.textContent = `${data.username}`;
+                updateProfileBadge(profileVerified);
                 gebid('pfp').src = pfp;
                 gebid('accountnumber').textContent = ` (${data.accountNumber})`;
                 gebid('bio').textContent = `${data.bio}`;
@@ -174,7 +208,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
         
         const pfp = gebid("changePfp").textContent;
-        const username = gebid("profileUsername").textContent;
+    const profileUsernameEl = gebid("profileUsername");
+    const username = profileUsernameEl.textContent.trim();
         const bio = gebid("bio").textContent.trim(); // Trim unnecessary whitespace
         const isEditable = gebid("bio").isContentEditable;
 
@@ -183,10 +218,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             gebid("pfp").style.cursor = 'default';
             try {
                 await apiRequest('/api/updateSettings', 'POST', { bio, pfp, username });
+                updateProfileBadge(profileVerified);
             } catch (error) {
                 console.error('Error updating profile settings:', error);
             }
         } else {
+            const existingBadge = document.getElementById('profileUsernameBadge');
+            if (existingBadge) {
+                existingBadge.remove();
+            }
+            profileUsernameEl.textContent = profileUsernameEl.textContent.trim();
             changeEdit(true, "block", "Save Profile", '1px dashed #ccc', '1px dashed #ccc', '1px dashed #ccc');
             gebid("pfp").style.cursor = 'pointer';
         }

@@ -1,6 +1,7 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { initializeGlobalButtons } from './utils/renderBar.js';
 import { initializeAuth, AuthManager } from './utils/auth.js';
+import { getVerifiedUsernameHTML } from './utils/verifiedBadge.js';
 
 function showDeleteConfirmation(title, message, onConfirm) {
     // Create confirmation modal
@@ -173,10 +174,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 // Check if this is the current user's followers page to show remove button
                 const isOwnFollowersPage = userId == accountNumber;
+                const usernameHTML = getVerifiedUsernameHTML(user.username, user.verified);
                 
                 followerPanel.innerHTML = `
-                    <img class="pfp homeHover clickable-profile" src="${user.pfp}" alt="Profile Picture" data-account-number="${user.accountNumber}"/>
-                    <h1 class="clickable-profile" data-account-number="${user.accountNumber}">@${user.username}</h1>
+                    <img class="pfp homeHover clickable-profile" src="${user.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png'}" alt="Profile Picture" data-account-number="${user.accountNumber}"/>
+                    <h1 class="clickable-profile" data-account-number="${user.accountNumber}">${usernameHTML}</h1>
                     ${isOwnFollowersPage ? `<button class="removeFollowerButton" data-account-number="${user.accountNumber}">Remove Follower</button>` : ''}
                 `;
                 homePanel.appendChild(followerPanel);

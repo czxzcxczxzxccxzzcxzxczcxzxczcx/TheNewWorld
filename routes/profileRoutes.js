@@ -17,7 +17,16 @@ router.get('/get/profile/:accountNumber', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        res.json({username: user.username, accountNumber: user.accountNumber, bio: user.bio, followers: user.followers, following: user.following, posts: user.posts, pfp: user.pfp,});
+        res.json({
+            username: user.username,
+            accountNumber: user.accountNumber,
+            bio: user.bio,
+            followers: user.followers,
+            following: user.following,
+            posts: user.posts,
+            pfp: user.pfp,
+            verified: !!user.verified,
+        });
     } catch (error) {
         console.error('Error fetching profile data:', error);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -199,7 +208,7 @@ router.get('/getFollowing/:userId', async (req, res) => {
         }
 
         // Fetch the list of users the current user is following
-        const followingUsers = await User.find({ accountNumber: { $in: user.following } }, 'username accountNumber pfp');
+    const followingUsers = await User.find({ accountNumber: { $in: user.following } }, 'username accountNumber pfp verified');
 
         res.json({ success: true, following: followingUsers });
     } catch (error) {
@@ -222,7 +231,7 @@ router.get('/getFollowers/:userId', async (req, res) => {
         }
 
         // Fetch the list of users who follow the current user
-        const followersUsers = await User.find({ accountNumber: { $in: user.followers } }, 'username accountNumber pfp');
+    const followersUsers = await User.find({ accountNumber: { $in: user.followers } }, 'username accountNumber pfp verified');
 
         res.json({ success: true, followers: followersUsers });
     } catch (error) {
@@ -314,6 +323,7 @@ router.post('/getUser', async (req, res) => {
                 username: user.username,
                 pfp: user.pfp,
                 accountNumber: user.accountNumber,
+                verified: !!user.verified,
             },
         });
     } catch (error) {

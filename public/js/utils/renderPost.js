@@ -1,5 +1,6 @@
 import { apiRequest } from './apiRequest.js';
 import { createElementWithClass } from './createElement.js';
+import { setVerifiedUsername } from './verifiedBadge.js';
 
 function showDeleteConfirmation(title, message, onConfirm) {
     // Create confirmation modal
@@ -234,7 +235,7 @@ function processContent(content) {
     return processedContent;
 }
 
-export function renderPost(post, username, pfp, accountNumber, from, fromAccountNumber) {
+export function renderPost(post, username, pfp, verified, from, fromAccountNumber) {
     const postDiv = createElementWithClass('div', 'post');
     const postDetailsDiv = createElementWithClass('div', 'postDetails');
     const postImage = createElementWithClass('img', 'pfp');
@@ -264,8 +265,8 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
      apiRequest('/api/getComments', 'POST', { postId: post.postId })
         .then((response) => {
             if (response.success) {
-                response.comments.forEach(({ comment, username, pfp }) => {
-                    renderComment({ ...comment, username, pfp }, commentDiv, fromAccountNumber);
+                response.comments.forEach(({ comment, username, pfp, verified }) => {
+                    renderComment({ ...comment, username, pfp, verified }, commentDiv, fromAccountNumber);
                 });
             } else {
                 console.error('Failed to fetch comments:', response.message);
@@ -275,6 +276,10 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
             console.error('Error fetching comments:', error);
         });
 
+
+    const authorVerified = typeof verified === 'boolean'
+        ? verified
+        : !!(post.userVerified ?? post.authorVerified ?? post.verified);
 
     setPostAttributes(postDiv,
         postDetailsDiv,
@@ -293,7 +298,8 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
         dateE,
         post,
         displayUsername,
-        displayPfp
+        displayPfp,
+        authorVerified
     );
 
     postDiv.append(postDetailsDiv, postBodyDiv,buttonsDiv, );
@@ -440,9 +446,9 @@ export function renderPost(post, username, pfp, accountNumber, from, fromAccount
     }
 }
 
-function setPostAttributes(postDiv,postDetailsDiv, postImage, usernameTitle, titleH1, postBodyDiv, contentP, dividerDiv, viewsH2, likeButton, likeCounter, repostButton, repostCounter,buttonsDiv, dateE, post, username, pfp) {
+function setPostAttributes(postDiv,postDetailsDiv, postImage, usernameTitle, titleH1, postBodyDiv, contentP, dividerDiv, viewsH2, likeButton, likeCounter, repostButton, repostCounter,buttonsDiv, dateE, post, username, pfp, verified) {
     postImage.src = pfp || post.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
-    usernameTitle.textContent = `@${username || post.username || ''}`;
+    setVerifiedUsername(usernameTitle, username || post.username || '', !!verified);
     // titleH1.textContent = post.title || 'test';
     // Note: contentP content is set via processContent() function in renderPost, don't override it here
     viewsH2.textContent = `${post.views || 0} Views`;
@@ -480,7 +486,7 @@ function renderComment(comment, commentDiv, loggedInAccountNumber) {
     const buttonsDiv = createElementWithClass('div', 'commentButtons');
 
     postImage.src = comment.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
-    usernameTitle.textContent = `@${comment.username || 'Anonymous'}`;
+    setVerifiedUsername(usernameTitle, comment.username || 'Anonymous', !!comment.verified);
     contentP.textContent = comment.content || 'No content';
     titleH1.textContent = comment.createdAt ? formatDate(comment.createdAt) : 'Unknown date';
 

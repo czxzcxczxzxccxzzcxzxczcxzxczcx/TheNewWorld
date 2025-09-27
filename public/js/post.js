@@ -45,10 +45,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 
                 // Use the existing renderPost function but modify the container
                 renderPost(
-                    post, 
-                    author.username, 
-                    author.pfp, 
-                    accountNumber || null, 
+                    post,
+                    author.username,
+                    author.pfp,
+                    author.verified,
                     'single', // Special context for single post view
                     accountNumber || null
                 );

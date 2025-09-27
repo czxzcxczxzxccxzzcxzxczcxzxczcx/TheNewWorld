@@ -183,7 +183,7 @@ router.post('/getOpenDMs', async (req, res) => {
         }
 
         // Fetch user details for each account in openDM
-        const openDMs = await User.find({ accountNumber: { $in: senderUser.openDM } }, 'accountNumber username pfp');
+    const openDMs = await User.find({ accountNumber: { $in: senderUser.openDM } }, 'accountNumber username pfp verified');
 
         // For each open DM, get the latest message time between the sender and the DM user
         const openDMsWithLatest = await Promise.all(openDMs.map(async (dmUser) => {
@@ -197,6 +197,7 @@ router.post('/getOpenDMs', async (req, res) => {
                 accountNumber: dmUser.accountNumber,
                 username: dmUser.username,
                 pfp: dmUser.pfp,
+                verified: !!dmUser.verified,
                 latestMessageTime: latestMessage ? latestMessage.sentAt : null,
                 latestMessageContent: latestMessage ? latestMessage.content : null
             };
@@ -225,7 +226,7 @@ router.post('/getIncomingDMs', async (req, res) => {
         // Find users who have the requesting user in their openDM array
         const usersWithOpenDMs = await User.find(
             { openDM: recipientAccountNumber },
-            'accountNumber username pfp'
+            'accountNumber username pfp verified'
         );
 
         res.status(200).json({ success: true, users: usersWithOpenDMs });

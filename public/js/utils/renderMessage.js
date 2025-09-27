@@ -1,4 +1,5 @@
 import { createElementWithClass } from './createElement.js';
+import { setVerifiedUsername } from './verifiedBadge.js';
 
 export function renderOpenDMUsers(opendmData, containerElementId) {
     const container = document.getElementById(containerElementId);
@@ -27,8 +28,8 @@ export function renderOpenDMUsers(opendmData, containerElementId) {
         closeButton.textContent = '×';
         closeButton.style.marginLeft = 'auto';
 
-        userImage.src = user.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
-        userName.textContent = user.username || 'Anonymous';
+    userImage.src = user.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
+    setVerifiedUsername(userName, user.username || 'Anonymous', !!user.verified, { includeAt: false });
 
         userElement.appendChild(userImage);
         userElement.appendChild(userName);
@@ -86,8 +87,8 @@ export function renderUserSearchResults(users, containerElementId) {
         const userImage = createElementWithClass('img', 'dmUserImage');
         const userName = createElementWithClass('h2', 'dmUserName');
         const openButton = createElementWithClass('button', 'openDMButton');
-        userImage.src = user.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
-        userName.textContent = user.username || 'Anonymous';
+    userImage.src = user.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
+    setVerifiedUsername(userName, user.username || 'Anonymous', !!user.verified, { includeAt: false });
         openButton.textContent = 'Open DM';
         openButton.addEventListener('click', async (e) => {
             e.stopPropagation();

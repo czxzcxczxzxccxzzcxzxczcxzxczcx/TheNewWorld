@@ -2,6 +2,7 @@ import { apiRequest } from './utils/apiRequest.js';
 import { initializeGlobalButtons } from './utils/renderBar.js';
 import { initializeAuth, AuthManager } from './utils/auth.js';
 import { gebid } from './utils/gebid.js';
+import { getVerifiedUsernameHTML } from './utils/verifiedBadge.js';
 
 document.addEventListener("DOMContentLoaded", async function () {
     const homePanel = document.getElementById("homePanel");
@@ -41,17 +42,18 @@ document.addEventListener("DOMContentLoaded", async function () {
             followingData.following.forEach(user => {
                 const followingPanel = document.createElement("div");
                 followingPanel.className = "followingPanel";
+                const usernameHTML = getVerifiedUsernameHTML(user.username, user.verified);
 
                 if (accountNumber == profileAccountNumber) { 
                     followingPanel.innerHTML = `
-                    <img class="pfp homeHover clickable-profile" src="${user.pfp}" alt="Profile Picture" data-account-number="${user.accountNumber}"/>
-                    <h1 class="clickable-profile" data-account-number="${user.accountNumber}">@${user.username}</h1>
+                    <img class="pfp homeHover clickable-profile" src="${user.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png'}" alt="Profile Picture" data-account-number="${user.accountNumber}"/>
+                    <h1 class="clickable-profile" data-account-number="${user.accountNumber}">${usernameHTML}</h1>
                     <button class="followingButton" data-account-number="${user.accountNumber}">Unfollow</button>
                 `;
                 } else {
                     followingPanel.innerHTML = `
-                    <img class="pfp homeHover clickable-profile" src="${user.pfp}" alt="Profile Picture" data-account-number="${user.accountNumber}"/>
-                    <h1 class="clickable-profile" data-account-number="${user.accountNumber}">@${user.username}</h1>
+                    <img class="pfp homeHover clickable-profile" src="${user.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png'}" alt="Profile Picture" data-account-number="${user.accountNumber}"/>
+                    <h1 class="clickable-profile" data-account-number="${user.accountNumber}">${usernameHTML}</h1>
                 `;
                 }
                 // document.getElementById("2369255378").addEventListener("click", async function (event) {

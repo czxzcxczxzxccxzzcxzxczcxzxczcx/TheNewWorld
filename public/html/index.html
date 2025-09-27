@@ -26,7 +26,7 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.6); /* <-- adjust darkness here */
-             background: url('https://cdn.mos.cms.futurecdn.net/wtqqnkYDYi2ifsWZVW2MT4-1200-80.jpg') no-repeat center center / cover;
+             background: url('https://previews.123rf.com/images/ewastudio/ewastudio1608/ewastudio160800344/61486457-beauty-nature-scenery-landscape-background-nature-composition-beautiful-landscape.jpg') no-repeat center center / cover;
             /* background: url('https://d3gi1mmy5sozy4.cloudfront.net/post-images/1750912843813_Uasdsadntitled.png') no-repeat center center / cover; */
     filter: blur(8px);
     z-index: -1;
@@ -46,40 +46,50 @@
         </ul>
     </div>
     <div class="panel" id="loginPanel">
+        <div class="panel-heading">
+            <div class="panel-icon">🔑</div>
+            <h1>Welcome back</h1>
+            <p class="panel-subtitle">Sign in to continue exploring The New World.</p>
+        </div>
         <form id="loginForm" onsubmit="event.preventDefault();">
-            <h1>Login</h1>
             <input class="inputText" id="loginUsername" type="text" placeholder="Username">
             <input class="inputText" id="loginPassword" type="password" placeholder="Password">
-            <!-- <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike"> -->
             <button type="submit" class="inputSubmit">Login</button>
         </form>
-        <button id="newAccount" type="submit" class="otherInput">Don't have an account?</button>
-        <!-- <h2 class="status" id="loginStatus"></h2> -->
-
-
+        <div class="panel-divider"><span>or continue with</span></div>
         <div class="google-login-container">
             <a href="/api/auth/google" class="google-login-btn">
-                <img src="https://imagepng.org/wp-content/uploads/2019/08/google-icon.png">
-                <h1>Sign in with Google</h1>
+                <img src="https://imagepng.org/wp-content/uploads/2019/08/google-icon.png" alt="Google icon">
+                <span>Sign in with Google</span>
             </a>
+        </div>
+        <div class="panel-toggle">
+            <span class="panel-toggle-text">New here?</span>
+            <button id="newAccount" type="button" class="otherInput">Create an account</button>
         </div>
     </div>
     <div class="panel" id="newAccPanel">
+        <div class="panel-heading">
+            <div class="panel-icon panel-icon-secondary">🚀</div>
+            <h1>Create your account</h1>
+            <p class="panel-subtitle">Join the community and start sharing your story.</p>
+        </div>
         <form id="newAccForm" onsubmit="event.preventDefault();">
-            <h1>Create Account</h1>
             <input class="inputText" id="newAccUsername" type="text" placeholder="Username">
             <input class="inputText" id="newAccPassword" type="password" placeholder="Password">
             <button type="submit" class="inputSubmit">Create Account</button>
         </form>
-        <button id="login" type="submit" class="otherInput">Already have an account?</button>
-        <!-- <h2 class="status" id="newAccountStatus">dadasasd</h2> -->
+        <div class="panel-divider"><span>or sign up with</span></div>
         <div class="google-login-container">
             <a href="/api/auth/google" class="google-login-btn">
-                <img src="https://imagepng.org/wp-content/uploads/2019/08/google-icon.png">
-                <h1>Sign in with Google</h1>
+                <img src="https://imagepng.org/wp-content/uploads/2019/08/google-icon.png" alt="Google icon">
+                <span>Continue with Google</span>
             </a>
         </div>
-    </div>
+        <div class="panel-toggle">
+            <span class="panel-toggle-text">Already part of The New World?</span>
+            <button id="login" type="button" class="otherInput">Log in</button>
+        </div>
     </div>
 
 

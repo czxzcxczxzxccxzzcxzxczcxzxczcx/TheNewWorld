@@ -119,6 +119,8 @@ router.post('/getPost', async (req, res) => {
                     post: existingPost,
                     username,
                     pfp,
+                    accountNumber: user.accountNumber,
+                    verified: !!user.verified,
                 });
             }
         }
@@ -537,6 +539,7 @@ router.post('/getUserReposts', async (req, res) => {
                     post,
                     username: postOwner?.username || null,
                     pfp: postOwner?.pfp || null,
+                    verified: !!postOwner?.verified,
                 };
             })
         );
