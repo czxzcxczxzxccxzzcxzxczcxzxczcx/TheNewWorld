@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" type="image/x-icon" href="/src/TNW.png">
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+    <script type="module" src="/js/moderation.js" defer></script>
+    <title>The New World - Moderation Hub</title>
+</head>
+
+<body>
+    <div class="modernAdminPanel">
+        <header class="adminHeader">
+            <div class="adminHeaderLeft">
+                <button id="modBackButton" class="backHomeBtn">← Back to Home</button>
+                <h1>🛡️ Moderation Hub</h1>
+            </div>
+            <div class="adminUserInfo">
+                <span id="moderationUserDisplay">Loading...</span>
+                <span id="moderationRoleBadge" class="roleBadge">Moderator</span>
+            </div>
+        </header>
+
+        <main class="moderationContent">
+            <section class="moderationSearch">
+                <div class="adminSearch">
+                    <input type="text" id="moderationSearchInput" placeholder="Search by username or account #">
+                    <button id="moderationSearchButton">🔍 Search</button>
+                </div>
+                <div class="moderationSearchResults" id="moderationSearchResults">
+                    <p class="moderationEmpty">Search for a user to begin moderation.</p>
+                </div>
+            </section>
+
+            <section class="moderationDetails">
+                <div id="moderationFeedback" class="moderationFeedback hidden"></div>
+                <div class="moderation-card" id="selectedUserCard">
+                    <h2>Selected User</h2>
+                    <p class="moderationEmpty" id="moderationNoUser">No user selected.</p>
+                    <div id="moderationUserSummary" class="hidden"></div>
+                </div>
+
+                <div class="moderation-actions">
+                    <div class="moderation-card" id="warningCard">
+                        <div class="moderation-card__header">
+                            <h3>Issue Warning</h3>
+                            <span class="badge badge-warning">Warn</span>
+                        </div>
+                        <p class="moderation-card__description">Send a warning that the user must acknowledge before continuing.</p>
+                        <textarea id="warningReason" placeholder="Reason for warning"></textarea>
+                        <button id="issueWarningButton" class="moderationActionBtn">Send Warning</button>
+                        <p class="moderationHint">Warnings can only be issued to users below your role.</p>
+                    </div>
+
+                    <div class="moderation-card" id="banCard">
+                        <div class="moderation-card__header">
+                            <h3>Issue Ban</h3>
+                            <span class="badge badge-ban">Ban</span>
+                        </div>
+                        <p class="moderation-card__description">Suspend account access for a set duration or permanently.</p>
+                        <textarea id="banReason" placeholder="Reason for ban"></textarea>
+                        <div class="banDuration">
+                            <label for="banDurationSelect">Duration</label>
+                            <select id="banDurationSelect">
+                                <option value="15">15 minutes</option>
+                                <option value="60">1 hour</option>
+                                <option value="720">12 hours</option>
+                                <option value="1440">24 hours</option>
+                                <option value="10080">7 days</option>
+                                <option value="">Custom (minutes)</option>
+                                <option value="permanent">Permanent</option>
+                            </select>
+                            <input type="number" id="banCustomMinutes" min="1" placeholder="Custom minutes" class="hidden">
+                        </div>
+                        <button id="issueBanButton" class="moderationActionBtn danger">Apply Ban</button>
+                        <p class="moderationHint">Moderators cannot ban other moderators or higher. Only head admins may lift permanent bans.</p>
+                    </div>
+                </div>
+
+                <div class="moderation-history">
+                    <div class="moderation-card" id="warningHistoryCard">
+                        <div class="moderation-card__header">
+                            <h3>Warning History</h3>
+                        </div>
+                        <div id="warningHistoryList" class="historyList">
+                            <p class="moderationEmpty">No warnings recorded.</p>
+                        </div>
+                    </div>
+
+                    <div class="moderation-card" id="banHistoryCard">
+                        <div class="moderation-card__header">
+                            <h3>Ban History</h3>
+                        </div>
+                        <div id="banHistoryList" class="historyList">
+                            <p class="moderationEmpty">No bans recorded.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>

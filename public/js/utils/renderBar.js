@@ -35,6 +35,41 @@ export function renderBar() {
                             <div class="nav-search-results" id="navSearchResults"></div>
                         </div>
                     </div>
+
+                    <!-- Admin Button -->
+                    <div class="nav-menu-container nav-admin-container" id="navAdminContainer" style="display: none;">
+                        <button class="nav-icon-btn" id="adminToggle" aria-haspopup="true" aria-expanded="false">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2 4 5v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V5l-8-3z"></path>
+                                <path d="M12 22s6-3 6-9V6l-6-2-6 2v7c0 6 6 9 6 9z" opacity="0.2"></path>
+                            </svg>
+                        </button>
+
+                        <div class="nav-menu-panel" id="navAdminPanel">
+                            <a id="adminPanelButton" href="/admin" class="nav-menu-item" style="display: none;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                                <span>Admin Panel</span>
+                            </a>
+                            <a id="moderationHubButton" href="/moderation" class="nav-menu-item" style="display: none;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="m9 7 4-4 4 4"></path>
+                                    <path d="M4 21v-7a2 2 0 0 1 2-2h2"></path>
+                                    <path d="M20 21v-7a2 2 0 0 0-2-2h-2"></path>
+                                    <path d="M9 21h6"></path>
+                                </svg>
+                                <span>Moderation Hub</span>
+                            </a>
+                            <a id="supportPanelButton" href="/support-panel" class="nav-menu-item" style="display: none;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 9V5a3 3 0 0 0-6 0v4"></path>
+                                    <rect x="2" y="9" width="20" height="11" rx="2" ry="2"></rect>
+                                </svg>
+                                <span>Support Panel</span>
+                            </a>
+                        </div>
+                    </div>
                     
                     <!-- Menu Button -->
                     <div class="nav-menu-container" id="navMenuContainer">
@@ -93,19 +128,6 @@ export function renderBar() {
                                     <line x1="5" y1="12" x2="3" y2="12"></line>
                                 </svg>
                                 <span>Support</span>
-                            </a>
-                            <a id="supportPanelButton" href="/support-panel" class="nav-menu-item" style="display: none;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 9V5a3 3 0 0 0-6 0v4"></path>
-                                    <rect x="2" y="9" width="20" height="11" rx="2" ry="2"></rect>
-                                </svg>
-                                <span>Support Panel</span>
-                            </a>
-                            <a id="adminPanelButton" href="/admin" class="nav-menu-item" style="display: none;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                                </svg>
-                                <span>Admin Panel</span>
                             </a>
                             <a id="logoutButton" href="" class="nav-menu-item logout">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -183,6 +205,11 @@ function initializeNavControls() {
     
     const menuContainer = document.getElementById('navMenuContainer');
     const menuPanel = document.getElementById('navMenuPanel');
+    const menuToggle = document.getElementById('menuToggle');
+
+    const adminContainer = document.getElementById('navAdminContainer');
+    const adminPanel = document.getElementById('navAdminPanel');
+    const adminToggle = document.getElementById('adminToggle');
     
     let searchTimeout;
     let currentSearchType = 'posts';
@@ -237,18 +264,71 @@ function initializeNavControls() {
     
     // Menu functionality
     if (menuContainer && menuPanel) {
-        // Mouse enter menu container
-        menuContainer.addEventListener('mouseenter', () => {
+        const openMenu = () => {
             menuPanel.classList.add('active');
-        });
+            if (menuToggle) {
+                menuToggle.setAttribute('aria-expanded', 'true');
+            }
+        };
+
+        const closeMenu = () => {
+            menuPanel.classList.remove('active');
+            if (menuToggle) {
+                menuToggle.setAttribute('aria-expanded', 'false');
+            }
+        };
+
+        // Mouse enter menu container
+        menuContainer.addEventListener('mouseenter', openMenu);
         
         // Mouse leave menu container
-        menuContainer.addEventListener('mouseleave', () => {
-            menuPanel.classList.remove('active');
-        });
+        menuContainer.addEventListener('mouseleave', closeMenu);
+
+        if (menuToggle) {
+            menuToggle.setAttribute('aria-haspopup', 'true');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            menuToggle.addEventListener('click', (event) => {
+                event.preventDefault();
+                const willOpen = !menuPanel.classList.contains('active');
+                menuPanel.classList.toggle('active', willOpen);
+                menuToggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            });
+        }
         
         // Prevent menu panel from closing when clicking inside it
         menuPanel.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+
+    if (adminContainer && adminPanel) {
+        const openAdminMenu = () => {
+            adminPanel.classList.add('active');
+            if (adminToggle) {
+                adminToggle.setAttribute('aria-expanded', 'true');
+            }
+        };
+
+        const closeAdminMenu = () => {
+            adminPanel.classList.remove('active');
+            if (adminToggle) {
+                adminToggle.setAttribute('aria-expanded', 'false');
+            }
+        };
+
+        adminContainer.addEventListener('mouseenter', openAdminMenu);
+        adminContainer.addEventListener('mouseleave', closeAdminMenu);
+
+        if (adminToggle) {
+            adminToggle.addEventListener('click', (event) => {
+                event.preventDefault();
+                const willOpen = !adminPanel.classList.contains('active');
+                adminPanel.classList.toggle('active', willOpen);
+                adminToggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            });
+        }
+
+        adminPanel.addEventListener('click', (e) => {
             e.stopPropagation();
         });
     }
@@ -334,31 +414,69 @@ export function initializeGlobalButtons(accountNumber) {
     apiRequest('/api/verify', 'GET')
         .then(data => {
             if (data.success) {
+                const adminMenuContainer = document.getElementById('navAdminContainer');
+                const adminMenuPanel = document.getElementById('navAdminPanel');
+                const adminToggle = document.getElementById('adminToggle');
                 // Handle admin button (only for admins)
                 const adminButton = document.getElementById('adminPanelButton');
+                const supportButton = document.getElementById('supportPanelButton');
+                const moderationButton = document.getElementById('moderationHubButton');
+
+                let showAdminMenu = false;
+
                 if (adminButton) {
                     if (data.adminAccess) {
                         adminButton.style.display = 'flex';
+                        showAdminMenu = true;
                     } else {
                         adminButton.style.display = 'none';
                     }
                 }
 
                 // Handle support panel button (for moderators and admins)
-                const supportButton = document.getElementById('supportPanelButton');
                 if (supportButton) {
                     if (data.supportAccess) {
                         supportButton.style.display = 'flex';
+                        showAdminMenu = true;
                     } else {
                         supportButton.style.display = 'none';
+                    }
+                }
+
+                if (moderationButton) {
+                    if (data.supportAccess) {
+                        moderationButton.style.display = 'flex';
+                        showAdminMenu = true;
+                    } else {
+                        moderationButton.style.display = 'none';
+                    }
+                }
+
+                if (adminMenuContainer) {
+                    adminMenuContainer.style.display = showAdminMenu ? 'block' : 'none';
+                    if (showAdminMenu && adminToggle) {
+                        adminToggle.setAttribute('aria-expanded', 'false');
+                    }
+                    if (!showAdminMenu) {
+                        adminMenuContainer.classList.remove('active');
+                        if (adminMenuPanel) {
+                            adminMenuPanel.classList.remove('active');
+                        }
+                        if (adminToggle) {
+                            adminToggle.setAttribute('aria-expanded', 'false');
+                        }
                     }
                 }
             } else {
                 // Hide both buttons if verification fails
                 const adminButton = document.getElementById('adminPanelButton');
                 const supportButton = document.getElementById('supportPanelButton');
+                const moderationButton = document.getElementById('moderationHubButton');
+                const adminMenuContainer = document.getElementById('navAdminContainer');
                 if (adminButton) adminButton.style.display = 'none';
                 if (supportButton) supportButton.style.display = 'none';
+                if (moderationButton) moderationButton.style.display = 'none';
+                if (adminMenuContainer) adminMenuContainer.style.display = 'none';
             }
         })
         .catch(error => {
@@ -366,8 +484,12 @@ export function initializeGlobalButtons(accountNumber) {
             // Keep buttons hidden if verification fails
             const adminButton = document.getElementById('adminPanelButton');
             const supportButton = document.getElementById('supportPanelButton');
+            const moderationButton = document.getElementById('moderationHubButton');
+            const adminMenuContainer = document.getElementById('navAdminContainer');
             if (adminButton) adminButton.style.display = 'none';
             if (supportButton) supportButton.style.display = 'none';
+            if (moderationButton) moderationButton.style.display = 'none';
+            if (adminMenuContainer) adminMenuContainer.style.display = 'none';
         });
 }
 

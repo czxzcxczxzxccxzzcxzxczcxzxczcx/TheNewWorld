@@ -1,5 +1,6 @@
 import { apiRequest } from './apiRequest.js';
 import { initializeGlobalButtons, initializeTheme } from './renderBar.js';
+import { applyModerationState } from './moderationOverlay.js';
 
 /**
  * Centralized authentication and user info management
@@ -8,6 +9,14 @@ export class AuthManager {
     constructor() {
         this.user = null;
         this.accountNumber = null;
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('tnw:moderation-update', (event) => {
+                if (event.detail) {
+                    this.setUser(event.detail);
+                }
+            });
+        }
     }
 
     /**
@@ -29,8 +38,8 @@ export class AuthManager {
             const data = await apiRequest('/api/getUserInfo', 'GET');
             
             if (data.success) {
-                this.user = data.user;
-                this.accountNumber = data.user.accountNumber;
+                this.setUser(data.user);
+                applyModerationState(this.user);
 
                 // Initialize global components if requested
                 if (initGlobalButtons) {
@@ -79,6 +88,16 @@ export class AuthManager {
      */
     isAuthenticated() {
         return this.user !== null;
+    }
+
+    /**
+     * Update the cached user data
+     * @param {Object} user - Updated user payload
+     */
+    setUser(user) {
+        if (!user) return;
+        this.user = user;
+        this.accountNumber = user.accountNumber;
     }
 }
 

@@ -1,3 +1,21 @@
+let moderationModulePromise = null;
+
+async function handleModerationResponse(data) {
+    if (!data) return data;
+    try {
+        if (!moderationModulePromise) {
+            moderationModulePromise = import('./moderationOverlay.js');
+        }
+        const module = await moderationModulePromise;
+        if (module && typeof module.handleModerationApiResponse === 'function') {
+            return module.handleModerationApiResponse(data);
+        }
+    } catch (error) {
+        console.debug('Moderation overlay handler unavailable:', error);
+    }
+    return data;
+}
+
 export async function apiRequest(url, method = 'GET', body = null, isFormData = false) {
     const options = {
         method,
@@ -24,7 +42,7 @@ export async function apiRequest(url, method = 'GET', body = null, isFormData = 
                 try {
                     const errorText = await response.text();
                     const errorData = JSON.parse(errorText);
-                    return errorData; // Return the error data instead of throwing
+                    return await handleModerationResponse(errorData); // Return the error data instead of throwing
                 } catch (parseError) {
                     // If we can't parse the error response, fall back to generic error
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -47,7 +65,8 @@ export async function apiRequest(url, method = 'GET', body = null, isFormData = 
             throw new Error(`Empty response from ${url}`);
         }
         
-        return JSON.parse(text);
+    const data = JSON.parse(text);
+    return await handleModerationResponse(data);
     } catch (error) {
         console.error(`Error during API request to ${url}:`, error);
         throw error;

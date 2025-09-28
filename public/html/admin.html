@@ -50,6 +50,7 @@
             <button class="adminTab" data-tab="posts">📝 Posts</button>
             <button class="adminTab" data-tab="comments">💬 Comments</button>
             <button class="adminTab" data-tab="messages">📩 Messages</button>
+            <button class="adminTab" data-tab="tickets">🎫 Tickets</button>
             <button class="adminTab" data-tab="permissions" id="permissionsTab" style="display: none;">🔑 Permissions</button>
         </nav>
 
@@ -109,6 +110,37 @@
                 </div>
                 
                 <div id="messageResults" class="resultsContainer"></div>
+            </section>
+
+            <!-- Tickets Tab -->
+            <section class="adminTabContent" id="ticketsTab">
+                <div class="adminSearch">
+                    <input type="text" id="ticketSearch" placeholder="Search tickets by ID, title, or user...">
+                    <button id="ticketSearchBtn">🔍 Search</button>
+                </div>
+
+                <div class="adminActions ticketFilters">
+                    <div class="filterControl">
+                        <label for="ticketStatusFilter">Status</label>
+                        <select id="ticketStatusFilter">
+                            <option value="all">All</option>
+                            <option value="open">Open</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </div>
+                    <div class="filterControl">
+                        <label for="ticketTypeFilter">Type</label>
+                        <select id="ticketTypeFilter">
+                            <option value="all">All</option>
+                            <option value="bug_report">Bug Report</option>
+                            <option value="user_report">User Report</option>
+                        </select>
+                    </div>
+                    <button id="loadAllTickets" class="actionBtn">📋 Load Tickets</button>
+                </div>
+
+                <div id="ticketResults" class="resultsContainer"></div>
             </section>
 
             <!-- Permissions Tab (Head Admin Only) -->

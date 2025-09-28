@@ -49,7 +49,74 @@ async function requireAuth(req, res, next) {
             return res.status(401).json({ success: false, message: 'Invalid session - user data mismatch' });
         }
         
+        // Track moderation state
+        let docUpdated = false;
+        if (!user.moderationState) {
+            user.moderationState = { activeBanId: null, activeWarningId: null };
+            user.markModified('moderationState');
+            docUpdated = true;
+        }
+
+        const now = new Date();
+        let activeBan = null;
+
+        if (user.moderationState?.activeBanId) {
+            activeBan = (user.bans || []).find(ban => ban.banId === user.moderationState.activeBanId && ban.status === 'active');
+            if (!activeBan) {
+                user.moderationState.activeBanId = null;
+                user.markModified('moderationState');
+                docUpdated = true;
+            }
+        }
+
+        if (!activeBan && Array.isArray(user.bans)) {
+            activeBan = user.bans.find(ban => ban.status === 'active');
+            if (activeBan) {
+                user.moderationState.activeBanId = activeBan.banId;
+                user.markModified('moderationState');
+                docUpdated = true;
+            }
+        }
+
+        if (activeBan && activeBan.expiresAt && activeBan.expiresAt <= now) {
+            activeBan.status = 'expired';
+            activeBan.liftedAt = now;
+            user.moderationState.activeBanId = null;
+            user.markModified('moderationState');
+            docUpdated = true;
+            activeBan = null;
+            user.markModified('bans');
+        }
+
+        if (docUpdated) {
+            try {
+                await user.save();
+            } catch (saveError) {
+                console.error('[AUTH] Failed to update user moderation state:', saveError);
+            }
+        }
+
+        if (activeBan) {
+            return res.status(403).json({
+                success: false,
+                message: 'Account is currently banned.',
+                code: 'BANNED',
+                ban: {
+                    banId: activeBan.banId,
+                    reason: activeBan.reason,
+                    issuedAt: activeBan.issuedAt,
+                    expiresAt: activeBan.expiresAt,
+                    issuedBy: activeBan.issuedBy,
+                    issuedByUsername: activeBan.issuedByUsername,
+                    issuedByRole: activeBan.issuedByRole,
+                    status: activeBan.status
+                }
+            });
+        }
+
         // Authentication successful
+        req.currentUser = user;
+        req.sessionData = sessionData;
         next();
     } catch (error) {
         console.error('[AUTH] Authentication error:', error);

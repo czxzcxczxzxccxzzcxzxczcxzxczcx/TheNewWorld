@@ -5,6 +5,11 @@ const { v4: uuidv4 } = require('uuid');
 
 const router = express.Router();
 
+function normalizeAccountNumber(value) {
+    if (value === null || value === undefined) return null;
+    return String(value);
+}
+
 // Helper to retrieve user data from the session store
 async function getUserFromSession(sessionId) {
     if (!sessionId) return null;
@@ -14,7 +19,10 @@ async function getUserFromSession(sessionId) {
 // Helper function to check if user has support access (moderator, admin, or headAdmin)
 async function hasSupportAccess(accountNumber, requiredRole = 'moderator') {
     try {
-        const user = await User.findOne({ accountNumber });
+        const normalizedAccountNumber = normalizeAccountNumber(accountNumber);
+        if (!normalizedAccountNumber) return false;
+
+        const user = await User.findOne({ accountNumber: normalizedAccountNumber });
         if (!user) return false;
         
         const roleHierarchy = { user: 0, moderator: 1, admin: 2, headAdmin: 3 };
@@ -50,6 +58,8 @@ router.post('/support/create-ticket', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid or expired session' });
         }
 
+    const requesterAccount = normalizeAccountNumber(user.accountNumber);
+
         // Validate required fields
         if (!type || !title || !description) {
             return res.status(400).json({ success: false, message: 'Missing required fields' });
@@ -62,7 +72,7 @@ router.post('/support/create-ticket', async (req, res) => {
                 return res.status(400).json({ success: false, message: 'Reported user is required for user reports' });
             }
             
-            reportedUserData = await User.findOne({ accountNumber: reportedUser });
+            reportedUserData = await User.findOne({ accountNumber: normalizeAccountNumber(reportedUser) });
             if (!reportedUserData) {
                 return res.status(400).json({ success: false, message: 'Reported user not found' });
             }
@@ -71,7 +81,7 @@ router.post('/support/create-ticket', async (req, res) => {
         const ticketId = generateTicketId();
         const initialMessage = {
             messageId: uuidv4(),
-            senderId: user.accountNumber,
+            senderId: requesterAccount,
             senderUsername: user.username,
             senderRole: 'user',
             content: description,
@@ -81,12 +91,12 @@ router.post('/support/create-ticket', async (req, res) => {
 
         const newTicket = new Ticket({
             ticketId,
-            userId: user.accountNumber,
+            userId: requesterAccount,
             username: user.username,
             type,
             title,
             description,
-            reportedUser: reportedUserData ? reportedUserData.accountNumber : null,
+            reportedUser: reportedUserData ? normalizeAccountNumber(reportedUserData.accountNumber) : null,
             reportedUsername: reportedUserData ? reportedUserData.username : null,
             messages: [initialMessage]
         });
@@ -119,7 +129,9 @@ router.get('/support/my-tickets', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid or expired session' });
         }
 
-        const tickets = await Ticket.find({ userId: user.accountNumber })
+        const requesterAccount = normalizeAccountNumber(user.accountNumber);
+
+        const tickets = await Ticket.find({ userId: requesterAccount })
             .sort({ updatedAt: -1 });
 
         return res.status(200).json({ success: true, tickets });
@@ -145,25 +157,28 @@ router.get('/support/ticket/:ticketId', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid or expired session' });
         }
 
-        const ticket = await Ticket.findOne({ ticketId });
+    const requesterAccount = normalizeAccountNumber(user.accountNumber);
+
+    const ticket = await Ticket.findOne({ ticketId });
         if (!ticket) {
             return res.status(404).json({ success: false, message: 'Ticket not found' });
         }
 
         // Check if user owns the ticket or has support access
-        const hasAccess = ticket.userId === user.accountNumber || 
-                         await hasSupportAccess(user.accountNumber);
+    const hasAccess = normalizeAccountNumber(ticket.userId) === requesterAccount || 
+                         await hasSupportAccess(requesterAccount);
         
         if (!hasAccess) {
             return res.status(403).json({ success: false, message: 'Access denied' });
         }
 
-        // Filter internal messages for regular users
-        if (!await hasSupportAccess(user.accountNumber)) {
-            ticket.messages = ticket.messages.filter(msg => !msg.isInternal);
+        const includeInternal = await hasSupportAccess(requesterAccount);
+        const ticketPayload = ticket.toObject({ versionKey: false });
+        if (!includeInternal) {
+            ticketPayload.messages = (ticketPayload.messages || []).filter(msg => !msg.isInternal);
         }
 
-        return res.status(200).json({ success: true, ticket });
+        return res.status(200).json({ success: true, ticket: ticketPayload });
 
     } catch (error) {
         console.error('Error fetching ticket:', error);
@@ -187,32 +202,36 @@ router.post('/support/ticket/:ticketId/message', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid or expired session' });
         }
 
+        const requesterAccount = normalizeAccountNumber(user.accountNumber);
+
         if (!content || !content.trim()) {
             return res.status(400).json({ success: false, message: 'Message content is required' });
         }
 
-        const ticket = await Ticket.findOne({ ticketId });
+    const ticket = await Ticket.findOne({ ticketId });
         if (!ticket) {
             return res.status(404).json({ success: false, message: 'Ticket not found' });
         }
 
         // Check if user owns the ticket or has support access
-        const hasAccess = ticket.userId === user.accountNumber || 
-                         await hasSupportAccess(user.accountNumber);
+    const hasAccess = normalizeAccountNumber(ticket.userId) === requesterAccount || 
+             await hasSupportAccess(requesterAccount);
         
         if (!hasAccess) {
             return res.status(403).json({ success: false, message: 'Access denied' });
         }
 
         // Only support staff can send internal messages
-        const canSendInternal = await hasSupportAccess(user.accountNumber);
+        const canSendInternal = await hasSupportAccess(requesterAccount);
         const messageIsInternal = isInternal && canSendInternal;
+
+        const dbUser = await User.findOne({ accountNumber: requesterAccount });
 
         const newMessage = {
             messageId: uuidv4(),
-            senderId: user.accountNumber,
-            senderUsername: user.username,
-            senderRole: user.adminRole || 'user',
+            senderId: requesterAccount,
+            senderUsername: dbUser?.username || user.username,
+            senderRole: dbUser?.adminRole || 'user',
             content: content.trim(),
             timestamp: new Date(),
             isInternal: messageIsInternal
@@ -256,7 +275,9 @@ router.get('/support/support-panel/tickets', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid or expired session' });
         }
 
-        const hasAccess = await hasSupportAccess(user.accountNumber);
+        const requesterAccount = normalizeAccountNumber(user.accountNumber);
+
+        const hasAccess = await hasSupportAccess(requesterAccount);
         if (!hasAccess) {
             return res.status(403).json({ success: false, message: 'Support access required' });
         }
@@ -299,7 +320,9 @@ router.post('/support/support-panel/ticket/:ticketId/status', async (req, res) =
             return res.status(401).json({ success: false, message: 'Invalid or expired session' });
         }
 
-        const hasAccess = await hasSupportAccess(user.accountNumber);
+        const requesterAccount = normalizeAccountNumber(user.accountNumber);
+
+        const hasAccess = await hasSupportAccess(requesterAccount);
         if (!hasAccess) {
             return res.status(403).json({ success: false, message: 'Support access required' });
         }

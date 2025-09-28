@@ -8,6 +8,20 @@ let currentUser = null;
 let currentTicket = null;
 let allTickets = [];
 
+function escapeHtml(text = '') {
+    const value = String(text ?? '');
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function formatMultiline(text = '') {
+    return escapeHtml(text).replace(/\n/g, '<br>');
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     initializeAuth()
         .then(user => {
@@ -109,28 +123,29 @@ function renderTickets(tickets) {
         const priorityClass = ticket.priority || 'medium';
         const lastUpdate = new Date(ticket.updatedAt).toLocaleDateString();
         const messageCount = ticket.messages?.length || 0;
+        const descriptionPreview = escapeHtml(ticket.description || '').replace(/\n+/g, ' ');
         
         return `
-            <div class="ticket-card" data-ticket-id="${ticket.ticketId}">
+            <div class="ticket-card" data-ticket-id="${escapeHtml(ticket.ticketId)}">
                 <div class="ticket-card-header">
                     <div class="ticket-card-title">
-                        <h3>${ticket.title}</h3>
-                        <span class="ticket-id">#${ticket.ticketId}</span>
+                        <h3>${escapeHtml(ticket.title || '')}</h3>
+                        <span class="ticket-id">#${escapeHtml(ticket.ticketId)}</span>
                     </div>
                     <div class="ticket-card-badges">
-                        <span class="badge type-${ticket.type}">${typeLabel}</span>
+                        <span class="badge type-${ticket.type}">${escapeHtml(typeLabel)}</span>
                         <span class="badge status-${statusClass}">${ticket.status.replace('_', ' ').toUpperCase()}</span>
-                        <span class="badge priority-${priorityClass}">${ticket.priority?.toUpperCase() || 'MEDIUM'}</span>
+                        <span class="badge priority-${priorityClass}">${(ticket.priority || 'medium').toUpperCase()}</span>
                     </div>
                 </div>
                 
                 <div class="ticket-card-info">
                     <div class="ticket-user">
-                        <strong>User:</strong> ${ticket.username} (#${ticket.userId})
+                        <strong>User:</strong> ${escapeHtml(ticket.username)} (#${escapeHtml(ticket.userId)})
                     </div>
                     ${ticket.reportedUsername ? `
                     <div class="reported-user">
-                        <strong>Reported:</strong> ${ticket.reportedUsername}
+                        <strong>Reported:</strong> ${escapeHtml(ticket.reportedUsername)}
                     </div>
                     ` : ''}
                     <div class="ticket-messages">
@@ -147,11 +162,11 @@ function renderTickets(tickets) {
                 </div>
                 
                 <div class="ticket-card-preview">
-                    ${ticket.description.substring(0, 120)}${ticket.description.length > 120 ? '...' : ''}
+                    ${descriptionPreview.substring(0, 120)}${descriptionPreview.length > 120 ? '...' : ''}
                 </div>
                 
                 <div class="ticket-card-actions">
-                    <button class="btn small primary" onclick="openTicketManagement('${ticket.ticketId}')">
+                    <button class="btn small primary" onclick="openTicketManagement('${escapeHtml(ticket.ticketId)}')">
                         Manage
                     </button>
                 </div>
@@ -187,7 +202,7 @@ async function openTicketManagement(ticketId) {
 }
 
 function showTicketManagementModal(ticket) {
-    document.getElementById('modalTicketTitle').textContent = `#${ticket.ticketId} - ${ticket.title}`;
+    document.getElementById('modalTicketTitle').textContent = `#${escapeHtml(ticket.ticketId)} - ${escapeHtml(ticket.title || '')}`;
     
     // Populate ticket details
     const details = document.getElementById('ticketManagementDetails');
@@ -196,16 +211,16 @@ function showTicketManagementModal(ticket) {
     
     details.innerHTML = `
         <div class="detail-item">
-            <strong>Type:</strong> ${typeLabel}
+            <strong>Type:</strong> ${escapeHtml(typeLabel)}
         </div>
         <div class="detail-item">
-            <strong>User:</strong> ${ticket.username} (#${ticket.userId})
+            <strong>User:</strong> ${escapeHtml(ticket.username)} (#${escapeHtml(ticket.userId)})
         </div>
         <div class="detail-item">
             <strong>Status:</strong> <span class="status-${statusClass}">${ticket.status.replace('_', ' ').toUpperCase()}</span>
         </div>
         <div class="detail-item">
-            <strong>Priority:</strong> ${ticket.priority?.toUpperCase() || 'MEDIUM'}
+            <strong>Priority:</strong> ${(ticket.priority || 'medium').toUpperCase()}
         </div>
         <div class="detail-item">
             <strong>Created:</strong> ${new Date(ticket.createdAt).toLocaleString()}
@@ -215,18 +230,18 @@ function showTicketManagementModal(ticket) {
         </div>
         ${ticket.reportedUsername ? `
         <div class="detail-item">
-            <strong>Reported User:</strong> ${ticket.reportedUsername} (#${ticket.reportedUser})
+            <strong>Reported User:</strong> ${escapeHtml(ticket.reportedUsername)} (#${escapeHtml(ticket.reportedUser)})
         </div>
         ` : ''}
         ${ticket.assignedTo ? `
         <div class="detail-item">
-            <strong>Assigned To:</strong> ${ticket.assignedTo}
+            <strong>Assigned To:</strong> ${escapeHtml(ticket.assignedTo)}
         </div>
         ` : ''}
         
         <div class="detail-item description">
             <strong>Description:</strong>
-            <div class="description-content">${ticket.description}</div>
+            <div class="description-content">${formatMultiline(ticket.description || '')}</div>
         </div>
     `;
     
@@ -255,11 +270,11 @@ function renderManagementMessages(messages) {
         return `
             <div class="message ${roleClass} ${internalClass}">
                 <div class="message-header">
-                    <span class="sender">${roleLabel}</span>
+                    <span class="sender">${escapeHtml(roleLabel)}</span>
                     <span class="timestamp">${new Date(message.timestamp).toLocaleString()}</span>
                     ${isInternal ? '<span class="internal-badge">Internal</span>' : ''}
                 </div>
-                <div class="message-content">${message.content}</div>
+                <div class="message-content">${formatMultiline(message.content || '')}</div>
             </div>
         `;
     }).join('');

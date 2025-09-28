@@ -13,6 +13,7 @@ const staticPages = [
     '/messages', 
     '/following', 
     '/admin',
+    '/moderation',
     '/search',
     '/support',
     '/settings',

@@ -7,6 +7,20 @@ renderBar();
 let currentUser = null;
 let currentTicket = null;
 
+function escapeHtml(text = '') {
+    const value = String(text ?? '');
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function formatMultiline(text = '') {
+    return escapeHtml(text).replace(/\n/g, '<br>');
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     initializeAuth()
         .then(user => {
@@ -186,7 +200,7 @@ async function openTicket(ticketId) {
 }
 
 function showTicketModal(ticket) {
-    document.getElementById('modalTicketTitle').textContent = `#${ticket.ticketId} - ${ticket.title}`;
+    document.getElementById('modalTicketTitle').textContent = `#${escapeHtml(ticket.ticketId)} - ${escapeHtml(ticket.title || '')}`;
     
     // Render ticket details
     const details = document.getElementById('ticketDetails');
@@ -195,7 +209,7 @@ function showTicketModal(ticket) {
     
     details.innerHTML = `
         <div class="ticket-detail-row">
-            <strong>Type:</strong> ${typeLabel}
+            <strong>Type:</strong> ${escapeHtml(typeLabel)}
         </div>
         <div class="ticket-detail-row">
             <strong>Status:</strong> <span class="status-${statusClass}">${ticket.status.replace('_', ' ').toUpperCase()}</span>
@@ -205,9 +219,13 @@ function showTicketModal(ticket) {
         </div>
         ${ticket.reportedUsername ? `
         <div class="ticket-detail-row">
-            <strong>Reported User:</strong> ${ticket.reportedUsername}
+            <strong>Reported User:</strong> ${escapeHtml(ticket.reportedUsername)}
         </div>
         ` : ''}
+        <div class="ticket-detail-row">
+            <strong>Description:</strong>
+            <div class="ticket-description">${formatMultiline(ticket.description || '')}</div>
+        </div>
     `;
     
     // Render messages
@@ -230,10 +248,10 @@ function renderTicketMessages(messages) {
         return `
             <div class="message ${roleClass}">
                 <div class="message-header">
-                    <span class="sender">${roleLabel}</span>
+                    <span class="sender">${escapeHtml(roleLabel)}</span>
                     <span class="timestamp">${new Date(message.timestamp).toLocaleString()}</span>
                 </div>
-                <div class="message-content">${message.content}</div>
+                <div class="message-content">${formatMultiline(message.content || '')}</div>
             </div>
         `;
     }).join('');

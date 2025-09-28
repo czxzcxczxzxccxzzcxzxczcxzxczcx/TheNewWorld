@@ -252,6 +252,113 @@ router.get('/getUserInfo', async (req, res) => {
             return res.status(200).json({ success: false, message: 'Invalid session' });
         }
 
+        let docUpdated = false;
+
+        if (!user.moderationState) {
+            user.moderationState = { activeWarningId: null, activeBanId: null };
+            user.markModified('moderationState');
+            docUpdated = true;
+        }
+
+        const now = new Date();
+
+        const resolveWarning = () => {
+            let activeWarning = null;
+            if (user.moderationState?.activeWarningId) {
+                activeWarning = (user.warnings || []).find(warning => warning.warningId === user.moderationState.activeWarningId && !warning.acknowledged);
+                if (!activeWarning) {
+                    user.moderationState.activeWarningId = null;
+                    user.markModified('moderationState');
+                    docUpdated = true;
+                }
+            }
+
+            if (!activeWarning && Array.isArray(user.warnings)) {
+                activeWarning = [...user.warnings]
+                    .filter(warning => !warning.acknowledged)
+                    .sort((a, b) => new Date(b.issuedAt) - new Date(a.issuedAt))[0] || null;
+
+                if (activeWarning) {
+                    user.moderationState.activeWarningId = activeWarning.warningId;
+                    user.markModified('moderationState');
+                    docUpdated = true;
+                }
+            }
+
+            return activeWarning;
+        };
+
+        const resolveBan = () => {
+            let activeBan = null;
+            if (user.moderationState?.activeBanId) {
+                activeBan = (user.bans || []).find(ban => ban.banId === user.moderationState.activeBanId && ban.status === 'active');
+                if (!activeBan) {
+                    user.moderationState.activeBanId = null;
+                    user.markModified('moderationState');
+                    docUpdated = true;
+                }
+            }
+
+            if (!activeBan && Array.isArray(user.bans)) {
+                activeBan = [...user.bans]
+                    .filter(ban => ban.status === 'active')
+                    .sort((a, b) => new Date(b.issuedAt) - new Date(a.issuedAt))[0] || null;
+                if (activeBan) {
+                    user.moderationState.activeBanId = activeBan.banId;
+                    user.markModified('moderationState');
+                    docUpdated = true;
+                }
+            }
+
+            if (activeBan && activeBan.expiresAt && activeBan.expiresAt <= now) {
+                activeBan.status = 'expired';
+                activeBan.liftedAt = now;
+                user.moderationState.activeBanId = null;
+                user.markModified('moderationState');
+                user.markModified('bans');
+                docUpdated = true;
+                return null;
+            }
+
+            return activeBan;
+        };
+
+        const activeWarning = resolveWarning();
+        const activeBan = resolveBan();
+
+        if (docUpdated) {
+            try {
+                await user.save();
+            } catch (saveError) {
+                console.error('Error updating moderation state in getUserInfo:', saveError);
+            }
+        }
+
+        const sanitizeWarning = (warning) => warning ? {
+            warningId: warning.warningId,
+            reason: warning.reason,
+            issuedBy: warning.issuedBy,
+            issuedByUsername: warning.issuedByUsername,
+            issuedByRole: warning.issuedByRole,
+            issuedAt: warning.issuedAt,
+            acknowledged: warning.acknowledged,
+            acknowledgedAt: warning.acknowledgedAt
+        } : null;
+
+        const sanitizeBan = (ban) => ban ? {
+            banId: ban.banId,
+            reason: ban.reason,
+            issuedBy: ban.issuedBy,
+            issuedByUsername: ban.issuedByUsername,
+            issuedByRole: ban.issuedByRole,
+            issuedAt: ban.issuedAt,
+            expiresAt: ban.expiresAt,
+            status: ban.status,
+            liftedAt: ban.liftedAt,
+            liftedBy: ban.liftedBy,
+            liftedByUsername: ban.liftedByUsername
+        } : null;
+
         // Return full user data (excluding sensitive information like password)
         const userInfo = {
             _id: user._id,
@@ -263,7 +370,14 @@ router.get('/getUserInfo', async (req, res) => {
             posts: user.posts,
             pfp: user.pfp,
             theme: user.theme,
-            verified: !!user.verified
+            verified: !!user.verified,
+            adminRole: user.adminRole || 'user',
+            moderation: {
+                activeWarning: sanitizeWarning(activeWarning),
+                activeBan: sanitizeBan(activeBan),
+                warnings: (user.warnings || []).map(sanitizeWarning),
+                bans: (user.bans || []).map(sanitizeBan)
+            }
         };
 
         res.json({ success: true, user: userInfo });
