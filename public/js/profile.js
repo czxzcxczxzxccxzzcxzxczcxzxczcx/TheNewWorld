@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     const gebid = id => document.getElementById(id);
     let userAccountNumber;
     let profileVerified = false;
+    let originalProfile = { username: '', bio: '', pfp: '' };
+    const DEFAULT_PFP_URL = 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
 
     function updateProfileBadge(isVerified) {
         const usernameEl = gebid('profileUsername');
@@ -95,8 +97,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                             // Sort posts by 'createdAt' in descending order
                             data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
+                            const ownerVerified = typeof data.verified === 'boolean' ? data.verified : profileVerified;
                             data.posts.forEach(post => {
-                                renderPost(post, username, pfp, data.verified, 'profile', userAccountNumber);
+                                renderPost(post, username, pfp, ownerVerified, 'profile', userAccountNumber);
                             });
                         }
                     });
@@ -120,12 +123,21 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const profileUsernameEl = gebid('profileUsername');
                 profileUsernameEl.textContent = `${data.username}`;
                 updateProfileBadge(profileVerified);
-                gebid('pfp').src = pfp;
+                const profileImage = gebid('pfp');
+                if (profileImage) {
+                    profileImage.src = pfp || DEFAULT_PFP_URL;
+                }
                 gebid('accountnumber').textContent = ` (${data.accountNumber})`;
                 gebid('bio').textContent = `${data.bio}`;
                 gebid('following').textContent = `${Array.isArray(data.following) ? data.following.length : 0} Following`; // Ensure array
                 gebid('followers').textContent = `${Array.isArray(data.followers) ? data.followers.length : 0} Followers`; // Ensure array
-                gebid('changePfp').textContent = `${data.pfp}`;
+                gebid('changePfp').textContent = `${(data.pfp || '').trim()}`;
+
+                originalProfile = {
+                    username: (data.username || '').trim(),
+                    bio: (data.bio || '').trim(),
+                    pfp: (data.pfp || '').trim()
+                };
                 
                 // Hide the pfp URL initially
                 gebid('changePfp').style.display = 'none';
@@ -207,27 +219,108 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
         
-        const pfp = gebid("changePfp").textContent;
-    const profileUsernameEl = gebid("profileUsername");
-    const username = profileUsernameEl.textContent.trim();
-        const bio = gebid("bio").textContent.trim(); // Trim unnecessary whitespace
-        const isEditable = gebid("bio").isContentEditable;
+        const profileUsernameEl = gebid("profileUsername");
+        const bioEl = gebid("bio");
+        const pfpEl = gebid("changePfp");
+
+        const currentUsername = profileUsernameEl ? profileUsernameEl.textContent.trim() : '';
+        const currentBio = bioEl ? bioEl.textContent.trim() : '';
+        const currentPfp = pfpEl ? pfpEl.textContent.trim() : '';
+        const isEditable = bioEl?.isContentEditable;
 
         if (isEditable) {
+            const updatePayload = {};
+
+            if (profileUsernameEl && currentUsername !== originalProfile.username) {
+                if (!currentUsername) {
+                    alert('Username cannot be empty.');
+                    return;
+                }
+                updatePayload.username = currentUsername;
+            }
+
+            const limitedBio = currentBio.slice(0, 3000);
+            if (bioEl && limitedBio !== originalProfile.bio) {
+                updatePayload.bio = limitedBio;
+            }
+
+            if (pfpEl && currentPfp !== originalProfile.pfp) {
+                updatePayload.pfp = currentPfp;
+            }
+
+            if (Object.keys(updatePayload).length === 0) {
+                changeEdit(false, "none", "Edit Profile", "", "", "");
+                gebid("pfp").style.cursor = 'default';
+                if (profileUsernameEl) profileUsernameEl.textContent = originalProfile.username;
+                if (bioEl) bioEl.textContent = originalProfile.bio;
+                if (pfpEl) pfpEl.textContent = originalProfile.pfp;
+                const avatarImg = gebid('pfp');
+                if (avatarImg) {
+                    avatarImg.src = originalProfile.pfp || DEFAULT_PFP_URL;
+                }
+                updateProfileBadge(profileVerified);
+                return;
+            }
+
             changeEdit(false, "none", "Edit Profile", "", "", "");
             gebid("pfp").style.cursor = 'default';
+
             try {
-                await apiRequest('/api/updateSettings', 'POST', { bio, pfp, username });
+                const response = await apiRequest('/api/updateSettings', 'POST', updatePayload);
+                if (!response.success) {
+                    throw new Error(response.message || 'Failed to save profile changes');
+                }
+
+                const updated = response.user || {};
+                const resolvedUsername = updated.username ?? (updatePayload.username ?? originalProfile.username);
+                const resolvedBio = updated.bio ?? (updatePayload.bio ?? originalProfile.bio);
+                const resolvedPfp = updated.pfp ?? (updatePayload.pfp ?? originalProfile.pfp);
+
+                originalProfile = {
+                    username: (resolvedUsername || '').trim(),
+                    bio: (resolvedBio || '').trim(),
+                    pfp: (resolvedPfp || '').trim()
+                };
+
+                if (profileUsernameEl) {
+                    profileUsernameEl.textContent = resolvedUsername;
+                }
+
+                if (bioEl) {
+                    bioEl.textContent = resolvedBio;
+                }
+
+                if (pfpEl) {
+                    pfpEl.textContent = originalProfile.pfp;
+                }
+
+                const avatarImg = gebid('pfp');
+                if (avatarImg) {
+                    avatarImg.src = originalProfile.pfp || DEFAULT_PFP_URL;
+                }
+
                 updateProfileBadge(profileVerified);
             } catch (error) {
                 console.error('Error updating profile settings:', error);
+                alert(error.message || 'Unable to save profile changes. Please try again.');
+                changeEdit(true, "block", "Save Profile", '1px dashed #ccc', '1px dashed #ccc', '1px dashed #ccc');
+                gebid("pfp").style.cursor = 'pointer';
+                if (profileUsernameEl) profileUsernameEl.textContent = originalProfile.username;
+                if (bioEl) bioEl.textContent = originalProfile.bio;
+                if (pfpEl) pfpEl.textContent = originalProfile.pfp;
+                const avatarImg = gebid('pfp');
+                if (avatarImg) {
+                    avatarImg.src = originalProfile.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
+                }
             }
         } else {
             const existingBadge = document.getElementById('profileUsernameBadge');
             if (existingBadge) {
                 existingBadge.remove();
             }
-            profileUsernameEl.textContent = profileUsernameEl.textContent.trim();
+            if (profileUsernameEl) {
+                profileUsernameEl.textContent = profileUsernameEl.textContent.trim();
+            }
             changeEdit(true, "block", "Save Profile", '1px dashed #ccc', '1px dashed #ccc', '1px dashed #ccc');
             gebid("pfp").style.cursor = 'pointer';
         }

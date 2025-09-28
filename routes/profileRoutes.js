@@ -26,6 +26,7 @@ router.get('/get/profile/:accountNumber', async (req, res) => {
             posts: user.posts,
             pfp: user.pfp,
             verified: !!user.verified,
+            adminRole: user.adminRole || 'user'
         });
     } catch (error) {
         console.error('Error fetching profile data:', error);
@@ -113,51 +114,110 @@ router.post('/follow', async (req, res) => {
 
 // Route to update user settings
 router.post('/updateSettings', async (req, res) => {
-    const { bio, pfp, username } = req.body;
     const sessionId = req.cookies.TNWID;
+
     try {
-        if (sessionId && await sessionStore.get(sessionId)) {
-            // Username validation (same as /newAccount in authRoutes.js)
-            if (!username || typeof username !== 'string' || username.trim().length < 3 || username.trim().length > 20) {
+        if (!sessionId) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const sessionUser = await sessionStore.get(sessionId);
+        if (!sessionUser) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+
+        const accountNumber = sessionUser.accountNumber;
+        const currentUser = await User.findOne({ accountNumber });
+        if (!currentUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const update = {};
+        let usernameChanged = false;
+
+        if (Object.prototype.hasOwnProperty.call(req.body, 'username')) {
+            const incomingUsername = req.body.username;
+            if (!incomingUsername || typeof incomingUsername !== 'string' || incomingUsername.trim().length < 3 || incomingUsername.trim().length > 20) {
                 return res.status(400).json({ success: false, message: 'Username must be 3-20 characters' });
             }
-            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            if (!/^[a-zA-Z0-9_]+$/.test(incomingUsername.trim())) {
                 return res.status(400).json({ success: false, message: 'Username must be alphanumeric or underscores' });
             }
-            // Enhanced duplicate username logic
-            const user = await sessionStore.get(sessionId);
-        if (!user) {
-            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
-        }
-        if (!user) {
-            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
-        }
-            const accountNumber = user.accountNumber;
-            // Find all users with the same username (case-insensitive)
-            const potentialUsers = await User.find({ username: { $regex: new RegExp(`^${username}$`, 'i') } });
-            if (potentialUsers.length > 1) {
-                // If more than one user has this username (case-insensitive)
-                // Only allow if the user is keeping their own exact username (case-sensitive)
-                const isOwnExact = potentialUsers.some(u => u.accountNumber === accountNumber && u.username === username);
-                if (!isOwnExact) {
-                    return res.status(400).json({ success: false, message: 'Multiple accounts exist with this username (different cases). Please choose a unique username.' });
-                }
-            } else if (potentialUsers.length === 1) {
-                // If one user exists, make sure it's either the current user or not taken
-                if (potentialUsers[0].accountNumber !== accountNumber) {
+
+            const normalizedUsername = incomingUsername.trim();
+            if (normalizedUsername !== currentUser.username) {
+                const potentialUsers = await User.find({ username: { $regex: new RegExp(`^${normalizedUsername}$`, 'i') } });
+                if (potentialUsers.length > 1) {
+                    const isOwnExact = potentialUsers.some(u => u.accountNumber === accountNumber && u.username === normalizedUsername);
+                    if (!isOwnExact) {
+                        return res.status(400).json({ success: false, message: 'Multiple accounts exist with this username (different cases). Please choose a unique username.' });
+                    }
+                } else if (potentialUsers.length === 1 && potentialUsers[0].accountNumber !== accountNumber) {
                     return res.status(400).json({ success: false, message: 'Username is already taken' });
                 }
+
+                update.username = normalizedUsername;
+                usernameChanged = true;
+            }
+        }
+
+        if (Object.prototype.hasOwnProperty.call(req.body, 'bio')) {
+            let incomingBio = req.body.bio;
+            if (incomingBio === null || incomingBio === undefined) {
+                incomingBio = '';
+            } else if (typeof incomingBio !== 'string') {
+                return res.status(400).json({ success: false, message: 'Bio must be a string' });
+            } else {
+                incomingBio = incomingBio.slice(0, 3000);
             }
 
-            await User.findOneAndUpdate(
-                { accountNumber },
-                { $set: { bio: bio, pfp: pfp, username: username } },
-                { new: true }
-            );
-            return res.json({ success: true, message: 'done' });
-        } else {
-            res.status(401).json({ success: false, message: 'Not authenticated' });
+            if ((currentUser.bio ?? '') !== incomingBio) {
+                update.bio = incomingBio;
+            }
         }
+
+        if (Object.prototype.hasOwnProperty.call(req.body, 'pfp')) {
+            let incomingPfp = req.body.pfp;
+            if (incomingPfp === null || incomingPfp === undefined) {
+                incomingPfp = '';
+            } else if (typeof incomingPfp !== 'string') {
+                return res.status(400).json({ success: false, message: 'Profile image must be a string' });
+            } else {
+                incomingPfp = incomingPfp.trim();
+            }
+
+            if ((currentUser.pfp ?? '') !== incomingPfp) {
+                update.pfp = incomingPfp;
+            }
+        }
+
+        if (!Object.keys(update).length) {
+            return res.json({
+                success: true,
+                message: 'No changes detected',
+                user: {
+                    username: currentUser.username,
+                    bio: currentUser.bio ?? '',
+                    pfp: currentUser.pfp ?? ''
+                }
+            });
+        }
+
+        const updatedUser = await User.findOneAndUpdate(
+            { accountNumber },
+            { $set: update },
+            { new: true, projection: { username: 1, bio: 1, pfp: 1 } }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        if (usernameChanged && updatedUser.username) {
+            await sessionStore.update(sessionId, { username: updatedUser.username });
+        }
+
+        return res.json({ success: true, message: 'Profile updated', user: updatedUser });
     } catch (error) {
         console.error("Error updating settings:", error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -253,12 +313,9 @@ router.post('/removeFollower', async (req, res) => {
     }
     
     const user = await sessionStore.get(sessionId);
-        if (!user) {
-            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
-        }
-        if (!user) {
-            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
-        } // Get user's data from session
+    if (!user) {
+        return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+    } // Get user's data from session
     const currentUserAccountNumber = user.accountNumber;
 
 
@@ -361,9 +418,6 @@ router.post('/setNotificationShown', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
         const user = await sessionStore.get(sessionId);
-        if (!user) {
-            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
-        }
         if (!user) {
             return res.status(401).json({ success: false, message: 'Invalid or expired session' });
         }

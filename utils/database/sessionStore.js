@@ -100,6 +100,31 @@ class SessionStore {
             return false;
         }
     }
+
+    async update(sessionId, updates = {}) {
+        try {
+            const allowed = {};
+            if (Object.prototype.hasOwnProperty.call(updates, 'username')) {
+                allowed.username = updates.username;
+            }
+            if (Object.prototype.hasOwnProperty.call(updates, 'accountNumber')) {
+                allowed.accountNumber = updates.accountNumber;
+            }
+            if (Object.prototype.hasOwnProperty.call(updates, 'theme')) {
+                allowed.theme = updates.theme;
+            }
+
+            if (Object.keys(allowed).length === 0) {
+                return false;
+            }
+
+            await Session.updateOne({ sessionId }, { $set: allowed });
+            return true;
+        } catch (error) {
+            console.error('Error updating session:', error);
+            return false;
+        }
+    }
 }
 
 // Create and export a singleton instance

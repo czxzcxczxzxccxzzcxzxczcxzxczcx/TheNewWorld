@@ -147,14 +147,30 @@ function formatDate(dateString) {
 }
 
 export function changeEdit(edit, pfpDisplay, profileText, pfpText, bioBorder, userBorder) {
-    bio.contentEditable = edit;
-    changePfp.contentEditable = edit;
-    profileUsername.contentEditable = edit;
-    changePfp.style.display = pfpDisplay;
-    profileEdit.textContent = profileText;
-    changePfp.style.border = pfpText;
-    bio.style.border = bioBorder;
-    username.style.border = userBorder;
+    const bio = document.getElementById('bio');
+    const changePfp = document.getElementById('changePfp');
+    const profileUsername = document.getElementById('profileUsername');
+    const profileEdit = document.getElementById('profileEdit');
+
+    if (bio) {
+        bio.contentEditable = edit;
+        bio.style.border = bioBorder;
+    }
+
+    if (changePfp) {
+        changePfp.contentEditable = edit;
+        changePfp.style.display = pfpDisplay;
+        changePfp.style.border = pfpText;
+    }
+
+    if (profileUsername) {
+        profileUsername.contentEditable = edit;
+        profileUsername.style.border = userBorder;
+    }
+
+    if (profileEdit) {
+        profileEdit.textContent = profileText;
+    }
 }
 
 function makeMentionsClickable(content) {

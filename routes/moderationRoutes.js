@@ -85,6 +85,10 @@ function requireModerator(actor) {
     return actor && getRoleLevel(actor.adminRole || 'user') >= ROLE_LEVEL.moderator;
 }
 
+function requireAdmin(actor) {
+    return actor && getRoleLevel(actor.adminRole || 'user') >= ROLE_LEVEL.admin;
+}
+
 router.get('/moderation/search', async (req, res) => {
     try {
         const actor = await resolveCurrentUser(req);
@@ -359,6 +363,96 @@ router.post('/moderation/acknowledge-warning', async (req, res) => {
         return res.json({ success: true, warning: sanitizeWarning(warning), user: sanitizeUser(user) });
     } catch (error) {
         console.error('Error acknowledging warning:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+router.post('/moderation/remove-warning', async (req, res) => {
+    try {
+        const actor = await resolveCurrentUser(req);
+        if (!requireAdmin(actor)) {
+            return res.status(403).json({ success: false, message: 'Admin access required' });
+        }
+
+        const { targetAccountNumber, warningId } = req.body;
+        if (!targetAccountNumber || !warningId) {
+            return res.status(400).json({ success: false, message: 'Target account number and warning ID are required' });
+        }
+
+        const target = await User.findOne({ accountNumber: targetAccountNumber });
+        if (!target) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        if (!canModerate(actor, target)) {
+            return res.status(403).json({ success: false, message: 'Cannot modify users with equal or higher role' });
+        }
+
+        const warnings = target.warnings || [];
+        const index = warnings.findIndex((warning) => warning.warningId === warningId);
+        if (index === -1) {
+            return res.status(404).json({ success: false, message: 'Warning not found' });
+        }
+
+        const [removedWarning] = warnings.splice(index, 1);
+        target.warnings = warnings;
+        target.markModified('warnings');
+
+        if (target.moderationState?.activeWarningId === removedWarning.warningId) {
+            target.moderationState.activeWarningId = null;
+            target.markModified('moderationState');
+        }
+
+        await target.save();
+
+        return res.json({ success: true, user: sanitizeUser(target) });
+    } catch (error) {
+        console.error('Error removing warning:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+router.post('/moderation/remove-ban', async (req, res) => {
+    try {
+        const actor = await resolveCurrentUser(req);
+        if (!requireAdmin(actor)) {
+            return res.status(403).json({ success: false, message: 'Admin access required' });
+        }
+
+        const { targetAccountNumber, banId } = req.body;
+        if (!targetAccountNumber || !banId) {
+            return res.status(400).json({ success: false, message: 'Target account number and ban ID are required' });
+        }
+
+        const target = await User.findOne({ accountNumber: targetAccountNumber });
+        if (!target) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        if (!canModerate(actor, target)) {
+            return res.status(403).json({ success: false, message: 'Cannot modify users with equal or higher role' });
+        }
+
+        const bans = target.bans || [];
+        const index = bans.findIndex((ban) => ban.banId === banId);
+        if (index === -1) {
+            return res.status(404).json({ success: false, message: 'Ban not found' });
+        }
+
+        const [removedBan] = bans.splice(index, 1);
+        target.bans = bans;
+        target.markModified('bans');
+
+        if (target.moderationState?.activeBanId === removedBan.banId) {
+            target.moderationState.activeBanId = null;
+            target.markModified('moderationState');
+        }
+
+        await target.save();
+
+        return res.json({ success: true, user: sanitizeUser(target) });
+    } catch (error) {
+        console.error('Error removing ban:', error);
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });

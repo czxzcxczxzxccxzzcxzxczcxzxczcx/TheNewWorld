@@ -4,7 +4,7 @@ const ticketSchema = new mongoose.Schema({
     ticketId: { type: String, required: true, unique: true },
     userId: { type: String, required: true }, // accountNumber of user who created ticket
     username: { type: String, required: true },
-    type: { type: String, enum: ['bug_report', 'user_report'], required: true },
+    type: { type: String, enum: ['bug_report', 'user_report', 'ban_appeal'], required: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
     status: { type: String, enum: ['open', 'in_progress', 'closed'], default: 'open' },

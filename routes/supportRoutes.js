@@ -5,6 +5,8 @@ const { v4: uuidv4 } = require('uuid');
 
 const router = express.Router();
 
+const ALLOWED_TICKET_TYPES = ['bug_report', 'user_report', 'ban_appeal'];
+
 function normalizeAccountNumber(value) {
     if (value === null || value === undefined) return null;
     return String(value);
@@ -63,6 +65,10 @@ router.post('/support/create-ticket', async (req, res) => {
         // Validate required fields
         if (!type || !title || !description) {
             return res.status(400).json({ success: false, message: 'Missing required fields' });
+        }
+
+        if (!ALLOWED_TICKET_TYPES.includes(type)) {
+            return res.status(400).json({ success: false, message: 'Invalid ticket type' });
         }
 
         // For user reports, validate reported user exists
@@ -282,7 +288,7 @@ router.get('/support/support-panel/tickets', async (req, res) => {
             return res.status(403).json({ success: false, message: 'Support access required' });
         }
 
-        const { status, type } = req.query;
+    const { status, type } = req.query;
         let filter = {};
         
         if (status && status !== 'all') {
@@ -290,6 +296,9 @@ router.get('/support/support-panel/tickets', async (req, res) => {
         }
         
         if (type && type !== 'all') {
+            if (!ALLOWED_TICKET_TYPES.includes(type)) {
+                return res.status(400).json({ success: false, message: 'Invalid ticket type filter' });
+            }
             filter.type = type;
         }
 

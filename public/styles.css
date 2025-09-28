@@ -2327,6 +2327,7 @@ body:has(.modernAdminPanel) .bar {
   margin-top: var(--space-sm);
   display: flex;
   justify-content: flex-end;
+  gap: var(--space-sm);
 }
 
 .historyLiftBtn {
@@ -2343,6 +2344,22 @@ body:has(.modernAdminPanel) .bar {
 .historyLiftBtn:hover {
   background: rgba(34, 197, 94, 0.18);
   border-color: rgba(34, 197, 94, 0.28);
+}
+
+.historyRemoveBtn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.historyRemoveBtn:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .moderationDetails textarea {
@@ -5601,9 +5618,49 @@ textarea:focus-visible {
 
 /* Tickets Grid */
 .tickets-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.tickets-section {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-lg);
+}
+
+.tickets-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.tickets-section-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.category-count {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.tickets-section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: var(--space-lg);
+}
+
+.tickets-section-empty {
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.95rem;
 }
 
 .ticket-card {
@@ -5660,6 +5717,11 @@ textarea:focus-visible {
 .type-user_report {
   background: rgba(245, 158, 11, 0.2);
   color: var(--warning-orange);
+}
+
+.type-ban_appeal {
+  background: rgba(16, 185, 129, 0.2);
+  color: rgba(16, 185, 129, 1);
 }
 
 .priority-low {
@@ -5966,6 +6028,10 @@ textarea:focus-visible {
     padding-right: 0;
     padding-bottom: var(--space-xl);
     margin-bottom: var(--space-xl);
+  }
+
+  .tickets-section-grid {
+    grid-template-columns: 1fr;
   }
   
   .tickets-grid {

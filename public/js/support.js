@@ -21,6 +21,19 @@ function formatMultiline(text = '') {
     return escapeHtml(text).replace(/\n/g, '<br>');
 }
 
+function formatTicketType(type) {
+    switch (type) {
+        case 'bug_report':
+            return 'Bug Report';
+        case 'user_report':
+            return 'User Report';
+        case 'ban_appeal':
+            return 'Ban Appeal';
+        default:
+            return 'General';
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     initializeAuth()
         .then(user => {
@@ -148,8 +161,8 @@ function renderTickets(tickets) {
     }
 
     ticketsList.innerHTML = tickets.map(ticket => {
-        const statusClass = ticket.status.replace('_', '-');
-        const typeLabel = ticket.type === 'bug_report' ? 'Bug Report' : 'User Report';
+    const statusClass = ticket.status.replace('_', '-');
+    const typeLabel = formatTicketType(ticket.type);
         const lastUpdate = new Date(ticket.updatedAt).toLocaleDateString();
         
         return `
@@ -204,7 +217,7 @@ function showTicketModal(ticket) {
     
     // Render ticket details
     const details = document.getElementById('ticketDetails');
-    const typeLabel = ticket.type === 'bug_report' ? 'Bug Report' : 'User Report';
+    const typeLabel = formatTicketType(ticket.type);
     const statusClass = ticket.status.replace('_', '-');
     
     details.innerHTML = `
@@ -338,7 +351,7 @@ function setupDonationForm() {
                     const { error } = await stripe.redirectToCheckout({
                         sessionId: data.sessionId
                     });
-                    
+
                     if (error) {
                         showNotification('Payment failed: ' + error.message, 'error');
                     }

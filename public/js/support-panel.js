@@ -8,6 +8,24 @@ let currentUser = null;
 let currentTicket = null;
 let allTickets = [];
 
+const TYPE_CONFIG = {
+    bug_report: {
+        singular: 'Bug Report',
+        label: 'Bug Reports',
+        emptyMessage: 'No bug reports right now.'
+    },
+    user_report: {
+        singular: 'User Report',
+        label: 'User Reports',
+        emptyMessage: 'No user reports right now.'
+    },
+    ban_appeal: {
+        singular: 'Ban Appeal',
+        label: 'Ban Appeals',
+        emptyMessage: 'No ban appeals right now.'
+    }
+};
+
 function escapeHtml(text = '') {
     const value = String(text ?? '');
     return value
@@ -20,6 +38,18 @@ function escapeHtml(text = '') {
 
 function formatMultiline(text = '') {
     return escapeHtml(text).replace(/\n/g, '<br>');
+}
+
+function formatTicketType(type, { plural = false } = {}) {
+    const config = TYPE_CONFIG[type];
+    if (!config) {
+        return plural ? 'Other Tickets' : 'Other';
+    }
+    return plural ? (config.label || config.singular) : (config.singular || config.label);
+}
+
+function getTypeEmptyMessage(type) {
+    return TYPE_CONFIG[type]?.emptyMessage || 'No tickets in this category.';
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -58,6 +88,7 @@ function setupEventListeners() {
     // Filter controls
     document.getElementById('statusFilter').addEventListener('change', filterTickets);
     document.getElementById('typeFilter').addEventListener('change', filterTickets);
+    document.getElementById('priorityFilter').addEventListener('change', filterTickets);
     document.getElementById('refreshTickets').addEventListener('click', loadTickets);
 
     // Modal controls
@@ -80,8 +111,7 @@ async function loadTickets() {
         
         if (data.success) {
             allTickets = data.tickets;
-            renderTickets(allTickets);
-            updateStats(allTickets);
+            filterTickets();
         } else {
             showNotification(data.message || 'Failed to load tickets', 'error');
         }
@@ -94,8 +124,9 @@ async function loadTickets() {
 function filterTickets() {
     const statusFilter = document.getElementById('statusFilter').value;
     const typeFilter = document.getElementById('typeFilter').value;
+    const priorityFilter = document.getElementById('priorityFilter').value;
     
-    let filteredTickets = allTickets;
+    let filteredTickets = allTickets || [];
     
     if (statusFilter !== 'all') {
         filteredTickets = filteredTickets.filter(ticket => ticket.status === statusFilter);
@@ -104,6 +135,10 @@ function filterTickets() {
     if (typeFilter !== 'all') {
         filteredTickets = filteredTickets.filter(ticket => ticket.type === typeFilter);
     }
+
+    if (priorityFilter !== 'all') {
+        filteredTickets = filteredTickets.filter(ticket => (ticket.priority || 'medium') === priorityFilter);
+    }
     
     renderTickets(filteredTickets);
     updateStats(allTickets); // Keep full stats
@@ -111,78 +146,111 @@ function filterTickets() {
 
 function renderTickets(tickets) {
     const grid = document.getElementById('ticketsGrid');
-    
-    if (tickets.length === 0) {
+    if (!grid) return;
+
+    const typeFilterValue = document.getElementById('typeFilter')?.value || 'all';
+    const typeKeys = typeFilterValue === 'all'
+        ? Object.keys(TYPE_CONFIG)
+        : [typeFilterValue];
+
+    const sectionsHtml = typeKeys.map((typeKey) => {
+        const categoryTickets = (tickets || []).filter(ticket => ticket.type === typeKey);
+        const headerLabel = formatTicketType(typeKey, { plural: true });
+        const badgeCount = categoryTickets.length;
+
+        const sectionBody = badgeCount
+            ? `<div class="tickets-section-grid">${categoryTickets.map(createTicketCard).join('')}</div>`
+            : `<div class="tickets-section-empty">${escapeHtml(getTypeEmptyMessage(typeKey))}</div>`;
+
+        return `
+            <section class="tickets-section" data-type="${escapeHtml(typeKey)}">
+                <div class="tickets-section-header">
+                    <h3>${escapeHtml(headerLabel)}</h3>
+                    <span class="badge category-count">${badgeCount} ${badgeCount === 1 ? 'ticket' : 'tickets'}</span>
+                </div>
+                ${sectionBody}
+            </section>
+        `;
+    }).join('');
+
+    if (!sectionsHtml || !sectionsHtml.trim()) {
         grid.innerHTML = '<div class="no-tickets-panel">No tickets found</div>';
         return;
     }
 
-    grid.innerHTML = tickets.map(ticket => {
-        const statusClass = ticket.status.replace('_', '-');
-        const typeLabel = ticket.type === 'bug_report' ? 'Bug Report' : 'User Report';
-        const priorityClass = ticket.priority || 'medium';
-        const lastUpdate = new Date(ticket.updatedAt).toLocaleDateString();
-        const messageCount = ticket.messages?.length || 0;
-        const descriptionPreview = escapeHtml(ticket.description || '').replace(/\n+/g, ' ');
-        
-        return `
-            <div class="ticket-card" data-ticket-id="${escapeHtml(ticket.ticketId)}">
-                <div class="ticket-card-header">
-                    <div class="ticket-card-title">
-                        <h3>${escapeHtml(ticket.title || '')}</h3>
-                        <span class="ticket-id">#${escapeHtml(ticket.ticketId)}</span>
-                    </div>
-                    <div class="ticket-card-badges">
-                        <span class="badge type-${ticket.type}">${escapeHtml(typeLabel)}</span>
-                        <span class="badge status-${statusClass}">${ticket.status.replace('_', ' ').toUpperCase()}</span>
-                        <span class="badge priority-${priorityClass}">${(ticket.priority || 'medium').toUpperCase()}</span>
-                    </div>
+    grid.innerHTML = sectionsHtml;
+}
+
+function createTicketCard(ticket) {
+    const statusClass = ticket.status.replace('_', '-');
+    const typeLabel = formatTicketType(ticket.type);
+    const priorityValue = (ticket.priority || 'medium').toLowerCase();
+    const priorityClass = priorityValue;
+    const lastUpdate = new Date(ticket.updatedAt).toLocaleDateString();
+    const messageCount = ticket.messages?.length || 0;
+    const descriptionPreview = escapeHtml(ticket.description || '').replace(/\n+/g, ' ');
+    const assignedDisplay = ticket.assignedTo ? escapeHtml(ticket.assignedTo) : null;
+
+    return `
+        <div class="ticket-card" data-ticket-id="${escapeHtml(ticket.ticketId)}">
+            <div class="ticket-card-header">
+                <div class="ticket-card-title">
+                    <h3>${escapeHtml(ticket.title || '')}</h3>
+                    <span class="ticket-id">#${escapeHtml(ticket.ticketId)}</span>
                 </div>
-                
-                <div class="ticket-card-info">
-                    <div class="ticket-user">
-                        <strong>User:</strong> ${escapeHtml(ticket.username)} (#${escapeHtml(ticket.userId)})
-                    </div>
-                    ${ticket.reportedUsername ? `
-                    <div class="reported-user">
-                        <strong>Reported:</strong> ${escapeHtml(ticket.reportedUsername)}
-                    </div>
-                    ` : ''}
-                    <div class="ticket-messages">
-                        <strong>Messages:</strong> ${messageCount}
-                    </div>
-                    <div class="ticket-updated">
-                        <strong>Updated:</strong> ${lastUpdate}
-                    </div>
-                    ${ticket.assignedTo ? `
-                    <div class="ticket-assigned">
-                        <strong>Assigned:</strong> ${ticket.assignedTo}
-                    </div>
-                    ` : ''}
-                </div>
-                
-                <div class="ticket-card-preview">
-                    ${descriptionPreview.substring(0, 120)}${descriptionPreview.length > 120 ? '...' : ''}
-                </div>
-                
-                <div class="ticket-card-actions">
-                    <button class="btn small primary" onclick="openTicketManagement('${escapeHtml(ticket.ticketId)}')">
-                        Manage
-                    </button>
+                <div class="ticket-card-badges">
+                    <span class="badge type-${escapeHtml(ticket.type)}">${escapeHtml(typeLabel)}</span>
+                    <span class="badge status-${statusClass}">${ticket.status.replace('_', ' ').toUpperCase()}</span>
+                    <span class="badge priority-${escapeHtml(priorityClass)}">${priorityValue.toUpperCase()}</span>
                 </div>
             </div>
-        `;
-    }).join('');
+
+            <div class="ticket-card-info">
+                <div class="ticket-user">
+                    <strong>User:</strong> ${escapeHtml(ticket.username)} (#${escapeHtml(ticket.userId)})
+                </div>
+                ${ticket.reportedUsername ? `
+                <div class="reported-user">
+                    <strong>Reported:</strong> ${escapeHtml(ticket.reportedUsername)}
+                </div>
+                ` : ''}
+                <div class="ticket-messages">
+                    <strong>Messages:</strong> ${messageCount}
+                </div>
+                <div class="ticket-updated">
+                    <strong>Updated:</strong> ${lastUpdate}
+                </div>
+                ${assignedDisplay ? `
+                <div class="ticket-assigned">
+                    <strong>Assigned:</strong> ${assignedDisplay}
+                </div>
+                ` : ''}
+            </div>
+
+            <div class="ticket-card-preview">
+                ${descriptionPreview.substring(0, 120)}${descriptionPreview.length > 120 ? '...' : ''}
+            </div>
+
+            <div class="ticket-card-actions">
+                <button class="btn small primary" onclick="openTicketManagement('${escapeHtml(ticket.ticketId)}')">
+                    Manage
+                </button>
+            </div>
+        </div>
+    `;
 }
 
 function updateStats(tickets) {
-    const total = tickets.length;
-    const open = tickets.filter(t => t.status === 'open').length;
-    const inProgress = tickets.filter(t => t.status === 'in_progress').length;
-    
+    const collection = tickets || [];
+    const total = collection.length;
+    const open = collection.filter(t => t.status === 'open').length;
+    const inProgress = collection.filter(t => t.status === 'in_progress').length;
+    const closed = collection.filter(t => t.status === 'closed').length;
+
     document.getElementById('totalTickets').textContent = total;
     document.getElementById('openTickets').textContent = open;
     document.getElementById('inProgressTickets').textContent = inProgress;
+    document.getElementById('closedTickets').textContent = closed;
 }
 
 async function openTicketManagement(ticketId) {
@@ -206,7 +274,7 @@ function showTicketManagementModal(ticket) {
     
     // Populate ticket details
     const details = document.getElementById('ticketManagementDetails');
-    const typeLabel = ticket.type === 'bug_report' ? 'Bug Report' : 'User Report';
+    const typeLabel = formatTicketType(ticket.type);
     const statusClass = ticket.status.replace('_', '-');
     
     details.innerHTML = `

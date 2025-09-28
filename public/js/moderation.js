@@ -54,6 +54,11 @@ function canModerateTarget(target) {
     return getRoleLevel(actor.adminRole) > getRoleLevel(target.adminRole);
 }
 
+function canRemoveHistoryEntries() {
+    if (!actor || !selectedUser) return false;
+    return getRoleLevel(actor.adminRole) >= ROLE_LEVEL.admin && canModerateTarget(selectedUser);
+}
+
 function showFeedback(type, message) {
     if (!elements.feedback) return;
     elements.feedback.textContent = message;
@@ -199,6 +204,17 @@ function renderWarningHistory(warnings = []) {
             item.appendChild(ack);
         }
 
+        if (canRemoveHistoryEntries()) {
+            const actions = document.createElement('div');
+            actions.className = 'historyActions';
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'historyRemoveBtn';
+            removeBtn.textContent = 'Remove from history';
+            removeBtn.addEventListener('click', () => removeWarning(warning.warningId));
+            actions.appendChild(removeBtn);
+            item.appendChild(actions);
+        }
+
         elements.warningHistoryList.appendChild(item);
     });
 }
@@ -254,15 +270,32 @@ function renderBanHistory(bans = []) {
             item.appendChild(lifted);
         }
 
+        let actions = null;
+        function ensureActions() {
+            if (!actions) {
+                actions = document.createElement('div');
+                actions.className = 'historyActions';
+                item.appendChild(actions);
+            }
+            return actions;
+        }
+
         if (ban.status === 'active' && canModerateTarget(selectedUser)) {
-            const actions = document.createElement('div');
-            actions.className = 'historyActions';
+            const actionsContainer = ensureActions();
             const liftBtn = document.createElement('button');
             liftBtn.className = 'historyLiftBtn';
             liftBtn.textContent = 'Lift Ban';
             liftBtn.addEventListener('click', () => liftBan(ban.banId));
-            actions.appendChild(liftBtn);
-            item.appendChild(actions);
+            actionsContainer.appendChild(liftBtn);
+        }
+
+        if (canRemoveHistoryEntries()) {
+            const actionsContainer = ensureActions();
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'historyRemoveBtn';
+            removeBtn.textContent = 'Remove from history';
+            removeBtn.addEventListener('click', () => removeBan(ban.banId));
+            actionsContainer.appendChild(removeBtn);
         }
 
         elements.banHistoryList.appendChild(item);
@@ -437,6 +470,58 @@ async function liftBan(banId) {
     } catch (error) {
         console.error('Failed to lift ban:', error);
         showFeedback('error', 'Unable to lift ban. Please try again.');
+    }
+}
+
+async function removeWarning(warningId) {
+    if (!selectedUser) return;
+
+    try {
+        const response = await apiRequest('/api/moderation/remove-warning', 'POST', {
+            targetAccountNumber: selectedUser.accountNumber,
+            warningId
+        });
+
+        if (!response.success) {
+            showFeedback('error', response.message || 'Failed to remove warning.');
+            return;
+        }
+
+        showFeedback('success', 'Warning removed from history.');
+        if (response.user) {
+            updateSelectedUser(response.user);
+        } else {
+            await loadSelectedUser(selectedUser.accountNumber);
+        }
+    } catch (error) {
+        console.error('Failed to remove warning:', error);
+        showFeedback('error', 'Unable to remove warning. Please try again.');
+    }
+}
+
+async function removeBan(banId) {
+    if (!selectedUser) return;
+
+    try {
+        const response = await apiRequest('/api/moderation/remove-ban', 'POST', {
+            targetAccountNumber: selectedUser.accountNumber,
+            banId
+        });
+
+        if (!response.success) {
+            showFeedback('error', response.message || 'Failed to remove ban.');
+            return;
+        }
+
+        showFeedback('success', 'Ban removed from history.');
+        if (response.user) {
+            updateSelectedUser(response.user);
+        } else {
+            await loadSelectedUser(selectedUser.accountNumber);
+        }
+    } catch (error) {
+        console.error('Failed to remove ban:', error);
+        showFeedback('error', 'Unable to remove ban. Please try again.');
     }
 }
 

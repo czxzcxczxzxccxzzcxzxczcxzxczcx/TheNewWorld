@@ -33,6 +33,14 @@
                         <option value="all">All Types</option>
                         <option value="bug_report">Bug Reports</option>
                         <option value="user_report">User Reports</option>
+                        <option value="ban_appeal">Ban Appeals</option>
+                    </select>
+
+                    <select id="priorityFilter">
+                        <option value="all">All Priorities</option>
+                        <option value="high">High Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="low">Low Priority</option>
                     </select>
                     
                     <button id="refreshTickets" class="btn secondary">
@@ -52,6 +60,10 @@
                     <div class="stat-item">
                         <span class="stat-number" id="inProgressTickets">0</span>
                         <span class="stat-label">In Progress</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="closedTickets">0</span>
+                        <span class="stat-label">Closed</span>
                     </div>
                 </div>
             </div>

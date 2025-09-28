@@ -800,17 +800,33 @@ router.post('/admin/updateUser', async (req, res) => {
             return res.status(403).json({ success: false, message: 'Unauthorized: Admin access required' });
         }
 
-        // If trying to set headAdmin role, check if current user is headAdmin
-        if (adminRole === 'headAdmin') {
-            const hasHeadAdminAccess = await hasAdminAccess(accountNumber, 'headAdmin');
-            if (!hasHeadAdminAccess) {
-                return res.status(403).json({ success: false, message: 'Unauthorized: Head admin access required to grant head admin role' });
-            }
+        const targetAccountNumber = normalizeAccountNumber(id);
+        const targetUser = await User.findOne({ accountNumber: targetAccountNumber });
+
+        if (!targetUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const allowedRoles = new Set(['user', 'moderator', 'admin', 'headAdmin']);
+        const requesterHasHeadAdminAccess = await hasAdminAccess(accountNumber, 'headAdmin');
+
+        let nextAdminRole = targetUser.adminRole || 'user';
+        if (typeof adminRole === 'string' && allowedRoles.has(adminRole)) {
+            nextAdminRole = adminRole;
+        }
+
+        const isGrantingHeadAdmin = nextAdminRole === 'headAdmin' && targetUser.adminRole !== 'headAdmin';
+        if (isGrantingHeadAdmin && !requesterHasHeadAdminAccess) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Head admin access required to grant head admin role' });
+        }
+
+        if (targetUser.adminRole === 'headAdmin' && !requesterHasHeadAdminAccess && nextAdminRole !== targetUser.adminRole) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Cannot modify head admin role' });
         }
 
         const updatedUser = await User.findOneAndUpdate(
-            { accountNumber: id },
-            { $set: { username, bio, adminRole, verified: verified === true } },
+            { accountNumber: targetAccountNumber },
+            { $set: { username, bio, adminRole: nextAdminRole, verified: !!verified } },
             { new: true }
         );
 

@@ -411,12 +411,13 @@ router.post('/getUserPosts', async (req, res) => {
         }
 
         const posts = await Post.find({ accountNumber });
+        const owner = await User.findOne({ accountNumber }, { verified: 1 });
 
         if (posts.length === 0) {
-            return res.status(404).json({ success: false, message: "No posts found for this user" });
+            return res.json({ success: true, posts: [], verified: !!owner?.verified });
         }
 
-        res.json({ success: true, posts });
+        res.json({ success: true, posts, verified: !!owner?.verified });
     } catch (err) {
         res.status(500).json({ success: false, message: "Error fetching posts" });
     }

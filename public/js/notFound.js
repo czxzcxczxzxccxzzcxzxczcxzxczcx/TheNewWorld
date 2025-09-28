@@ -49,9 +49,10 @@ function setupEventListeners() {
     const reportIssueBtn = document.getElementById('reportIssue');
     if (reportIssueBtn) {
         reportIssueBtn.addEventListener('click', function() {
-            const subject = encodeURIComponent('404 Error Report');
-            const body = encodeURIComponent(`I encountered a 404 error on:\nURL: ${window.location.href}\nTimestamp: ${new Date().toISOString()}`);
-            window.location.href = `mailto:thenewworld.help@gmail.com?subject=${subject}&body=${body}`;
+            // const subject = encodeURIComponent('404 Error Report');
+            // const body = encodeURIComponent(`I encountered a 404 error on:\nURL: ${window.location.href}\nTimestamp: ${new Date().toISOString()}`);
+            // window.location.href = `mailto:thenewworld.help@gmail.com?subject=${subject}&body=${body}`;
+            window.location.href = '/support';
         });
     }
 }

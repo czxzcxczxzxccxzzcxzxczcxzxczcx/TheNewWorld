@@ -26,18 +26,25 @@ class AdminPanel {
             initializeGlobalButtons(user.accountNumber);
             
             // Get user profile to check admin role
-            const profile = await apiRequest(`/api/get/profile/${user.accountNumber}`, 'GET');
-                this.userRole = profile.adminRole || 'admin';
-                
-                document.getElementById('adminUserDisplay').textContent = `${user.username} (#${user.accountNumber})`;
-                const roleBadge = document.getElementById('adminRoleBadge');
-                roleBadge.textContent = this.userRole === 'headAdmin' ? 'Head Admin' : 'Admin';
-                roleBadge.className = `roleBadge ${this.userRole}`;
-                
-                // Show permissions tab only for head admin
-                if (this.userRole === 'headAdmin') {
-                    document.getElementById('permissionsTab').style.display = 'block';
-                }
+            let profile = null;
+            try {
+                profile = await apiRequest(`/api/get/profile/${user.accountNumber}`, 'GET');
+            } catch (profileError) {
+                console.warn('Unable to load profile details:', profileError);
+            }
+
+            const resolvedRole = (user?.adminRole) || (profile?.adminRole) || 'admin';
+            this.userRole = resolvedRole;
+            
+            document.getElementById('adminUserDisplay').textContent = `${user.username} (#${user.accountNumber})`;
+            const roleBadge = document.getElementById('adminRoleBadge');
+            roleBadge.textContent = this.userRole === 'headAdmin' ? 'Head Admin' : 'Admin';
+            roleBadge.className = `roleBadge ${this.userRole}`;
+            
+            // Show permissions tab only for head admin
+            if (this.userRole === 'headAdmin') {
+                document.getElementById('permissionsTab').style.display = 'block';
+            }
         } catch (error) {
             console.error("Error loading user info:", error);
             window.location.href = '/';
@@ -405,15 +412,7 @@ class AdminPanel {
                     <label>Bio</label>
                     <textarea id="edit_bio">${item.bio || ''}</textarea>
                 </div>
-                <div class="formGroup">
-                    <label>Admin Role</label>
-                    <select id="edit_adminRole">
-                        <option value="user" ${item.adminRole === 'user' ? 'selected' : ''}>User</option>
-                        <option value="moderator" ${item.adminRole === 'moderator' ? 'selected' : ''}>Moderator</option>
-                        <option value="admin" ${item.adminRole === 'admin' ? 'selected' : ''}>Admin</option>
-                        ${this.userRole === 'headAdmin' ? `<option value="headAdmin" ${item.adminRole === 'headAdmin' ? 'selected' : ''}>Head Admin</option>` : ''}
-                    </select>
-                </div>
+                ${this.renderAdminRoleField(item)}
                 <div class="formGroup">
                     <label>
                         <input type="checkbox" id="edit_verified" ${item.verified ? 'checked' : ''}>
@@ -447,6 +446,36 @@ class AdminPanel {
         };
         
         return forms[type] ? forms[type](item) : '<p>Edit form not available</p>';
+    }
+
+    renderAdminRoleField(item) {
+        const baseRoles = [
+            { value: 'user', label: 'User' },
+            { value: 'moderator', label: 'Moderator' },
+            { value: 'admin', label: 'Admin' }
+        ];
+
+        const rolesMap = new Map(baseRoles.map(role => [role.value, role]));
+
+        if (this.userRole === 'headAdmin' || item.adminRole === 'headAdmin') {
+            rolesMap.set('headAdmin', { value: 'headAdmin', label: 'Head Admin' });
+        }
+
+        const roles = Array.from(rolesMap.values());
+        const isLockedHeadAdmin = item.adminRole === 'headAdmin' && this.userRole !== 'headAdmin';
+
+        const options = roles.map(role => `
+            <option value="${role.value}" ${item.adminRole === role.value ? 'selected' : ''}>${role.label}</option>
+        `).join('');
+
+        return `
+            <div class="formGroup">
+                <label>Admin Role${isLockedHeadAdmin ? ' (view only)' : ''}</label>
+                <select id="edit_adminRole" ${isLockedHeadAdmin ? 'disabled' : ''} data-locked-role="${isLockedHeadAdmin ? item.adminRole : ''}">
+                    ${options}
+                </select>
+            </div>
+        `;
     }
 
     async saveChanges() {
@@ -494,12 +523,21 @@ class AdminPanel {
 
     getFormData(type) {
         const extractors = {
-            users: () => ({
-                username: document.getElementById('edit_username').value,
-                bio: document.getElementById('edit_bio').value,
-                adminRole: document.getElementById('edit_adminRole').value,
-                verified: document.getElementById('edit_verified').checked
-            }),
+            users: () => {
+                const adminRoleSelect = document.getElementById('edit_adminRole');
+                const lockedRole = adminRoleSelect?.dataset.lockedRole;
+                const fallbackRole = this.editingItem?.item?.adminRole ?? 'user';
+                const resolvedRole = lockedRole && lockedRole.length > 0
+                    ? lockedRole
+                    : (adminRoleSelect?.value ?? fallbackRole);
+
+                return {
+                    username: document.getElementById('edit_username').value,
+                    bio: document.getElementById('edit_bio').value,
+                    adminRole: resolvedRole,
+                    verified: document.getElementById('edit_verified').checked
+                };
+            },
             posts: () => ({
                 title: document.getElementById('edit_title').value,
                 content: document.getElementById('edit_content').value
