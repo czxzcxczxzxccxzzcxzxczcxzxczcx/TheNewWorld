@@ -88,9 +88,24 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 const profileImage = gebid("profileImage");
                 const profileName = gebid("profileName");
+                const profileMeta = gebid('profileMeta');
+                const profileLink = document.getElementById('openProfile');
 
                 profileImage.src = recipient.pfp || "/src/default.png"; // Use default if no image
                 setVerifiedUsername(profileName, recipient.username || "Unknown User", !!recipient.verified);
+
+                if (profileMeta) {
+                    const bioPreview = (recipient.bio || '').trim();
+                    const tagline = bioPreview
+                        ? `${bioPreview.length > 60 ? bioPreview.slice(0, 60).trim() + '…' : bioPreview}`
+                        : `@${recipient.username || recipient.accountNumber}`;
+                    profileMeta.textContent = tagline;
+                    profileMeta.title = bioPreview || tagline;
+                }
+
+                if (profileLink) {
+                    profileLink.href = `/profile/${recipient.accountNumber}`;
+                }
             } else {
                 console.error("Failed to fetch recipient info:", data.message);
             }
@@ -377,7 +392,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    function scrollToBottom() {homePanel.scrollTop = homePanel.scrollHeight;}
+    function scrollToBottom() {
+        if (!homePanel) return;
+        requestAnimationFrame(() => {
+            homePanel.scrollTop = homePanel.scrollHeight;
+        });
+    }
 
     async function sendMessage(content) {
         try {
@@ -401,44 +421,72 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Create the send message box outside the homePanel
     function setupInputBox() {
-        if (!document.querySelector('.inputContainer')) {
-            const inputContainer = document.createElement('div');
+        let inputContainer = document.querySelector('.inputContainer');
+        if (!inputContainer) {
             const dmContainer = gebid('dmContainer');
+            inputContainer = document.createElement('div');
             inputContainer.className = 'inputContainer';
 
-            const messageInput = document.createElement('textarea');
-            messageInput.id = 'messageInput';
-            messageInput.placeholder = 'Type your message...';
+            const messageInputEl = document.createElement('textarea');
+            messageInputEl.id = 'messageInput';
+            messageInputEl.placeholder = 'Type your message...';
+            messageInputEl.rows = 1;
+            messageInputEl.autocomplete = 'off';
+            messageInputEl.autocapitalize = 'sentences';
+            messageInputEl.spellcheck = true;
 
-            const sendButton = document.createElement('button');
-            sendButton.id = 'sendButton';
-            sendButton.textContent = 'Send';
+            const sendButtonEl = document.createElement('button');
+            sendButtonEl.id = 'sendButton';
+            sendButtonEl.type = 'button';
+            sendButtonEl.setAttribute('aria-label', 'Send message');
+            sendButtonEl.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/></svg><span>Send</span>';
 
-            inputContainer.appendChild(messageInput);
-            inputContainer.appendChild(sendButton);
-            dmContainer.appendChild(inputContainer); // Append to the document body
+            inputContainer.appendChild(messageInputEl);
+            inputContainer.appendChild(sendButtonEl);
+            dmContainer.appendChild(inputContainer);
+        }
 
-            // Add event listener to send button
-            sendButton.addEventListener('click', () => {
-                const content = messageInput.value.trim();
-                if (content) {
-                    sendMessage(content);
-                    messageInput.value = ''; // Clear the input box
-                }
-            });
+        const messageInput = gebid('messageInput');
+        const sendButton = gebid('sendButton');
+        if (!(messageInput && sendButton)) return;
 
-            // Add event listener for Enter key
+        messageInput.setAttribute('rows', '1');
+        messageInput.setAttribute('maxlength', '4000');
+
+        const autoResize = () => {
+            messageInput.style.height = 'auto';
+            const minHeight = 48;
+            const newHeight = Math.max(messageInput.scrollHeight, minHeight);
+            messageInput.style.height = `${Math.min(newHeight, 240)}px`;
+        };
+
+        const handleSend = () => {
+            const content = messageInput.value.trim();
+            if (!content) return;
+            sendMessage(content);
+            messageInput.value = '';
+            autoResize();
+        };
+
+        if (!sendButton.dataset.bound) {
+            sendButton.addEventListener('click', handleSend);
+            sendButton.dataset.bound = 'true';
+        }
+
+        if (!messageInput.dataset.bound) {
             messageInput.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter' && !event.shiftKey) {
                     event.preventDefault();
-                    const content = messageInput.value.trim();
-                    if (content) {
-                        sendMessage(content);
-                        messageInput.value = '';
-                    }
+                    handleSend();
                 }
             });
+
+            messageInput.addEventListener('input', autoResize);
+            messageInput.addEventListener('focus', autoResize);
+            messageInput.dataset.bound = 'true';
         }
+
+        autoResize();
     }
 
     // Ensure the input box is set up after the DOM is loaded
