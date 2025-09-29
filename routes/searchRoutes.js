@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Post, User } = require('../utils/database/database');
+const { resolveVerificationFlags } = require('../utils/verification');
 
 // Ensure the app uses JSON middleware in the main server file (not shown here)
 
@@ -31,11 +32,15 @@ router.post('/searchPosts', async (req, res) => {
         const postsWithUsernames = await Promise.all(posts.map(async (post) => {
             try {
                 const user = await User.findOne({ accountNumber: post.accountNumber });
+                const flags = resolveVerificationFlags(user || {});
                 return {
                     ...post.toObject(),
                     username: user ? user.username : 'Unknown',
                     pfp: user ? user.pfp : null,
-                    userVerified: !!user?.verified,
+                    userVerified: flags.displayVerified,
+                    userDisplayVerified: flags.displayVerified,
+                    userActualVerified: flags.actualVerified,
+                    userVerificationVisible: flags.verificationVisible,
                     date: post.createdAt || new Date()
                 };
             } catch (err) {
@@ -45,6 +50,9 @@ router.post('/searchPosts', async (req, res) => {
                     username: 'Unknown',
                     pfp: null,
                     userVerified: false,
+                    userDisplayVerified: false,
+                    userActualVerified: false,
+                    userVerificationVisible: false,
                     date: post.createdAt || new Date()
                 };
             }
@@ -68,8 +76,23 @@ router.post('/searchUsers', async (req, res) => {
         // Find users whose username starts with the search data, case-insensitive
         const users = await User.find({
             username: { $regex: '^' + data, $options: 'i' }
-    }, 'username pfp accountNumber verified bio'); // Only return necessary fields
-        res.json({ success: true, users });
+        }, 'username pfp accountNumber verified verificationVisible bio').lean();
+
+        const usersWithFlags = users.map(user => {
+            const flags = resolveVerificationFlags(user);
+            return {
+                username: user.username,
+                pfp: user.pfp,
+                accountNumber: user.accountNumber,
+                bio: user.bio,
+                verified: flags.displayVerified,
+                displayVerified: flags.displayVerified,
+                actualVerified: flags.actualVerified,
+                verificationVisible: flags.verificationVisible
+            };
+        });
+
+        res.json({ success: true, users: usersWithFlags });
     } catch (error) {
         console.error('Error searching users:', error);
         res.status(500).json({ success: false, message: 'Internal server error.' });

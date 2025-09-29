@@ -1,6 +1,6 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderBar, initializeGlobalButtons, applyTheme, initializeTheme } from './utils/renderBar.js';
-import { initializeAuth, AuthManager } from './utils/auth.js';
+import { initializeAuth, authManager } from './utils/auth.js';
 import { setVerifiedUsername } from './utils/verifiedBadge.js';
 
 // Initialize navigation
@@ -27,15 +27,55 @@ class SettingsManager {
 
     async loadUserData() {
         this.user = await initializeAuth();
+        if (this.user) {
+            const visibility = this.user.verificationVisible !== false;
+            const actualVerified = !!this.user.verified;
+            this.user.verificationVisible = visibility;
+            this.user.displayVerified = typeof this.user.displayVerified === 'boolean'
+                ? this.user.displayVerified
+                : (actualVerified && visibility);
+        }
         initializeGlobalButtons(this.user.accountNumber);
     }
 
     updateUI() {
         // Update current values in the UI
-    const currentUsernameEl = document.getElementById('currentUsername');
-    setVerifiedUsername(currentUsernameEl, this.user.username, !!this.user.verified);
+        const currentUsernameEl = document.getElementById('currentUsername');
+        const verifiedBadgeSetting = document.getElementById('verifiedBadgeSetting');
+        const verifiedBadgeToggle = document.getElementById('verifiedBadgeToggle');
+        const verifiedBadgeStatus = document.getElementById('verifiedBadgeStatus');
+        const toggleLabel = verifiedBadgeSetting?.querySelector('.toggleLabel');
+
+        const actualVerified = !!this.user?.verified;
+        const visibility = this.user?.verificationVisible !== false;
+        const displayVerified = typeof this.user?.displayVerified === 'boolean'
+            ? this.user.displayVerified
+            : (actualVerified && visibility);
+
+        this.user.displayVerified = displayVerified;
+
+        setVerifiedUsername(currentUsernameEl, this.user.username, displayVerified);
         document.getElementById('currentBio').textContent = this.user.bio || 'No bio set';
         document.getElementById('currentProfilePicture').src = this.user.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
+
+        if (verifiedBadgeSetting) {
+            if (actualVerified) {
+                verifiedBadgeSetting.style.display = '';
+                if (verifiedBadgeToggle) {
+                    verifiedBadgeToggle.checked = visibility;
+                }
+                if (verifiedBadgeStatus) {
+                    verifiedBadgeStatus.textContent = visibility
+                        ? 'Your verified badge is visible to other users.'
+                        : 'Your verified badge is currently hidden from other users.';
+                }
+                if (toggleLabel) {
+                    toggleLabel.textContent = visibility ? 'Badge visible' : 'Badge hidden';
+                }
+            } else {
+                verifiedBadgeSetting.style.display = 'none';
+            }
+        }
     }
 
     applyUserTheme() {
@@ -62,6 +102,73 @@ class SettingsManager {
 
         // Theme management
         this.setupThemeSelector();
+        this.setupVerificationToggle();
+    }
+
+    setupVerificationToggle() {
+        const toggleSetting = document.getElementById('verifiedBadgeSetting');
+        const toggleInput = document.getElementById('verifiedBadgeToggle');
+        const statusEl = document.getElementById('verifiedBadgeStatus');
+        const toggleLabel = toggleSetting?.querySelector('.toggleLabel');
+
+        if (!toggleSetting || !toggleInput) {
+            return;
+        }
+
+        toggleInput.addEventListener('change', async (event) => {
+            const previousVisibility = this.user.verificationVisible !== false;
+            const desiredVisibility = event.target.checked;
+
+            if (!this.user?.verified) {
+                // Should not happen, but guard against accidental toggles when not verified
+                event.target.checked = false;
+                return;
+            }
+
+            toggleInput.disabled = true;
+            if (toggleLabel) {
+                toggleLabel.textContent = 'Updating…';
+            }
+            if (statusEl) {
+                statusEl.textContent = 'Saving your preference...';
+            }
+
+            try {
+                const response = await apiRequest('/api/updateSettings', 'POST', {
+                    verificationVisible: desiredVisibility
+                });
+
+                if (!response.success) {
+                    throw new Error(response.message || 'Failed to update verified badge visibility');
+                }
+
+                const updatedUser = response.user || {};
+                this.user.verificationVisible = updatedUser.verificationVisible !== false;
+                this.user.displayVerified = typeof updatedUser.displayVerified === 'boolean'
+                    ? updatedUser.displayVerified
+                    : (this.user.verified && this.user.verificationVisible);
+
+                if (typeof updatedUser.verified === 'boolean') {
+                    this.user.verified = updatedUser.verified;
+                }
+
+                authManager.setUser({ ...this.user });
+                this.updateUI();
+
+                this.showSuccessMessage(desiredVisibility
+                    ? 'Your verified badge is visible again.'
+                    : 'Your verified badge is now hidden from others.');
+            } catch (error) {
+                console.error('Error updating verified badge visibility:', error);
+                event.target.checked = previousVisibility;
+                this.user.verificationVisible = previousVisibility;
+                this.user.displayVerified = this.user.verified && previousVisibility;
+                this.updateUI();
+                this.showErrorMessage(error.message || 'Failed to update verified badge visibility');
+            } finally {
+                toggleInput.disabled = false;
+            }
+        });
     }
 
     createModal(title, subtitle = '') {

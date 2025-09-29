@@ -9,6 +9,7 @@ const paymentRoutes = require('../routes/paymentRoutes');
 const supportRoutes = require('../routes/supportRoutes');
 const staticRoutes = require('../routes/staticRoutes');
 const moderationRoutes = require('../routes/moderationRoutes');
+const gifRoutes = require('../routes/gifRoutes');
 
 const protectedRoutes = [
     postRoutes,
@@ -20,6 +21,7 @@ const protectedRoutes = [
     paymentRoutes,
     supportRoutes,
     moderationRoutes,
+    gifRoutes,
 ];
 
 

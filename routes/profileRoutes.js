@@ -2,6 +2,7 @@ const express = require('express');
 const { User, Notification, Post, Comment, Message } = require('../utils/database/database');
 const { createNotification } = require('../utils/database/genNotification');
 const { updateUserPassword } = require('../utils/database/databaseFunctions');
+const { resolveVerificationFlags } = require('../utils/verification');
 
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 
@@ -17,6 +18,8 @@ router.get('/get/profile/:accountNumber', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+        const { actualVerified, verificationVisible, displayVerified } = resolveVerificationFlags(user);
+
         res.json({
             username: user.username,
             accountNumber: user.accountNumber,
@@ -25,7 +28,10 @@ router.get('/get/profile/:accountNumber', async (req, res) => {
             following: user.following,
             posts: user.posts,
             pfp: user.pfp,
-            verified: !!user.verified,
+            verified: displayVerified,
+            displayVerified,
+            actualVerified,
+            verificationVisible,
             adminRole: user.adminRole || 'user'
         });
     } catch (error) {
@@ -132,8 +138,9 @@ router.post('/updateSettings', async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        const update = {};
-        let usernameChanged = false;
+    const update = {};
+    let usernameChanged = false;
+    let verificationVisibilityChanged = false;
 
         if (Object.prototype.hasOwnProperty.call(req.body, 'username')) {
             const incomingUsername = req.body.username;
@@ -191,6 +198,23 @@ router.post('/updateSettings', async (req, res) => {
             }
         }
 
+        if (Object.prototype.hasOwnProperty.call(req.body, 'verificationVisible')) {
+            const incomingVisibility = req.body.verificationVisible;
+            if (typeof incomingVisibility !== 'boolean') {
+                return res.status(400).json({ success: false, message: 'Verification visibility must be a boolean value' });
+            }
+
+            if (!currentUser.verified) {
+                return res.status(403).json({ success: false, message: 'Only verified users can toggle badge visibility' });
+            }
+
+            const currentVisibility = currentUser.verificationVisible !== false;
+            if (currentVisibility !== incomingVisibility) {
+                update.verificationVisible = incomingVisibility;
+                verificationVisibilityChanged = true;
+            }
+        }
+
         if (!Object.keys(update).length) {
             return res.json({
                 success: true,
@@ -198,7 +222,10 @@ router.post('/updateSettings', async (req, res) => {
                 user: {
                     username: currentUser.username,
                     bio: currentUser.bio ?? '',
-                    pfp: currentUser.pfp ?? ''
+                    pfp: currentUser.pfp ?? '',
+                    verificationVisible: currentUser.verificationVisible !== false,
+                    displayVerified: resolveVerificationFlags(currentUser).displayVerified,
+                    verified: !!currentUser.verified
                 }
             });
         }
@@ -206,7 +233,7 @@ router.post('/updateSettings', async (req, res) => {
         const updatedUser = await User.findOneAndUpdate(
             { accountNumber },
             { $set: update },
-            { new: true, projection: { username: 1, bio: 1, pfp: 1 } }
+            { new: true, projection: { username: 1, bio: 1, pfp: 1, verificationVisible: 1 } }
         );
 
         if (!updatedUser) {
@@ -217,7 +244,26 @@ router.post('/updateSettings', async (req, res) => {
             await sessionStore.update(sessionId, { username: updatedUser.username });
         }
 
-        return res.json({ success: true, message: 'Profile updated', user: updatedUser });
+        const visibility = verificationVisibilityChanged
+            ? update.verificationVisible
+            : (updatedUser.verificationVisible !== false);
+        const visibilityFlags = resolveVerificationFlags({
+            verified: currentUser.verified,
+            verificationVisible: visibility
+        });
+
+        return res.json({
+            success: true,
+            message: 'Profile updated',
+            user: {
+                username: updatedUser.username,
+                bio: updatedUser.bio ?? '',
+                pfp: updatedUser.pfp ?? '',
+                verificationVisible: visibilityFlags.verificationVisible,
+                displayVerified: visibilityFlags.displayVerified,
+                verified: visibilityFlags.actualVerified
+            }
+        });
     } catch (error) {
         console.error("Error updating settings:", error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -268,9 +314,25 @@ router.get('/getFollowing/:userId', async (req, res) => {
         }
 
         // Fetch the list of users the current user is following
-    const followingUsers = await User.find({ accountNumber: { $in: user.following } }, 'username accountNumber pfp verified');
+        const followingUsers = await User.find(
+            { accountNumber: { $in: user.following } },
+            'username accountNumber pfp verified verificationVisible'
+        ).lean();
 
-        res.json({ success: true, following: followingUsers });
+        const formattedFollowing = followingUsers.map((followUser) => {
+            const { actualVerified, verificationVisible, displayVerified } = resolveVerificationFlags(followUser);
+            return {
+                username: followUser.username,
+                accountNumber: followUser.accountNumber,
+                pfp: followUser.pfp,
+                verified: displayVerified,
+                displayVerified,
+                actualVerified,
+                verificationVisible
+            };
+        });
+
+        res.json({ success: true, following: formattedFollowing });
     } catch (error) {
         console.error('Error fetching following users:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -291,9 +353,25 @@ router.get('/getFollowers/:userId', async (req, res) => {
         }
 
         // Fetch the list of users who follow the current user
-    const followersUsers = await User.find({ accountNumber: { $in: user.followers } }, 'username accountNumber pfp verified');
+        const followersUsers = await User.find(
+            { accountNumber: { $in: user.followers } },
+            'username accountNumber pfp verified verificationVisible'
+        ).lean();
 
-        res.json({ success: true, followers: followersUsers });
+        const formattedFollowers = followersUsers.map((followerUser) => {
+            const { actualVerified, verificationVisible, displayVerified } = resolveVerificationFlags(followerUser);
+            return {
+                username: followerUser.username,
+                accountNumber: followerUser.accountNumber,
+                pfp: followerUser.pfp,
+                verified: displayVerified,
+                displayVerified,
+                actualVerified,
+                verificationVisible
+            };
+        });
+
+        res.json({ success: true, followers: formattedFollowers });
     } catch (error) {
         console.error('Error fetching followers:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -374,13 +452,18 @@ router.post('/getUser', async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
+        const { actualVerified, verificationVisible, displayVerified } = resolveVerificationFlags(user);
+
         res.json({
             success: true,
             user: {
                 username: user.username,
                 pfp: user.pfp,
                 accountNumber: user.accountNumber,
-                verified: !!user.verified,
+                verified: displayVerified,
+                displayVerified,
+                actualVerified,
+                verificationVisible
             },
         });
     } catch (error) {

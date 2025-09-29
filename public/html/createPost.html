@@ -40,6 +40,10 @@
                 <h1 id="username">Create a Post</h1>
                 <input class="titleInput" id="titleText" type="text" placeholder="Title">
                 <textarea class="bodyInput" id="bodyText" type="text" placeholder="Body"></textarea>
+                <div class="gifControls">
+                    <button id="openGifPicker" type="button" class="postPanelButton secondary">Add GIF</button>
+                    <div id="selectedGifPreview" class="gifPreview" aria-live="polite"></div>
+                </div>
                 <button id="createPost" type="submit" class="postPanelButton">Create Post</button>
             </form>
         </div>

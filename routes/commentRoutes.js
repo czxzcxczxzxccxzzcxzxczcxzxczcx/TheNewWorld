@@ -2,6 +2,7 @@ const express = require('express');
 const { Comment, Post, User } = require('../utils/database/database');
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 const { createNotification } = require('../utils/database/genNotification');
+const { resolveVerificationFlags } = require('../utils/verification');
 const router = express.Router();
 
 const generateUniqueCommentId = async () => {
@@ -63,6 +64,8 @@ router.post('/createComment', async (req, res) => {
 
         }
 
+        const { displayVerified, verificationVisible, actualVerified } = resolveVerificationFlags(user);
+
         res.status(201).json({
             success: true,
             message: 'Comment created successfully',
@@ -70,7 +73,10 @@ router.post('/createComment', async (req, res) => {
                 ...newComment.toObject(),
                 username: user.username,
                 pfp: user.pfp,
-                verified: !!user.verified,
+                verified: displayVerified,
+                displayVerified,
+                actualVerified,
+                verificationVisible
             },
         });
     } catch (error) {
@@ -98,13 +104,20 @@ router.post('/deleteComment', async (req, res) => {
                 return res.status(404).json({ success: false, message: 'Comment not found' });
             }
 
-            if (existingComment.accountNumber !== accountNumber) {
+            const post = await Post.findOne({ postId: existingComment.postId });
+            if (!post) {
+                return res.status(404).json({ success: false, message: 'Post associated with comment not found' });
+            }
+
+            const isCommentOwner = existingComment.accountNumber === accountNumber;
+            const isPostOwner = post.accountNumber === accountNumber;
+
+            if (!isCommentOwner && !isPostOwner) {
                 return res.status(403).json({ success: false, message: 'You are not authorized to delete this comment' });
             }
 
             // Remove comment from the post's replies array
-            const post = await Post.findOne({ postId: existingComment.postId });
-            if (post && Array.isArray(post.replies)) {
+            if (Array.isArray(post.replies)) {
                 post.replies = post.replies.filter(replyId => replyId !== commentId);
                 await post.save();
             }
@@ -135,11 +148,15 @@ router.post('/getComments', async (req, res) => {
         const commentsWithUserData = await Promise.all(
             comments.map(async (comment) => {
                 const user = await User.findOne({ accountNumber: comment.accountNumber });
+                const flags = resolveVerificationFlags(user || {});
                 return {
                     comment,
                     username: user?.username || null,
                     pfp: user?.pfp || null,
-                    verified: !!user?.verified,
+                    verified: flags.displayVerified,
+                    displayVerified: flags.displayVerified,
+                    actualVerified: flags.actualVerified,
+                    verificationVisible: flags.verificationVisible
                 };
             })
         );

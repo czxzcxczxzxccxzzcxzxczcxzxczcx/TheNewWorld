@@ -6,6 +6,7 @@ const { hashPassword, comparePassword } = require('../utils/hashing');
 const crypto = require('crypto');
 const passport = require('../utils/passport');
 const router = express.Router();
+const { resolveVerificationFlags } = require('../utils/verification');
 
 // Function to generate a unique account number
 const generateAccountNumber = async () => {
@@ -360,6 +361,8 @@ router.get('/getUserInfo', async (req, res) => {
         } : null;
 
         // Return full user data (excluding sensitive information like password)
+        const { actualVerified, verificationVisible, displayVerified } = resolveVerificationFlags(user);
+
         const userInfo = {
             _id: user._id,
             username: user.username,
@@ -370,7 +373,9 @@ router.get('/getUserInfo', async (req, res) => {
             posts: user.posts,
             pfp: user.pfp,
             theme: user.theme,
-            verified: !!user.verified,
+            verified: actualVerified,
+            verificationVisible,
+            displayVerified,
             adminRole: user.adminRole || 'user',
             moderation: {
                 activeWarning: sanitizeWarning(activeWarning),

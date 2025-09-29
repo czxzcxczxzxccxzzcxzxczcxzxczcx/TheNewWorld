@@ -1,6 +1,7 @@
 import { apiRequest } from './apiRequest.js';
 import { createElementWithClass } from './createElement.js';
 import { setVerifiedUsername } from './verifiedBadge.js';
+import { openGiphyPicker } from './giphyPicker.js';
 
 function showDeleteConfirmation(title, message, onConfirm) {
     // Create confirmation modal
@@ -271,6 +272,9 @@ export function renderPost(post, username, pfp, verified, from, fromAccountNumbe
     const commentDiv = createElementWithClass('div', 'commentSection');
     const commentInputDiv = createElementWithClass('div', 'commentInputDiv');
     const commentTextBox = createElementWithClass('textarea', 'commentTextBox');
+    const commentGifControls = createElementWithClass('div', 'commentGifControls');
+    const commentGifButton = createElementWithClass('button', 'commentGifButton');
+    const commentGifPreview = createElementWithClass('div', 'commentGifPreview');
     const commentButton = createElementWithClass('button', 'commentButton');
     const toggleCommentsButton = createElementWithClass('button', 'postButton postEditButton');
 
@@ -281,8 +285,17 @@ export function renderPost(post, username, pfp, verified, from, fromAccountNumbe
      apiRequest('/api/getComments', 'POST', { postId: post.postId })
         .then((response) => {
             if (response.success) {
-                response.comments.forEach(({ comment, username, pfp, verified }) => {
-                    renderComment({ ...comment, username, pfp, verified }, commentDiv, fromAccountNumber);
+                response.comments.forEach(({ comment, username, pfp, verified, displayVerified, actualVerified, verificationVisible }) => {
+                    const resolvedVerified = typeof displayVerified === 'boolean' ? displayVerified : verified;
+                    renderComment({
+                        ...comment,
+                        username,
+                        pfp,
+                        verified: resolvedVerified,
+                        displayVerified,
+                        actualVerified,
+                        verificationVisible
+                    }, commentDiv, fromAccountNumber, post.accountNumber);
                 });
             } else {
                 console.error('Failed to fetch comments:', response.message);
@@ -323,11 +336,15 @@ export function renderPost(post, username, pfp, verified, from, fromAccountNumbe
 
     commentDiv.style.display = 'none';
     commentButton.textContent = 'Post Comment';
+    commentButton.type = 'button';
+    commentGifButton.type = 'button';
     toggleCommentsButton.textContent = 'Comments';
     toggleCommentsButton.style.color = '#ffffff'
 
-    commentInputDiv.appendChild(commentTextBox);
-    commentInputDiv.appendChild(commentButton);
+    commentGifPreview.setAttribute('aria-live', 'polite');
+    commentGifControls.append(commentGifButton, commentGifPreview);
+
+    commentInputDiv.append(commentTextBox, commentGifControls, commentButton);
     commentDiv.appendChild(commentInputDiv);
     postDiv.appendChild(commentDiv);
     buttonsDiv.appendChild(toggleCommentsButton); 
@@ -388,9 +405,72 @@ export function renderPost(post, username, pfp, verified, from, fromAccountNumbe
         {window.location.href = `/profile/${post.accountNumber}`;  
     });
 
+    let selectedCommentGif = null;
+
+    function renderCommentGifPreview() {
+        commentGifPreview.innerHTML = '';
+
+        if (!selectedCommentGif?.url) {
+            commentGifPreview.textContent = 'No GIF selected';
+            commentGifButton.textContent = 'Add GIF';
+            commentGifControls.classList.remove('has-selection');
+            return;
+        }
+
+        commentGifControls.classList.add('has-selection');
+        commentGifButton.textContent = 'Change GIF';
+
+        const img = document.createElement('img');
+        img.src = selectedCommentGif.preview || selectedCommentGif.url;
+        img.alt = selectedCommentGif.title || 'Selected GIF';
+        commentGifPreview.appendChild(img);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'commentGifRemove';
+        removeBtn.textContent = 'Remove';
+        removeBtn.addEventListener('click', () => {
+            selectedCommentGif = null;
+            renderCommentGifPreview();
+        });
+        commentGifPreview.appendChild(removeBtn);
+    }
+
+    renderCommentGifPreview();
+
+    commentGifButton.addEventListener('click', () => {
+        openGiphyPicker({
+            onSelect: (gif) => {
+                selectedCommentGif = gif;
+                if (commentTextBox && gif?.url && !commentTextBox.value.includes(gif.url)) {
+                    if (commentTextBox.value && !commentTextBox.value.endsWith('\n')) {
+                        commentTextBox.value += '\n';
+                    }
+                    commentTextBox.value += `<${gif.url}>\n`;
+                }
+                renderCommentGifPreview();
+            }
+        });
+    });
+
+    commentTextBox.addEventListener('input', () => {
+        if (selectedCommentGif?.url && !commentTextBox.value.includes(selectedCommentGif.url)) {
+            selectedCommentGif = null;
+            renderCommentGifPreview();
+        }
+    });
+
     commentButton.addEventListener('click', async () => {
-        const commentContent = commentTextBox.value.trim();
-        if (!commentContent) {
+        const originalValue = commentTextBox.value || '';
+        let commentContent = originalValue;
+
+        if (selectedCommentGif?.url && !commentContent.includes(selectedCommentGif.url)) {
+            const separator = commentContent.trim() ? '\n' : '';
+            commentContent = `${commentContent}${separator}<${selectedCommentGif.url}>`;
+        }
+
+        const trimmedContent = (commentContent || '').trim();
+        if (!trimmedContent) {
             alert('Comment cannot be empty.');
             return;
         }
@@ -398,16 +478,18 @@ export function renderPost(post, username, pfp, verified, from, fromAccountNumbe
             const response = await apiRequest('/api/createComment', 'POST', {
                 accountNumber: fromAccountNumber,
                 postId: post.postId,
-                content: commentContent,
+                content: trimmedContent,
             });
 
             if (response.success) {
                 alert('Comment posted successfully.');
                 commentTextBox.value = '';
+                selectedCommentGif = null;
+                renderCommentGifPreview();
 
                 const newComment = response.comment;
 
-                renderComment(newComment, commentDiv, fromAccountNumber);
+                renderComment(newComment, commentDiv, fromAccountNumber, post.accountNumber);
             } else {
                 alert('Failed to post comment.');
             }
@@ -489,7 +571,7 @@ function setPostAttributes(postDiv,postDetailsDiv, postImage, usernameTitle, tit
     buttonsDiv.append(likeButton, repostButton);
 }
 
-function renderComment(comment, commentDiv, loggedInAccountNumber) {
+function renderComment(comment, commentDiv, loggedInAccountNumber, postOwnerAccountNumber) {
     const commentElement = createElementWithClass('div', 'comment');
     const postDetailsDiv = createElementWithClass('div', 'postCommentDetails');
     const postImage = createElementWithClass('img', 'pfp');
@@ -502,8 +584,16 @@ function renderComment(comment, commentDiv, loggedInAccountNumber) {
     const buttonsDiv = createElementWithClass('div', 'commentButtons');
 
     postImage.src = comment.pfp || 'https://cdn.pfps.gg/pfps/9463-little-cat.png';
-    setVerifiedUsername(usernameTitle, comment.username || 'Anonymous', !!comment.verified);
-    contentP.textContent = comment.content || 'No content';
+    const commentDisplayVerified = typeof comment.displayVerified === 'boolean'
+        ? comment.displayVerified
+        : !!comment.verified;
+    setVerifiedUsername(usernameTitle, comment.username || 'Anonymous', commentDisplayVerified);
+    const rawCommentContent = comment.content || '';
+    if (rawCommentContent.trim()) {
+        contentP.innerHTML = processContent(rawCommentContent);
+    } else {
+        contentP.textContent = 'No content';
+    }
     titleH1.textContent = comment.createdAt ? formatDate(comment.createdAt) : 'Unknown date';
 
     // Create like and repost buttons
@@ -521,7 +611,12 @@ function renderComment(comment, commentDiv, loggedInAccountNumber) {
     buttonsDiv.append(likeButton, repostButton);
 
     // Add delete button if user owns the comment
-    if (comment.accountNumber === loggedInAccountNumber) {
+    const canDelete = loggedInAccountNumber && (
+        comment.accountNumber === loggedInAccountNumber ||
+        postOwnerAccountNumber === loggedInAccountNumber
+    );
+
+    if (canDelete) {
         const deleteButton = createElementWithClass('button', 'deleteButton');
         deleteButton.innerHTML = '×';
         deleteButton.setAttribute('title', 'Delete comment');

@@ -40,6 +40,7 @@ const userSchema = new mongoose.Schema({
     openDM: { type: [String], default: [] },
     adminRole: { type: String, enum: ['user', 'moderator', 'admin', 'headAdmin'], default: 'user' },
     verified: { type: Boolean, default: false },
+    verificationVisible: { type: Boolean, default: true },
     theme: { type: String, enum: ['light', 'dark', 'auto'], default: 'light' },
     warnings: { type: [warningSchema], default: [] },
     bans: { type: [banSchema], default: [] },

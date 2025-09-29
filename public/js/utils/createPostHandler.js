@@ -1,4 +1,5 @@
 import { apiRequest } from './apiRequest.js';
+import { openGiphyPicker } from './giphyPicker.js';
 
 export function initializeCreatePost(accountNumber) {
     const createPostDiv = document.createElement('div');
@@ -49,6 +50,10 @@ export function initializeCreatePost(accountNumber) {
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                 <button id="createPost" type="submit" class="postPanelButton">Create Post</button>
                 <button id="togglePoll" type="button" style="padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">📊 Add Poll</button>
+            </div>
+            <div class="gifControls">
+                <button id="openGifPicker" type="button" class="postPanelButton secondary">Add GIF</button>
+                <div id="selectedGifPreview" class="gifPreview" aria-live="polite"></div>
             </div>
             
             <div class="imageUploading">
@@ -157,12 +162,60 @@ export function initializeCreatePost(accountNumber) {
         }
     });
 
+    let selectedGif = null;
+    const gifPreviewEl = document.getElementById('selectedGifPreview');
+    const bodyTextArea = document.getElementById('bodyText');
+
+    function renderGifPreview() {
+        if (!gifPreviewEl) return;
+        gifPreviewEl.innerHTML = '';
+
+        if (!selectedGif?.url) {
+            gifPreviewEl.textContent = 'No GIF selected';
+            return;
+        }
+
+        const img = document.createElement('img');
+        img.src = selectedGif.preview || selectedGif.url;
+        img.alt = selectedGif.title || 'Selected GIF';
+        gifPreviewEl.appendChild(img);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'postPanelButton secondary';
+        removeBtn.textContent = 'Remove GIF';
+        removeBtn.addEventListener('click', () => {
+            selectedGif = null;
+            renderGifPreview();
+        });
+        gifPreviewEl.appendChild(removeBtn);
+    }
+
+    renderGifPreview();
+
+    const gifButton = document.getElementById('openGifPicker');
+    if (gifButton) {
+        gifButton.addEventListener('click', () => {
+            openGiphyPicker({
+                onSelect: (gif) => {
+                    selectedGif = gif;
+                    renderGifPreview();
+                    if (bodyTextArea && gif?.url && !bodyTextArea.value.includes(gif.url)) {
+                        if (bodyTextArea.value && !bodyTextArea.value.endsWith('\n')) bodyTextArea.value += '\n';
+                        bodyTextArea.value += `<${gif.url}>\n`;
+                        updatePreview();
+                    }
+                }
+            });
+        });
+    }
+
     document.getElementById('createPost').addEventListener('click', async function (event) {
         event.preventDefault();
 
         // const title = document.getElementById('titleText').value;
         const title = " ";
-        const content = document.getElementById('bodyText').value;
+    let content = bodyTextArea.value || '';
         
         // Prepare poll data if enabled
         let pollData = null;
@@ -192,11 +245,19 @@ export function initializeCreatePost(accountNumber) {
         }
         
         // Validate content - allow posts with poll only, content only, or both
+        if (selectedGif?.url && !content.includes(selectedGif.url)) {
+            const separator = content.trim() ? '\n' : '';
+            content = `${content}${separator}<${selectedGif.url}>`;
+        }
+
         if ((content && content.trim()) || pollData) {
             try {
                 const postData = { accountNumber, title, content };
                 if (pollData) {
                     postData.poll = pollData;
+                }
+                if (selectedGif?.url) {
+                    postData.imageUrl = selectedGif.url;
                 }
                 
                 const data = await apiRequest('/api/createPost', 'POST', postData);
@@ -212,7 +273,6 @@ export function initializeCreatePost(accountNumber) {
     });
 
     // Live preview for <url> images in post body
-    const bodyText = document.getElementById('bodyText');
     const postPreview = document.getElementById('postPreview');
     function processContent(content) {
         // Make mentions clickable
@@ -261,9 +321,9 @@ export function initializeCreatePost(accountNumber) {
         return processedContent;
     }
     function updatePreview() {
-        postPreview.innerHTML = processContent(bodyText.value);
+        postPreview.innerHTML = processContent(bodyTextArea.value);
     }
-    bodyText.addEventListener('input', updatePreview);
+    bodyTextArea.addEventListener('input', updatePreview);
     // Initial preview
     updatePreview();
 }

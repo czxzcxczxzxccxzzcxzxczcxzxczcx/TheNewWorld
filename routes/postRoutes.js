@@ -4,6 +4,7 @@ const { Post, User } = require('../utils/database/database');
 const sessionStore = require('../utils/database/sessionStore'); // Import sessionStore
 const { createNotification } = require('../utils/database/genNotification');
 const router = express.Router();
+const { resolveVerificationFlags } = require('../utils/verification');
 const multer = require('multer');
 const { s3Client, PutObjectCommand } = require('../utils/awsS3Client');
 const upload = multer({ storage: multer.memoryStorage() });
@@ -113,6 +114,7 @@ router.post('/getPost', async (req, res) => {
             if (user) {
                 const username = user.username;
                 const pfp = user.pfp;
+                const { actualVerified, verificationVisible, displayVerified } = resolveVerificationFlags(user);
                 return res.status(201).json({
                     success: true,
                     message: 'Post retrieved successfully',
@@ -120,7 +122,10 @@ router.post('/getPost', async (req, res) => {
                     username,
                     pfp,
                     accountNumber: user.accountNumber,
-                    verified: !!user.verified,
+                    verified: displayVerified,
+                    displayVerified,
+                    actualVerified,
+                    verificationVisible,
                 });
             }
         }
@@ -411,13 +416,28 @@ router.post('/getUserPosts', async (req, res) => {
         }
 
         const posts = await Post.find({ accountNumber });
-        const owner = await User.findOne({ accountNumber }, { verified: 1 });
+        const owner = await User.findOne({ accountNumber }, { verified: 1, verificationVisible: 1 });
+        const ownerFlags = resolveVerificationFlags(owner || {});
 
         if (posts.length === 0) {
-            return res.json({ success: true, posts: [], verified: !!owner?.verified });
+            return res.json({
+                success: true,
+                posts: [],
+                verified: ownerFlags.displayVerified,
+                displayVerified: ownerFlags.displayVerified,
+                actualVerified: ownerFlags.actualVerified,
+                verificationVisible: ownerFlags.verificationVisible
+            });
         }
 
-        res.json({ success: true, posts, verified: !!owner?.verified });
+        res.json({
+            success: true,
+            posts,
+            verified: ownerFlags.displayVerified,
+            displayVerified: ownerFlags.displayVerified,
+            actualVerified: ownerFlags.actualVerified,
+            verificationVisible: ownerFlags.verificationVisible
+        });
     } catch (err) {
         res.status(500).json({ success: false, message: "Error fetching posts" });
     }
@@ -534,13 +554,17 @@ router.post('/getUserReposts', async (req, res) => {
         const postsWithUserData = await Promise.all(
             repostedPosts.map(async (post) => {
                 const postOwner = await User.findOne({ accountNumber: post.accountNumber });
+                const { actualVerified, verificationVisible, displayVerified } = resolveVerificationFlags(postOwner || {});
                 return {
                     success: true,
                     message: 'Post retrieved successfully',
                     post,
                     username: postOwner?.username || null,
                     pfp: postOwner?.pfp || null,
-                    verified: !!postOwner?.verified,
+                    verified: displayVerified,
+                    displayVerified,
+                    actualVerified,
+                    verificationVisible,
                 };
             })
         );

@@ -1194,10 +1194,42 @@ body.panel-open::before {
   transition: all var(--transition-fast);
 }
 
-.postPanel .postPanelButton:hover {
+.postPanel .postPanelButton.secondary {
+  background: var(--secondary-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.postPanel .postPanelButton:not(.secondary):hover {
   background: var(--accent-blue-hover);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+}
+
+.postPanel .postPanelButton.secondary:hover {
+  background: var(--hover-bg);
+  box-shadow: var(--shadow-sm);
+}
+
+.gifControls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin: var(--space-md) 0;
+}
+
+.gifPreview {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-secondary);
+}
+
+.gifPreview img {
+  max-height: 80px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .postPanel #postPreview {
@@ -1467,7 +1499,9 @@ body.panel-open::before {
 
 .commentSection .commentInputDiv {
   display: flex;
-  gap: var(--space-md);
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-sm);
   margin-top: var(--space-lg);
 }
 
@@ -1498,10 +1532,72 @@ body.panel-open::before {
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
+  align-self: flex-end;
+  margin-top: var(--space-xs);
 }
 
 .commentSection .commentButton:hover {
   background: var(--accent-blue-hover);
+}
+
+.commentGifControls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  color: var(--text-secondary);
+  width: 100%;
+}
+
+.commentGifControls.has-selection {
+  color: var(--text-primary);
+}
+
+.commentGifButton {
+  padding: var(--space-xs) var(--space-md);
+  background: var(--secondary-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.commentGifButton:hover {
+  background: var(--hover-bg);
+  box-shadow: var(--shadow-sm);
+}
+
+.commentGifPreview {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.85rem;
+}
+
+.commentGifPreview img {
+  max-height: 72px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.commentGifRemove {
+  padding: var(--space-xs) var(--space-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.commentGifRemove:hover {
+  color: var(--error-red);
+  border-color: var(--error-red);
 }
 
 /* ===== NOTIFICATIONS PANEL ===== */
@@ -3757,12 +3853,12 @@ textarea:focus-visible {
 /* Long press visual feedback */
 .post {
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .post:active {
-  transform: scale(0.98);
-  box-shadow: var(--shadow-sm);
+  transform: scale(0.995);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.14);
 }
 
 /* Print styles */
@@ -3777,6 +3873,170 @@ textarea:focus-visible {
   .post {
     border: 1px solid #000;
     break-inside: avoid;
+  }
+}
+
+/* ===== GIF PICKER OVERLAY ===== */
+body.gif-picker-open {
+  overflow: hidden;
+}
+
+.gif-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 15, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: var(--space-lg);
+}
+
+.gif-picker-modal {
+  width: min(720px, 100%);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.gif-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gif-picker-title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.gif-picker-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.75rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color var(--transition-fast);
+}
+
+.gif-picker-close:hover {
+  color: var(--text-primary);
+}
+
+.gif-picker-search {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.gif-picker-search input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  background: var(--secondary-bg);
+  color: var(--text-primary);
+}
+
+.gif-picker-search-btn,
+.gif-picker-trending-btn {
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-lg);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.gif-picker-search-btn {
+  background: var(--accent-blue);
+  color: white;
+}
+
+.gif-picker-trending-btn {
+  background: var(--secondary-bg);
+  color: var(--text-primary);
+}
+
+.gif-picker-search-btn:hover,
+.gif-picker-trending-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.gif-picker-status {
+  min-height: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.gif-picker-status[data-tone="error"] {
+  color: var(--error-red);
+}
+
+.gif-picker-status[data-tone="success"] {
+  color: var(--success-green);
+}
+
+.gif-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-md);
+  overflow-y: auto;
+  padding-right: var(--space-sm);
+}
+
+.gif-picker-item {
+  border: none;
+  background: var(--secondary-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.gif-picker-item img {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  pointer-events: none;
+}
+
+.gif-picker-item:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: var(--shadow-md);
+}
+
+.gif-picker-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-secondary);
+  padding: var(--space-xl);
+}
+
+@media (max-width: 640px) {
+  .gif-picker-modal {
+    padding: var(--space-lg);
+  }
+
+  .gif-picker-search {
+    flex-direction: column;
+  }
+
+  .gif-picker-search-btn,
+  .gif-picker-trending-btn {
+    width: 100%;
   }
 }
 
@@ -3847,6 +4107,83 @@ textarea:focus-visible {
   border-radius: var(--radius-lg);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid transparent;
+}
+
+.settingToggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  user-select: none;
+}
+
+.settingToggle input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+}
+
+.toggleSlider {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background: var(--border-color);
+  border-radius: 999px;
+  transition: background var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
+}
+
+.toggleSlider::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: var(--card-bg);
+  border-radius: 50%;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.settingToggle input:checked + .toggleSlider {
+  background: var(--accent-blue);
+  box-shadow: 0 0 0 4px rgba(29, 155, 240, 0.15);
+}
+
+.settingToggle input:checked + .toggleSlider::after {
+  transform: translateX(22px);
+}
+
+.settingToggle input:focus-visible + .toggleSlider {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+.toggleLabel {
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.settingToggle.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.settingToggle.disabled .toggleLabel {
+  color: var(--text-muted);
+}
+
+.settingToggle input:disabled + .toggleSlider {
+  cursor: not-allowed;
+  background: var(--border-color);
+}
+
+.settingToggle input:disabled + .toggleSlider::after {
+  background: var(--hover-bg);
 }
 
 /* Theme Selector Styles */

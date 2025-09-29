@@ -19,6 +19,7 @@ Features
   - Interactive Polls: Create polls with 2-10 options, multiple vote support, time limits, and real-time voting
   - Enhanced Post Editing: Edit posts with poll management, image uploads, and live preview functionality
   - Image Embedding: Auto-embed images via URL syntax or AWS S3 CDN uploads with CloudFront delivery
+  - GIF Library: Search trending or tagged GIFs via the built-in Giphy picker without leaving the composer
   - Comments: Leave, edit, and delete comments on posts with nested interaction
   - Reposts & Likes: Engage with content via social interactions with real-time updates
   - Search: Find users or posts with advanced search functionality and filtering
@@ -50,6 +51,7 @@ Technologies Used
   - dotenv – Environment variable configuration and secret management
   - AWS S3 – Cloud storage for image uploads with programmatic access
   - AWS CloudFront – Global CDN for fast image delivery and caching
+  - Giphy API – Rich GIF search and trending content for post creation
   - connect-mongo – MongoDB session store for persistent login sessions
   - cors – Cross-Origin Resource Sharing configuration
   - multer – Multipart form data handling for file uploads
@@ -75,6 +77,8 @@ Getting Started Locally
     GOOGLE_CLIENT_SECRET=your_google_secret
 
     STRIPE_SECRET_KEY=your_stripe_secret_key
+
+  GIPHY_API_KEY=your_giphy_api_key
 
     AWS_ACCESS_KEY_ID=your_aws_access_key
     AWS_SECRET_ACCESS_KEY=your_aws_secret_key
