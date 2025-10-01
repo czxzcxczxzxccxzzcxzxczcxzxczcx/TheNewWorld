@@ -65,8 +65,8 @@ export async function apiRequest(url, method = 'GET', body = null, isFormData = 
             throw new Error(`Empty response from ${url}`);
         }
         
-    const data = JSON.parse(text);
-    return await handleModerationResponse(data);
+        const data = JSON.parse(text);
+        return await handleModerationResponse(data);
     } catch (error) {
         console.error(`Error during API request to ${url}:`, error);
         throw error;

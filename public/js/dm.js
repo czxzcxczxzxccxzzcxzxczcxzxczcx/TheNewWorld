@@ -1,8 +1,9 @@
 import { apiRequest } from './utils/apiRequest.js';
 import { renderBar, initializeGlobalButtons } from './utils/renderBar.js';
-import { initializeAuth, AuthManager } from './utils/auth.js';
+import { initializeAuth } from './utils/auth.js';
 import { gebid } from './utils/gebid.js';
 import { setVerifiedUsername } from './utils/verifiedBadge.js';
+import { openGiphyPicker } from './utils/giphyPicker.js';
 
 renderBar();
 let socket;
@@ -26,6 +27,166 @@ document.addEventListener("DOMContentLoaded", async function () {
     const recipientAccountNumber = window.location.pathname.split('/')[2];
     // gebid is now imported from utils/gebid.js
     let accountNumber;
+    let selectedGif = null;
+    let pendingAttachments = [];
+    let gifPreviewEl;
+    let gifPreviewImg;
+    let removeGifButton;
+    let gifButton;
+    let attachmentPreviewEl;
+    let attachmentInput;
+    let attachmentButton;
+    let attachmentUploadInProgress = false;
+
+    const MAX_DM_ATTACHMENTS = 4;
+
+    function renderGifPreview() {
+        if (!gifPreviewEl) return;
+
+        const hasGif = !!(selectedGif && selectedGif.url);
+        gifPreviewEl.hidden = !hasGif;
+
+        if (!hasGif) {
+            if (gifPreviewImg) {
+                gifPreviewImg.src = '';
+                gifPreviewImg.alt = 'No GIF selected';
+            }
+            if (gifButton) {
+                gifButton.classList.remove('active');
+                gifButton.setAttribute('aria-pressed', 'false');
+            }
+            return;
+        }
+
+        if (gifPreviewImg) {
+            gifPreviewImg.src = selectedGif.preview || selectedGif.url;
+            gifPreviewImg.alt = selectedGif.title || 'Selected GIF';
+        }
+        if (gifButton) {
+            gifButton.classList.add('active');
+            gifButton.setAttribute('aria-pressed', 'true');
+        }
+    }
+
+    function renderAttachmentPreview() {
+        if (!attachmentPreviewEl) return;
+
+        attachmentPreviewEl.innerHTML = '';
+        if (!pendingAttachments.length) {
+            attachmentPreviewEl.hidden = true;
+            return;
+        }
+
+        pendingAttachments.forEach((attachment, index) => {
+            if (!attachment || !attachment.url) return;
+
+            const item = document.createElement('div');
+            item.className = 'dm-attachment-item';
+
+            const img = document.createElement('img');
+            img.src = attachment.preview || attachment.url;
+            img.alt = attachment.alt || 'Selected attachment';
+            img.loading = 'lazy';
+            item.appendChild(img);
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'dm-attachment-remove';
+            removeBtn.setAttribute('aria-label', 'Remove attachment');
+            removeBtn.textContent = '×';
+            removeBtn.addEventListener('click', () => {
+                pendingAttachments.splice(index, 1);
+                renderAttachmentPreview();
+                updateAttachmentButtonState();
+            });
+            item.appendChild(removeBtn);
+
+            attachmentPreviewEl.appendChild(item);
+        });
+
+        attachmentPreviewEl.hidden = false;
+    }
+
+    function updateAttachmentButtonState() {
+        if (!attachmentButton) return;
+        const isFull = pendingAttachments.length >= MAX_DM_ATTACHMENTS;
+        attachmentButton.disabled = isFull || attachmentUploadInProgress;
+        attachmentButton.classList.toggle('disabled', attachmentButton.disabled);
+        attachmentButton.setAttribute('aria-disabled', attachmentButton.disabled ? 'true' : 'false');
+    }
+
+    async function handleAttachmentSelection(fileList) {
+        if (!attachmentInput || !attachmentPreviewEl) return;
+        if (!fileList || !fileList.length) {
+            attachmentInput.value = '';
+            return;
+        }
+
+        const availableSlots = MAX_DM_ATTACHMENTS - pendingAttachments.length;
+        if (availableSlots <= 0) {
+            alert(`You can attach up to ${MAX_DM_ATTACHMENTS} images per message.`);
+            attachmentInput.value = '';
+            return;
+        }
+
+        const files = Array.from(fileList)
+            .filter(file => file && file.type && file.type.startsWith('image/'))
+            .slice(0, availableSlots);
+
+        if (!files.length) {
+            alert('Please choose an image file to upload.');
+            attachmentInput.value = '';
+            return;
+        }
+
+        attachmentUploadInProgress = true;
+        updateAttachmentButtonState();
+
+        if (!pendingAttachments.length) {
+            attachmentPreviewEl.hidden = false;
+            attachmentPreviewEl.innerHTML = '<span class="dm-attachment-status">Uploading image…</span>';
+        } else {
+            const statusEl = document.createElement('span');
+            statusEl.className = 'dm-attachment-status';
+            statusEl.textContent = 'Uploading image…';
+            attachmentPreviewEl.appendChild(statusEl);
+        }
+
+        for (const file of files) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const data = await apiRequest('/api/uploadPostImage', 'POST', formData, true);
+                if (data?.success && data.imageUrl) {
+                    pendingAttachments.push({
+                        url: data.imageUrl,
+                        type: 'image',
+                        alt: file.name || 'Uploaded image'
+                    });
+                    renderAttachmentPreview();
+                } else {
+                    const message = data?.message || 'Failed to upload image.';
+                    alert(message);
+                }
+            } catch (error) {
+                console.error('Error uploading DM attachment:', error);
+                alert('Image upload failed. Please try again.');
+            }
+        }
+
+        attachmentUploadInProgress = false;
+        updateAttachmentButtonState();
+
+        if (!pendingAttachments.length) {
+            attachmentPreviewEl.hidden = true;
+            attachmentPreviewEl.innerHTML = '';
+        } else {
+            renderAttachmentPreview();
+        }
+
+        attachmentInput.value = '';
+    }
 
     try {
         const user = await initializeAuth();
@@ -46,7 +207,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 appendMessage({ 
                     messageId: msg.messageId,
                     from: msg.from, 
-                    content: msg.message 
+                    content: msg.message,
+                    gifUrl: msg.gifUrl,
+                    attachments: msg.attachments
                 }, accountNumber);
             }
         });
@@ -141,6 +304,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 messageId: message.messageId,
                 from: message.from,
                 content: message.content,
+                attachments: message.attachments,
+                gifUrl: message.gifUrl,
                 sentAt: message.sentAt
             }, senderAccountNumber);
         });
@@ -151,7 +316,62 @@ document.addEventListener("DOMContentLoaded", async function () {
     function appendMessage(message, senderAccountNumber) {
         const messageDiv = document.createElement('div');
         messageDiv.className = message.from === senderAccountNumber ? 'message sent' : 'message received';
-        messageDiv.textContent = message.content;
+        const contentBlock = document.createElement('div');
+        contentBlock.className = 'message-content';
+        let hasVisibleContent = false;
+
+        if (message.content && message.content.trim()) {
+            const textEl = document.createElement('span');
+            textEl.className = 'message-text';
+            textEl.textContent = message.content;
+            contentBlock.appendChild(textEl);
+            hasVisibleContent = true;
+        }
+
+        if (message.gifUrl) {
+            const gifWrapper = document.createElement('div');
+            gifWrapper.className = 'message-gif';
+            const img = document.createElement('img');
+            img.src = message.gifUrl;
+            img.alt = 'GIF';
+            img.loading = 'lazy';
+            gifWrapper.appendChild(img);
+            contentBlock.appendChild(gifWrapper);
+            hasVisibleContent = true;
+        }
+
+        if (Array.isArray(message.attachments) && message.attachments.length) {
+            const attachmentsContainer = document.createElement('div');
+            attachmentsContainer.className = 'message-attachments';
+
+            message.attachments.forEach((attachment) => {
+                if (!attachment || !attachment.url) return;
+                const attachmentItem = document.createElement('div');
+                attachmentItem.className = 'message-attachment';
+
+                const attachmentImg = document.createElement('img');
+                attachmentImg.src = attachment.url;
+                attachmentImg.alt = attachment.alt || 'Message attachment';
+                attachmentImg.loading = 'lazy';
+                attachmentItem.appendChild(attachmentImg);
+
+                attachmentsContainer.appendChild(attachmentItem);
+            });
+
+            if (attachmentsContainer.childElementCount) {
+                contentBlock.appendChild(attachmentsContainer);
+                hasVisibleContent = true;
+            }
+        }
+
+        if (!hasVisibleContent) {
+            const textEl = document.createElement('span');
+            textEl.className = 'message-text';
+            textEl.textContent = '';
+            contentBlock.appendChild(textEl);
+        }
+
+        messageDiv.appendChild(contentBlock);
         
         // Add message ID as data attribute for deletion
         if (message.messageId) {
@@ -399,23 +619,37 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     }
 
-    async function sendMessage(content) {
+    async function sendMessage({ content, gifUrl, attachments }) {
         try {
+            const payload = {
+                to: recipientAccountNumber,
+                content,
+                gifUrl,
+                attachments
+            };
+
             // Send to backend for DB storage
-            const data = await apiRequest('/api/sendMessage', 'POST', { to: recipientAccountNumber, content });
+            const data = await apiRequest('/api/sendMessage', 'POST', payload);
             if (data.success) {
+                const sentMessage = data.messageData;
                 // Emit via socket.io for real-time update with messageId
                 socket.emit('dmMessage', { 
                     from: accountNumber, 
                     to: recipientAccountNumber, 
-                    message: content,
-                    messageId: data.messageData.messageId
+                    message: sentMessage.content,
+                    gifUrl: sentMessage.gifUrl,
+                    attachments: sentMessage.attachments,
+                    messageId: sentMessage.messageId,
+                    sentAt: sentMessage.sentAt
                 });
+                return true;
             } else {
                 console.error('Failed to send message:', data.message);
+                return false;
             }
         } catch (error) {
             console.error('Error sending message:', error);
+            return false;
         }
     }
 
@@ -427,6 +661,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             inputContainer = document.createElement('div');
             inputContainer.className = 'inputContainer';
 
+            const gifButtonEl = document.createElement('button');
+            gifButtonEl.id = 'gifButton';
+            gifButtonEl.type = 'button';
+            gifButtonEl.className = 'composerIconButton';
+            gifButtonEl.setAttribute('aria-label', 'Add GIF');
+            gifButtonEl.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm0-2a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3H5zm4.5 11H7v2H5V9h4.5v2H7v2h2.5v2zm2.5-4h2a2 2 0 0 1 0 4h-1v2h-1.5V7zm1.5 3a.5.5 0 0 0 0-1H12v1h1zm4.5-3h-4v8H18v-2h-2.5V7H18V5z" fill="currentColor"/></svg>';
+
+            const composerInputWrap = document.createElement('div');
+            composerInputWrap.className = 'composerInputWrap';
+
             const messageInputEl = document.createElement('textarea');
             messageInputEl.id = 'messageInput';
             messageInputEl.placeholder = 'Type your message...';
@@ -434,6 +678,27 @@ document.addEventListener("DOMContentLoaded", async function () {
             messageInputEl.autocomplete = 'off';
             messageInputEl.autocapitalize = 'sentences';
             messageInputEl.spellcheck = true;
+            composerInputWrap.appendChild(messageInputEl);
+
+            const gifPreviewContainer = document.createElement('div');
+            gifPreviewContainer.id = 'gifPreview';
+            gifPreviewContainer.className = 'dm-gif-preview';
+            gifPreviewContainer.hidden = true;
+
+            const gifImg = document.createElement('img');
+            gifImg.alt = 'Selected GIF preview';
+            gifImg.loading = 'lazy';
+            gifPreviewContainer.appendChild(gifImg);
+
+            const removeButtonEl = document.createElement('button');
+            removeButtonEl.type = 'button';
+            removeButtonEl.id = 'removeGifButton';
+            removeButtonEl.className = 'remove-gif';
+            removeButtonEl.setAttribute('aria-label', 'Remove GIF');
+            removeButtonEl.textContent = '×';
+            gifPreviewContainer.appendChild(removeButtonEl);
+
+            composerInputWrap.appendChild(gifPreviewContainer);
 
             const sendButtonEl = document.createElement('button');
             sendButtonEl.id = 'sendButton';
@@ -441,13 +706,25 @@ document.addEventListener("DOMContentLoaded", async function () {
             sendButtonEl.setAttribute('aria-label', 'Send message');
             sendButtonEl.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/></svg><span>Send</span>';
 
-            inputContainer.appendChild(messageInputEl);
+            inputContainer.appendChild(gifButtonEl);
+            inputContainer.appendChild(composerInputWrap);
             inputContainer.appendChild(sendButtonEl);
             dmContainer.appendChild(inputContainer);
         }
 
         const messageInput = gebid('messageInput');
         const sendButton = gebid('sendButton');
+        gifButton = gebid('gifButton');
+        gifPreviewEl = gebid('gifPreview');
+        gifPreviewImg = gifPreviewEl ? gifPreviewEl.querySelector('img') : null;
+        removeGifButton = gebid('removeGifButton');
+    attachmentPreviewEl = document.getElementById('attachmentPreview');
+    attachmentInput = document.getElementById('attachmentInput');
+    attachmentButton = document.getElementById('attachmentButton');
+
+    updateAttachmentButtonState();
+    renderAttachmentPreview();
+
         if (!(messageInput && sendButton)) return;
 
         messageInput.setAttribute('rows', '1');
@@ -460,16 +737,37 @@ document.addEventListener("DOMContentLoaded", async function () {
             messageInput.style.height = `${Math.min(newHeight, 240)}px`;
         };
 
-        const handleSend = () => {
+        const handleSend = async () => {
             const content = messageInput.value.trim();
-            if (!content) return;
-            sendMessage(content);
-            messageInput.value = '';
-            autoResize();
+            const gifUrl = selectedGif?.url || '';
+            const attachmentsPayload = pendingAttachments.map((attachment) => ({
+                url: attachment.url,
+                type: attachment.type || 'image'
+            }));
+
+            if (!content && !gifUrl && !attachmentsPayload.length) {
+                return;
+            }
+
+            const wasSent = await sendMessage({ content, gifUrl, attachments: attachmentsPayload });
+            if (wasSent) {
+                messageInput.value = '';
+                selectedGif = null;
+                pendingAttachments = [];
+                renderGifPreview();
+                renderAttachmentPreview();
+                updateAttachmentButtonState();
+                if (attachmentInput) {
+                    attachmentInput.value = '';
+                }
+                autoResize();
+            }
         };
 
         if (!sendButton.dataset.bound) {
-            sendButton.addEventListener('click', handleSend);
+            sendButton.addEventListener('click', () => {
+                handleSend();
+            });
             sendButton.dataset.bound = 'true';
         }
 
@@ -486,6 +784,55 @@ document.addEventListener("DOMContentLoaded", async function () {
             messageInput.dataset.bound = 'true';
         }
 
+        if (gifButton && !gifButton.dataset.bound) {
+            gifButton.addEventListener('click', () => {
+                try {
+                    openGiphyPicker({
+                        onSelect(gif) {
+                            selectedGif = {
+                                url: gif.url,
+                                preview: gif.preview,
+                                title: gif.title
+                            };
+                            renderGifPreview();
+                            messageInput.focus();
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error opening GIF picker:', error);
+                }
+            });
+            gifButton.dataset.bound = 'true';
+            gifButton.setAttribute('aria-pressed', 'false');
+        }
+
+        if (removeGifButton && !removeGifButton.dataset.bound) {
+            removeGifButton.addEventListener('click', () => {
+                selectedGif = null;
+                renderGifPreview();
+                messageInput.focus();
+            });
+            removeGifButton.dataset.bound = 'true';
+        }
+
+        if (attachmentButton && !attachmentButton.dataset.bound) {
+            attachmentButton.addEventListener('click', () => {
+                if (attachmentButton.disabled) return;
+                if (attachmentInput) {
+                    attachmentInput.click();
+                }
+            });
+            attachmentButton.dataset.bound = 'true';
+        }
+
+        if (attachmentInput && !attachmentInput.dataset.bound) {
+            attachmentInput.addEventListener('change', async (event) => {
+                await handleAttachmentSelection(event.target?.files);
+            });
+            attachmentInput.dataset.bound = 'true';
+        }
+
+        renderGifPreview();
         autoResize();
     }
 

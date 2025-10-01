@@ -7,9 +7,9 @@ function setupSocket(io) {
     });
 
     // Relay a new message to the DM room
-    socket.on('dmMessage', ({ from, to, message, messageId }) => {
+    socket.on('dmMessage', ({ from, to, message, gifUrl, attachments, messageId, sentAt }) => {
       const room = [from, to].sort().join('-');
-      io.to(room).emit('dmMessage', { from, to, message, messageId });
+      io.to(room).emit('dmMessage', { from, to, message, gifUrl, attachments, messageId, sentAt });
     });
 
     // Handle message deletion in real-time

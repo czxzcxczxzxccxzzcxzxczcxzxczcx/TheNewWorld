@@ -53,7 +53,25 @@
         </div>
 
         <div class="inputContainer">
-            <textarea id="messageInput" placeholder="Type your message..." rows="1" autocomplete="off" autocapitalize="sentences" spellcheck="true"></textarea>
+            <input id="attachmentInput" type="file" accept="image/*" hidden>
+            <button id="attachmentButton" type="button" class="composerIconButton" aria-label="Upload image">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M20.94 11a1 1 0 0 0-.95-.78H17a1 1 0 0 0-1 1v1.67l-3.36-3.36a2.42 2.42 0 0 0-3.34 0L5 14.59V6a1 1 0 0 1 1-1h9a1 1 0 0 0 0-2H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5a1 1 0 0 0-.06-.34ZM18 19H6a1 1 0 0 1-1-1v-.23l5.29-5.29a.42.42 0 0 1 .58 0L15 17.18V18a1 1 0 0 0 1 1h2a1 1 0 0 1 0 2Z" fill="currentColor"/>
+                </svg>
+            </button>
+            <button id="gifButton" type="button" class="composerIconButton" aria-label="Add GIF">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm0-2a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3H5zm4.5 11H7v2H5V9h4.5v2H7v2h2.5v2zm2.5-4h2a2 2 0 0 1 0 4h-1v2h-1.5V7zm1.5 3a.5.5 0 0 0 0-1H12v1h1zm4.5-3h-4v8H18v-2h-2.5V7H18V5z" fill="currentColor" />
+                </svg>
+            </button>
+            <div class="composerInputWrap">
+                <textarea id="messageInput" placeholder="Type your message..." rows="1" autocomplete="off" autocapitalize="sentences" spellcheck="true"></textarea>
+                <div id="attachmentPreview" class="dm-attachment-preview" hidden aria-live="polite" aria-label="Selected images"></div>
+                <div id="gifPreview" class="dm-gif-preview" hidden>
+                    <img alt="Selected GIF preview" loading="lazy" />
+                    <button type="button" id="removeGifButton" class="remove-gif" aria-label="Remove GIF">×</button>
+                </div>
+            </div>
             <button id="sendButton" type="button" aria-label="Send message">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/></svg>
                 <span>Send</span>

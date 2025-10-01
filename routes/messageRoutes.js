@@ -21,7 +21,7 @@ const generateUniqueMessageId = async () => {
 
 // Route to send a message
 router.post('/sendMessage', async (req, res) => {
-    const { to, content } = req.body;
+    const { to, content = '', gifUrl = '', attachments = [] } = req.body;
     const sessionId = req.cookies.TNWID;
 
     try {
@@ -44,6 +44,38 @@ router.post('/sendMessage', async (req, res) => {
             return res.status(404).json({ success: false, message: 'Recipient not found' });
         }
 
+        const trimmedContent = typeof content === 'string' ? content.trim() : '';
+        const normalizedGifUrl = typeof gifUrl === 'string' ? gifUrl.trim() : '';
+        const normalizedAttachments = Array.isArray(attachments)
+            ? attachments
+                .map((attachment) => {
+                    if (!attachment) return null;
+
+                    if (typeof attachment === 'string') {
+                        const cleanUrl = attachment.trim();
+                        return cleanUrl ? { url: cleanUrl, type: 'image' } : null;
+                    }
+
+                    if (typeof attachment === 'object' && typeof attachment.url === 'string') {
+                        const cleanUrl = attachment.url.trim();
+                        if (!cleanUrl) return null;
+                        return {
+                            url: cleanUrl,
+                            type: typeof attachment.type === 'string' && attachment.type.trim()
+                                ? attachment.type.trim()
+                                : 'image'
+                        };
+                    }
+
+                    return null;
+                })
+                .filter(Boolean)
+            : [];
+
+        if (!trimmedContent && !normalizedGifUrl && !normalizedAttachments.length) {
+            return res.status(400).json({ success: false, message: 'Message must include text, a GIF, or an attachment' });
+        }
+
         // Generate a unique message ID
         const messageId = await generateUniqueMessageId();
 
@@ -52,7 +84,9 @@ router.post('/sendMessage', async (req, res) => {
             messageId,
             from,
             to,
-            content,
+            content: trimmedContent,
+            gifUrl: normalizedGifUrl,
+            attachments: normalizedAttachments,
         });
 
         await newMessage.save();
@@ -71,7 +105,7 @@ router.post('/sendMessage', async (req, res) => {
         });
 
 
-        res.status(201).json({ success: true, message: 'Message sent successfully', messageData: newMessage });
+    res.status(201).json({ success: true, message: 'Message sent successfully', messageData: newMessage });
     } catch (error) {
         console.error('Error sending message:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
