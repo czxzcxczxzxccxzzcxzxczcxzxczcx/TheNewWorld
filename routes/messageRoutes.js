@@ -31,11 +31,12 @@ router.post('/sendMessage', async (req, res) => {
         }
 
         const sender = await sessionStore.get(sessionId);
-        const from = sender.accountNumber;
+        const from = String(sender.accountNumber);
+        const normalizedRecipientAccount = String(to);
 
         // Validate sender and recipient
         const senderUser = await User.findOne({ accountNumber: from });
-        const recipientUser = await User.findOne({ accountNumber: to });
+        const recipientUser = await User.findOne({ accountNumber: normalizedRecipientAccount });
 
         if (!senderUser) {
             return res.status(404).json({ success: false, message: 'Sender not found' });
@@ -83,7 +84,7 @@ router.post('/sendMessage', async (req, res) => {
         const newMessage = new Message({
             messageId,
             from,
-            to,
+            to: normalizedRecipientAccount,
             content: trimmedContent,
             gifUrl: normalizedGifUrl,
             attachments: normalizedAttachments,
@@ -92,15 +93,18 @@ router.post('/sendMessage', async (req, res) => {
         await newMessage.save();
 
         // Add the sender to the recipient's openDM array if not already present
-        if (!recipientUser.openDM.includes(from)) {
+        const recipientHasSender = Array.isArray(recipientUser.openDM)
+            ? recipientUser.openDM.some((entry) => String(entry) === from)
+            : false;
+        if (!recipientHasSender) {
             recipientUser.openDM.push(from);
             await recipientUser.save();
         }
 
         // Generate a notification for the recipient of the direct message
         const notification = await createNotification({
-            from: sender.accountNumber,
-            to: recipientUser.accountNumber,
+            from,
+            to: String(recipientUser.accountNumber),
             content: `${senderUser.username} sent you a message.`,
         });
 
@@ -127,10 +131,7 @@ router.delete('/deleteMessage/:messageId', async (req, res) => {
         if (!user) {
             return res.status(401).json({ success: false, message: 'Invalid or expired session' });
         }
-        if (!user) {
-            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
-        }
-        const accountNumber = user.accountNumber;
+        const accountNumber = String(user.accountNumber);
 
         // Find the message by ID
         const message = await Message.findOne({ messageId });
@@ -140,7 +141,7 @@ router.delete('/deleteMessage/:messageId', async (req, res) => {
         }
 
         // Ensure the user is the sender of the message (only sender can delete)
-        if (message.from !== accountNumber) {
+        if (String(message.from) !== accountNumber) {
             return res.status(403).json({ success: false, message: 'You can only delete your own messages' });
         }
 
@@ -174,18 +175,27 @@ router.post('/addOpenDM', async (req, res) => {
         }
 
         const sender = await sessionStore.get(sessionId);
-        const senderAccountNumber = sender.accountNumber;
+        const senderAccountNumber = String(sender.accountNumber);
+        const normalizedRecipient = String(recipientAccountNumber);
 
         // Validate recipient
-        const recipientUser = await User.findOne({ accountNumber: recipientAccountNumber });
+        const recipientUser = await User.findOne({ accountNumber: normalizedRecipient });
         if (!recipientUser) {
             return res.status(404).json({ success: false, message: 'Recipient not found' });
         }
 
         // Add the recipient to the sender's openDM array if not already present
         const senderUser = await User.findOne({ accountNumber: senderAccountNumber });
-        if (!senderUser.openDM.includes(recipientAccountNumber)) {
-            senderUser.openDM.push(recipientAccountNumber);
+        if (!senderUser) {
+            return res.status(404).json({ success: false, message: 'Sender not found' });
+        }
+
+        const senderHasRecipient = Array.isArray(senderUser.openDM)
+            ? senderUser.openDM.some((entry) => String(entry) === normalizedRecipient)
+            : false;
+
+        if (!senderHasRecipient) {
+            senderUser.openDM.push(normalizedRecipient);
             await senderUser.save();
         }
 
@@ -206,8 +216,8 @@ router.post('/getOpenDMs', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const sender = await sessionStore.get(sessionId);
-        const senderAccountNumber = sender.accountNumber;
+    const sender = await sessionStore.get(sessionId);
+    const senderAccountNumber = String(sender.accountNumber);
 
         // Retrieve the sender's openDM array
         const senderUser = await User.findOne({ accountNumber: senderAccountNumber });
@@ -216,15 +226,19 @@ router.post('/getOpenDMs', async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
+        const normalizedOpenDMs = Array.isArray(senderUser.openDM)
+            ? senderUser.openDM.map((entry) => String(entry))
+            : [];
+
         // Fetch user details for each account in openDM
-    const openDMs = await User.find({ accountNumber: { $in: senderUser.openDM } }, 'accountNumber username pfp verified');
+        const openDMs = await User.find({ accountNumber: { $in: normalizedOpenDMs } }, 'accountNumber username pfp verified');
 
         // For each open DM, get the latest message time between the sender and the DM user
         const openDMsWithLatest = await Promise.all(openDMs.map(async (dmUser) => {
             const latestMessage = await Message.findOne({
                 $or: [
-                    { from: senderAccountNumber, to: dmUser.accountNumber },
-                    { from: dmUser.accountNumber, to: senderAccountNumber }
+                    { from: senderAccountNumber, to: String(dmUser.accountNumber) },
+                    { from: String(dmUser.accountNumber), to: senderAccountNumber }
                 ]
             }).sort({ sentAt: -1 }).limit(1);
             return {
@@ -254,8 +268,8 @@ router.post('/getIncomingDMs', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
 
-        const recipient = await sessionStore.get(sessionId);
-        const recipientAccountNumber = recipient.accountNumber;
+    const recipient = await sessionStore.get(sessionId);
+    const recipientAccountNumber = String(recipient.accountNumber);
 
         // Find users who have the requesting user in their openDM array
         const usersWithOpenDMs = await User.find(
@@ -272,11 +286,13 @@ router.post('/getIncomingDMs', async (req, res) => {
 
 router.post('/getMessages', async (req, res) => {
     const { from, to } = req.body;
+    const normalizedFrom = String(from);
+    const normalizedTo = String(to);
 
     try {
         // Validate sender and recipient
-        const sender = await User.findOne({ accountNumber: from });
-        const recipient = await User.findOne({ accountNumber: to });
+        const sender = await User.findOne({ accountNumber: normalizedFrom });
+        const recipient = await User.findOne({ accountNumber: normalizedTo });
 
         if (!sender || !recipient) {
             return res.status(404).json({ success: false, message: 'Sender or recipient not found' });
@@ -284,8 +300,8 @@ router.post('/getMessages', async (req, res) => {
         // Fetch messages between the sender and recipient
         const messages = await Message.find({
             $or: [
-                { from, to },
-                { from: to, to: from }
+                { from: normalizedFrom, to: normalizedTo },
+                { from: normalizedTo, to: normalizedFrom }
             ]
         }).sort({ sentAt: 1 }); // Sort messages by sentAt in ascending order
 
@@ -308,7 +324,8 @@ router.post('/removeOpenDM', async (req, res) => {
         }
 
         const sender = await sessionStore.get(sessionId);
-        const senderAccountNumber = sender.accountNumber;
+        const senderAccountNumber = String(sender.accountNumber);
+        const normalizedRecipient = String(recipientAccountNumber);
 
         // Validate recipient
         const senderUser = await User.findOne({ accountNumber: senderAccountNumber });
@@ -317,7 +334,9 @@ router.post('/removeOpenDM', async (req, res) => {
         }
 
         // Remove the recipient from the sender's openDM array if present
-        const index = senderUser.openDM.indexOf(recipientAccountNumber);
+        const index = Array.isArray(senderUser.openDM)
+            ? senderUser.openDM.findIndex((entry) => String(entry) === normalizedRecipient)
+            : -1;
         if (index !== -1) {
             senderUser.openDM.splice(index, 1);
             await senderUser.save();

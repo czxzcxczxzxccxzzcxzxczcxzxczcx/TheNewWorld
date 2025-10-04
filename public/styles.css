@@ -1315,7 +1315,8 @@ body.panel-open::before {
 .message-attachments {
   display: grid;
   gap: 0.35rem;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(120px, 180px));
+  justify-content: flex-start;
 }
 
 .message-attachment {
@@ -1323,12 +1324,14 @@ body.panel-open::before {
   border-radius: var(--radius-md);
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.05);
+  max-width: 220px;
 }
 
 .message-attachment img {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
+  max-height: 220px;
   object-fit: cover;
 }
   margin-bottom: var(--space-xl);
@@ -3418,16 +3421,11 @@ body.dm-page {
     border-radius: var(--radius-lg);
   }
 
-  .message {
-    max-width: 85%;
-    font-size: 0.95rem;
-    padding: 0.45rem 0.8rem;
-  }
 }
 
 
 .message {
-  padding: 0.52rem 0.9rem;
+  padding: 0.32rem 0.8rem;
   margin-bottom: 0;
   border-radius: var(--radius-xl);
   max-width: min(72%, 460px);
@@ -3462,17 +3460,13 @@ body.dm-page {
 
 /* Message spacing */
 .message + .message {
-  margin-top: 0.15rem;
+  margin-top: 0.05rem;
 }
+
 
 .message.sent + .message.sent,
 .message.received + .message.received {
-  margin-top: 0.08rem;
-}
-
-.message.sent + .message.received,
-.message.received + .message.sent {
-  margin-top: 0.25rem;
+  margin-top: 0.03rem;
 }
 
 .dm .message .message-content {
@@ -3495,7 +3489,7 @@ body.dm-page {
 
 .dm .message .message-gif img {
   display: block;
-  width: 100%;
+  width: auto;
   height: auto;
   max-width: min(280px, 70vw);
   border-radius: var(--radius-lg);
@@ -3505,6 +3499,7 @@ body.dm-page {
 .dm .message .message-gif {
   display: flex;
   justify-content: flex-start;
+  max-width: min(280px, 70vw);
 }
 
 .dm .message.sent .message-gif {

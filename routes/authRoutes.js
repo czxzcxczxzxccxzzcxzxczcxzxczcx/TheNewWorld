@@ -8,6 +8,19 @@ const passport = require('../utils/passport');
 const router = express.Router();
 const { resolveVerificationFlags } = require('../utils/verification');
 
+const getCallbackUrl = (req) => {
+    const forwardedProtoHeader = (req.headers['x-forwarded-proto'] || '').split(',')[0].trim();
+    const protocol = forwardedProtoHeader || req.protocol;
+    const forwardedHostHeader = (req.headers['x-forwarded-host'] || '').split(',')[0].trim();
+    const host = forwardedHostHeader || req.get('host');
+
+    if (!host) {
+        return process.env.GOOGLE_DEFAULT_CALLBACK_URL || 'http://localhost:1111/api/auth/google/callback';
+    }
+
+    return `${protocol}://${host}/api/auth/google/callback`;
+};
+
 // Function to generate a unique account number
 const generateAccountNumber = async () => {
     let accountNumber;
@@ -407,10 +420,20 @@ router.post('/logout', async (req, res) => {
 });
 
 // Google OAuth login route
-router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/auth/google', (req, res, next) => {
+    passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        callbackURL: getCallbackUrl(req)
+    })(req, res, next);
+});
 
 // Google OAuth callback route
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }),
+router.get('/auth/google/callback', (req, res, next) => {
+    passport.authenticate('google', {
+        failureRedirect: '/login',
+        callbackURL: getCallbackUrl(req)
+    })(req, res, next);
+},
   async (req, res) => {
     // Set up session and cookie as with local login
     const sessionId = crypto.randomBytes(16).toString('hex');

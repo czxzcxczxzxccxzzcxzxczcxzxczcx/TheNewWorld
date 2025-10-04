@@ -6,7 +6,8 @@ const crypto = require('crypto');
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'https://tnw-axbycee9gmd6htb0.canadacentral-01.azurewebsites.net/api/auth/google/callback'
+    // Provide a fallback callback URL; individual requests override this dynamically.
+    callbackURL: process.env.GOOGLE_DEFAULT_CALLBACK_URL || 'http://localhost:1111/api/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         let user = await User.findOne({ googleId: profile.id });
