@@ -271,11 +271,23 @@ export function renderPost(post, username, pfp, verified, from, fromAccountNumbe
     const buttonsDiv = createElementWithClass('div', 'buttonsDiv');
     const commentDiv = createElementWithClass('div', 'commentSection');
     const commentInputDiv = createElementWithClass('div', 'commentInputDiv');
+    const commentComposer = createElementWithClass('div', 'commentComposer');
+    const commentTextWrap = createElementWithClass('div', 'commentComposer-input');
+    const commentControls = createElementWithClass('div', 'commentComposer-controls');
+    const commentUtilities = createElementWithClass('div', 'commentComposer-utilities');
     const commentTextBox = createElementWithClass('textarea', 'commentTextBox');
-    const commentGifControls = createElementWithClass('div', 'commentGifControls');
-    const commentGifButton = createElementWithClass('button', 'commentGifButton');
-    const commentGifPreview = createElementWithClass('div', 'commentGifPreview');
+    const commentSendWrap = createElementWithClass('div', 'commentComposer-send');
     const commentButton = createElementWithClass('button', 'commentButton');
+    const commentAttachmentButton = createElementWithClass('button', 'commentActionButton commentAttachmentButton');
+    const commentGifButton = createElementWithClass('button', 'commentActionButton commentGifButton');
+    const commentPreviewWrap = createElementWithClass('div', 'commentComposer-preview');
+    const commentAttachmentPreview = createElementWithClass('div', 'commentAttachmentPreview');
+    const commentGifPreview = createElementWithClass('div', 'commentGifPreview');
+    const commentAttachmentInput = document.createElement('input');
+    commentAttachmentInput.type = 'file';
+    commentAttachmentInput.accept = 'image/*';
+    commentAttachmentInput.multiple = true;
+    commentAttachmentInput.hidden = true;
     const toggleCommentsButton = createElementWithClass('button', 'postButton postEditButton');
 
 
@@ -335,16 +347,31 @@ export function renderPost(post, username, pfp, verified, from, fromAccountNumbe
     footerDiv.append(dateE);
 
     commentDiv.style.display = 'none';
-    commentButton.textContent = 'Post Comment';
     commentButton.type = 'button';
+    commentButton.setAttribute('aria-label', 'Post comment');
+    commentButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/></svg><span>Post</span>';
     commentGifButton.type = 'button';
+    commentGifButton.setAttribute('aria-label', 'Add GIF');
+    commentGifButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm0-2a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3H5zm4.5 11H7v2H5V9h4.5v2H7v2h2.5v2zm2.5-4h2a2 2 0 0 1 0 4h-1v2h-1.5V7zm1.5 3a.5.5 0 0 0 0-1H12v1h1zm4.5-3h-4v8H18v-2h-2.5V7H18V5z" fill="currentColor"/></svg>';
+    commentAttachmentButton.type = 'button';
+    commentAttachmentButton.setAttribute('aria-label', 'Upload image');
+    commentAttachmentButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.94 11a1 1 0 0 0-.95-.78H17a1 1 0 0 0-1 1v1.67l-3.36-3.36a2.42 2.42 0 0 0-3.34 0L5 14.59V6a1 1 0 0 1 1-1h9a1 1 0 0 0 0-2H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5a1 1 0 0 0-.06-.34ZM18 19H6a1 1 0 0 1-1-1v-.23l5.29-5.29a.42.42 0 0 1 .58 0L15 17.18V18a1 1 0 0 0 1 1h2a1 1 0 0 1 0 2Z" fill="currentColor"/></svg>';
+    commentAttachmentPreview.hidden = true;
+    commentAttachmentPreview.setAttribute('aria-live', 'polite');
+    commentGifPreview.hidden = true;
+    commentGifPreview.setAttribute('aria-live', 'polite');
     toggleCommentsButton.textContent = 'Comments';
     toggleCommentsButton.style.color = '#ffffff'
 
-    commentGifPreview.setAttribute('aria-live', 'polite');
-    commentGifControls.append(commentGifButton, commentGifPreview);
+    commentUtilities.append(commentAttachmentButton, commentGifButton);
+    commentTextWrap.append(commentTextBox);
+    commentSendWrap.append(commentButton);
+    commentControls.append(commentUtilities, commentSendWrap);
+    commentComposer.append(commentTextWrap, commentControls);
 
-    commentInputDiv.append(commentTextBox, commentGifControls, commentButton);
+    commentPreviewWrap.append(commentAttachmentPreview, commentGifPreview);
+
+    commentInputDiv.append(commentAttachmentInput, commentComposer, commentPreviewWrap);
     commentDiv.appendChild(commentInputDiv);
     postDiv.appendChild(commentDiv);
     buttonsDiv.appendChild(toggleCommentsButton); 
@@ -406,92 +433,223 @@ export function renderPost(post, username, pfp, verified, from, fromAccountNumbe
     });
 
     let selectedCommentGif = null;
+    const MAX_COMMENT_ATTACHMENTS = 4;
+    let commentAttachments = [];
+    let commentAttachmentUploadInProgress = false;
 
     function renderCommentGifPreview() {
         commentGifPreview.innerHTML = '';
 
         if (!selectedCommentGif?.url) {
-            commentGifPreview.textContent = 'No GIF selected';
-            commentGifButton.textContent = 'Add GIF';
-            commentGifControls.classList.remove('has-selection');
+            commentGifPreview.hidden = true;
+            commentGifButton.classList.remove('active');
+            commentGifButton.setAttribute('aria-pressed', 'false');
             return;
         }
 
-        commentGifControls.classList.add('has-selection');
-        commentGifButton.textContent = 'Change GIF';
+        commentGifButton.classList.add('active');
+        commentGifButton.setAttribute('aria-pressed', 'true');
 
         const img = document.createElement('img');
         img.src = selectedCommentGif.preview || selectedCommentGif.url;
         img.alt = selectedCommentGif.title || 'Selected GIF';
+        img.loading = 'lazy';
         commentGifPreview.appendChild(img);
 
         const removeBtn = document.createElement('button');
         removeBtn.type = 'button';
         removeBtn.className = 'commentGifRemove';
-        removeBtn.textContent = 'Remove';
+        removeBtn.setAttribute('aria-label', 'Remove GIF');
+        removeBtn.textContent = '×';
         removeBtn.addEventListener('click', () => {
             selectedCommentGif = null;
             renderCommentGifPreview();
         });
         commentGifPreview.appendChild(removeBtn);
+
+        commentGifPreview.hidden = false;
     }
 
     renderCommentGifPreview();
 
-    commentGifButton.addEventListener('click', () => {
-        openGiphyPicker({
-            onSelect: (gif) => {
-                selectedCommentGif = gif;
-                if (commentTextBox && gif?.url && !commentTextBox.value.includes(gif.url)) {
-                    if (commentTextBox.value && !commentTextBox.value.endsWith('\n')) {
-                        commentTextBox.value += '\n';
-                    }
-                    commentTextBox.value += `<${gif.url}>\n`;
-                }
-                renderCommentGifPreview();
-            }
+    function updateCommentAttachmentButtonState() {
+        const isFull = commentAttachments.length >= MAX_COMMENT_ATTACHMENTS;
+        commentAttachmentButton.disabled = isFull || commentAttachmentUploadInProgress;
+        commentAttachmentButton.classList.toggle('disabled', commentAttachmentButton.disabled);
+        commentAttachmentButton.setAttribute('aria-disabled', commentAttachmentButton.disabled ? 'true' : 'false');
+    }
+
+    function renderCommentAttachmentPreview() {
+        commentAttachmentPreview.innerHTML = '';
+
+        if (!commentAttachments.length) {
+            commentAttachmentPreview.hidden = true;
+            return;
+        }
+
+        commentAttachmentPreview.hidden = false;
+
+        commentAttachments.forEach((attachment, index) => {
+            if (!attachment || !attachment.url) return;
+
+            const item = document.createElement('div');
+            item.className = 'commentAttachmentItem';
+
+            const img = document.createElement('img');
+            img.src = attachment.preview || attachment.url;
+            img.alt = attachment.alt || 'Comment attachment';
+            img.loading = 'lazy';
+            item.appendChild(img);
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'commentAttachmentRemove';
+            removeBtn.setAttribute('aria-label', 'Remove image');
+            removeBtn.textContent = '×';
+            removeBtn.addEventListener('click', () => {
+                commentAttachments.splice(index, 1);
+                renderCommentAttachmentPreview();
+                updateCommentAttachmentButtonState();
+            });
+            item.appendChild(removeBtn);
+
+            commentAttachmentPreview.appendChild(item);
         });
+    }
+
+    async function handleCommentAttachmentSelection(fileList) {
+        if (!fileList || !fileList.length) {
+            commentAttachmentInput.value = '';
+            return;
+        }
+
+        const availableSlots = MAX_COMMENT_ATTACHMENTS - commentAttachments.length;
+        if (availableSlots <= 0) {
+            alert(`You can attach up to ${MAX_COMMENT_ATTACHMENTS} images per comment.`);
+            commentAttachmentInput.value = '';
+            return;
+        }
+
+        const files = Array.from(fileList)
+            .filter(file => file && file.type && file.type.startsWith('image/'))
+            .slice(0, availableSlots);
+
+        if (!files.length) {
+            alert('Please choose an image file to upload.');
+            commentAttachmentInput.value = '';
+            return;
+        }
+
+        commentAttachmentUploadInProgress = true;
+        updateCommentAttachmentButtonState();
+
+        commentAttachmentPreview.hidden = false;
+        commentAttachmentPreview.innerHTML = '<span class="commentAttachmentStatus">Uploading image…</span>';
+
+        for (const file of files) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const data = await apiRequest('/api/uploadPostImage', 'POST', formData, true);
+                if (data?.success && data.imageUrl) {
+                    commentAttachments.push({
+                        url: data.imageUrl,
+                        type: 'image',
+                        alt: file.name || 'Uploaded image'
+                    });
+                    renderCommentAttachmentPreview();
+                } else {
+                    const message = data?.message || 'Failed to upload image.';
+                    alert(message);
+                }
+            } catch (error) {
+                console.error('Error uploading comment attachment:', error);
+                alert('Image upload failed. Please try again.');
+            }
+        }
+
+        commentAttachmentUploadInProgress = false;
+        updateCommentAttachmentButtonState();
+
+        if (!commentAttachments.length) {
+            commentAttachmentPreview.hidden = true;
+            commentAttachmentPreview.innerHTML = '';
+        } else {
+            renderCommentAttachmentPreview();
+        }
+
+        commentAttachmentInput.value = '';
+    }
+
+    updateCommentAttachmentButtonState();
+
+    commentAttachmentButton.addEventListener('click', () => {
+        if (commentAttachmentButton.disabled) return;
+        commentAttachmentInput.click();
     });
 
-    commentTextBox.addEventListener('input', () => {
-        if (selectedCommentGif?.url && !commentTextBox.value.includes(selectedCommentGif.url)) {
-            selectedCommentGif = null;
-            renderCommentGifPreview();
+    commentAttachmentInput.addEventListener('change', async (event) => {
+        await handleCommentAttachmentSelection(event.target?.files);
+    });
+
+    commentGifButton.addEventListener('click', () => {
+        try {
+            openGiphyPicker({
+                onSelect: (gif) => {
+                    selectedCommentGif = {
+                        url: gif.url,
+                        preview: gif.preview,
+                        title: gif.title
+                    };
+                    renderCommentGifPreview();
+                }
+            });
+        } catch (error) {
+            console.error('Error opening GIF picker:', error);
         }
     });
 
     commentButton.addEventListener('click', async () => {
-        const originalValue = commentTextBox.value || '';
-        let commentContent = originalValue;
-
-        if (selectedCommentGif?.url && !commentContent.includes(selectedCommentGif.url)) {
-            const separator = commentContent.trim() ? '\n' : '';
-            commentContent = `${commentContent}${separator}<${selectedCommentGif.url}>`;
-        }
-
-        const trimmedContent = (commentContent || '').trim();
-        if (!trimmedContent) {
-            alert('Comment cannot be empty.');
+        if (commentAttachmentUploadInProgress) {
+            alert('Please wait for images to finish uploading.');
             return;
         }
+
+        const trimmedContent = (commentTextBox.value || '').trim();
+        const gifUrl = selectedCommentGif?.url || '';
+        const attachmentsPayload = commentAttachments.map((attachment) => ({
+            url: attachment.url,
+            type: attachment.type || 'image'
+        }));
+
+        if (!trimmedContent && !gifUrl && !attachmentsPayload.length) {
+            alert('Comment cannot be empty. Add text, a GIF, or an image.');
+            return;
+        }
+
         try {
             const response = await apiRequest('/api/createComment', 'POST', {
                 accountNumber: fromAccountNumber,
                 postId: post.postId,
                 content: trimmedContent,
+                gifUrl,
+                attachments: attachmentsPayload
             });
 
             if (response.success) {
-                alert('Comment posted successfully.');
                 commentTextBox.value = '';
                 selectedCommentGif = null;
+                commentAttachments = [];
                 renderCommentGifPreview();
+                renderCommentAttachmentPreview();
+                updateCommentAttachmentButtonState();
+                commentAttachmentInput.value = '';
 
                 const newComment = response.comment;
-
                 renderComment(newComment, commentDiv, fromAccountNumber, post.accountNumber);
             } else {
-                alert('Failed to post comment.');
+                alert(response.message || 'Failed to post comment.');
             }
         } catch (error) {
             console.error('Error posting comment:', error);
@@ -591,8 +749,6 @@ function renderComment(comment, commentDiv, loggedInAccountNumber, postOwnerAcco
     const rawCommentContent = comment.content || '';
     if (rawCommentContent.trim()) {
         contentP.innerHTML = processContent(rawCommentContent);
-    } else {
-        contentP.textContent = 'No content';
     }
     titleH1.textContent = comment.createdAt ? formatDate(comment.createdAt) : 'Unknown date';
 
@@ -607,7 +763,40 @@ function renderComment(comment, commentDiv, loggedInAccountNumber, postOwnerAcco
     repostButton.textContent = `Reposts (${repostsCount})`;
 
     postDetailsDiv.append(postImage, usernameTitle, titleH1);
-    postBodyDiv.append(contentP);
+
+    if (rawCommentContent.trim()) {
+        postBodyDiv.append(contentP);
+    }
+
+    if (comment.gifUrl) {
+        const gifContainer = createElementWithClass('div', 'comment-gif');
+        const gifImg = document.createElement('img');
+        gifImg.src = comment.gifUrl;
+        gifImg.alt = 'Comment GIF';
+        gifImg.loading = 'lazy';
+        gifContainer.appendChild(gifImg);
+        postBodyDiv.appendChild(gifContainer);
+    }
+
+    if (Array.isArray(comment.attachments) && comment.attachments.length) {
+        const attachmentsContainer = createElementWithClass('div', 'comment-attachments');
+
+        comment.attachments.forEach((attachment) => {
+            if (!attachment || !attachment.url) return;
+            const attachmentItem = createElementWithClass('div', 'comment-attachment');
+            const attachmentImg = document.createElement('img');
+            attachmentImg.src = attachment.url;
+            attachmentImg.alt = attachment.alt || 'Comment attachment';
+            attachmentImg.loading = 'lazy';
+            attachmentItem.appendChild(attachmentImg);
+            attachmentsContainer.appendChild(attachmentItem);
+        });
+
+        if (attachmentsContainer.childElementCount) {
+            postBodyDiv.appendChild(attachmentsContainer);
+        }
+    }
+
     buttonsDiv.append(likeButton, repostButton);
 
     // Add delete button if user owns the comment

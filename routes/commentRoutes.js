@@ -22,11 +22,54 @@ const generateUniqueCommentId = async () => {
 
 // Route to create a new comment
 router.post('/createComment', async (req, res) => {
-    const { accountNumber, postId, content } = req.body;
+    const {
+        accountNumber,
+        postId,
+        content = '',
+        gifUrl = '',
+        attachments = []
+    } = req.body;
 
     try {
-        const user = await User.findOne({ accountNumber });
-        const post = await Post.findOne({ postId });
+        const normalizedAccountNumber = String(accountNumber);
+        const normalizedPostId = String(postId);
+        const trimmedContent = typeof content === 'string' ? content.trim() : '';
+        const normalizedGifUrl = typeof gifUrl === 'string' ? gifUrl.trim() : '';
+        const normalizedAttachments = Array.isArray(attachments)
+            ? attachments
+                .map((attachment) => {
+                    if (!attachment) return null;
+
+                    if (typeof attachment === 'string') {
+                        const cleanUrl = attachment.trim();
+                        return cleanUrl ? { url: cleanUrl, type: 'image' } : null;
+                    }
+
+                    if (typeof attachment === 'object' && typeof attachment.url === 'string') {
+                        const cleanUrl = attachment.url.trim();
+                        if (!cleanUrl) return null;
+                        return {
+                            url: cleanUrl,
+                            type: typeof attachment.type === 'string' && attachment.type.trim()
+                                ? attachment.type.trim()
+                                : 'image'
+                        };
+                    }
+
+                    return null;
+                })
+                .filter(Boolean)
+            : [];
+
+        if (!trimmedContent && !normalizedGifUrl && !normalizedAttachments.length) {
+            return res.status(400).json({
+                success: false,
+                message: 'Comment must include text, a GIF, or an image.'
+            });
+        }
+
+        const user = await User.findOne({ accountNumber: normalizedAccountNumber });
+        const post = await Post.findOne({ postId: normalizedPostId });
 
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
@@ -39,9 +82,11 @@ router.post('/createComment', async (req, res) => {
         const commentId = await generateUniqueCommentId();
         const newComment = new Comment({
             commentId,
-            content,
+            content: trimmedContent,
+            gifUrl: normalizedGifUrl,
+            attachments: normalizedAttachments,
             accountNumber: user.accountNumber,
-            postId, // Link the comment to the post
+            postId: normalizedPostId, // Link the comment to the post
         });
 
         await newComment.save();
@@ -54,9 +99,9 @@ router.post('/createComment', async (req, res) => {
         await post.save();
 
         // Generate a notification for the post owner if the commenter is not the post owner
-        if (post.accountNumber !== accountNumber) {
+        if (String(post.accountNumber) !== normalizedAccountNumber) {
             const notification = await createNotification({
-                from: accountNumber,
+                from: normalizedAccountNumber,
                 to: post.accountNumber,
                 content: `${user.username} commented on your post.`,
             });

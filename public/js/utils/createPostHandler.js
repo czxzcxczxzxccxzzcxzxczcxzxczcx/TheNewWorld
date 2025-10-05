@@ -6,38 +6,37 @@ export function initializeCreatePost(accountNumber) {
     createPostDiv.className = 'postPanel';
     createPostDiv.id = 'profilePanel';
     createPostDiv.style.display = 'none'; // Initially hidden
+    createPostDiv.setAttribute('role', 'dialog');
+    createPostDiv.setAttribute('aria-modal', 'true');
+    createPostDiv.setAttribute('aria-hidden', 'true');
     createPostDiv.innerHTML = `
+        <button type="button" class="postPanel-close" aria-label="Close create post panel">&times;</button>
         <form>
-            <h1 id="username">Create A New Post</h1>
-            
-            <textarea class="bodyInput" id="bodyText" type="text" placeholder="Body"></textarea>
-            <div id="postPreview" style="min-height:30px;margin-bottom:10px;"></div>
-            
+            <h1>Create a new post</h1>
+            <textarea class="bodyInput" id="bodyText" placeholder="What's happening?"></textarea>
+            <div id="postPreview"></div>
+
             <!-- Poll Section -->
-            <div id="pollSection" style="display: none; margin: 15px 0; padding: 15px; border: 1px solid #333; border-radius: 8px; background: rgba(255,255,255,0.05);">
-                <h3 style="margin: 0 0 10px 0; color: #fff;">Create Poll</h3>
-                <input type="text" id="pollQuestion" placeholder="Ask a question..." style="width: 100%; padding: 8px; margin-bottom: 10px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff;">
-                
-                <div id="pollOptions">
-                    <input type="text" class="poll-option" placeholder="Option 1" style="width: 100%; padding: 8px; margin-bottom: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff;">
-                    <input type="text" class="poll-option" placeholder="Option 2" style="width: 100%; padding: 8px; margin-bottom: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff;">
+            <div id="pollSection" hidden>
+                <h3>Create Poll</h3>
+                <input type="text" id="pollQuestion" class="poll-option" placeholder="Ask a question...">
+                <div id="pollOptions" class="poll-options">
+                    <input type="text" class="poll-option" placeholder="Option 1">
+                    <input type="text" class="poll-option" placeholder="Option 2">
                 </div>
-                
-                <div style="display: flex; gap: 10px; margin: 10px 0;">
-                    <button type="button" id="addPollOption" style="padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">+ Add Option</button>
-                    <button type="button" id="removePollOption" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">- Remove</button>
+                <div class="poll-controls">
+                    <button type="button" id="addPollOption">+ Add Option</button>
+                    <button type="button" id="removePollOption">- Remove</button>
                 </div>
-                
-                <div style="margin: 10px 0;">
-                    <label style="display: flex; align-items: center; color: #fff; font-size: 14px;">
-                        <input type="checkbox" id="allowMultipleVotes" style="margin-right: 5px;">
+                <div class="poll-settings">
+                    <label>
+                        <input type="checkbox" id="allowMultipleVotes">
                         Allow multiple votes
                     </label>
                 </div>
-                
-                <div style="margin: 10px 0;">
-                    <label style="color: #fff; font-size: 14px;">Poll Duration:</label>
-                    <select id="pollDuration" style="margin-left: 10px; padding: 4px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff;">
+                <div class="poll-duration">
+                    <span>Poll duration:</span>
+                    <select id="pollDuration">
                         <option value="">No end time</option>
                         <option value="1">1 day</option>
                         <option value="3">3 days</option>
@@ -46,18 +45,19 @@ export function initializeCreatePost(accountNumber) {
                     </select>
                 </div>
             </div>
-            
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+
+            <div class="actions-row">
                 <button id="createPost" type="submit" class="postPanelButton">Create Post</button>
-                <button id="togglePoll" type="button" style="padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">📊 Add Poll</button>
+                <button id="togglePoll" type="button" class="postPanelButton secondary" aria-expanded="false">📊 Add Poll</button>
             </div>
+
             <div class="gifControls">
                 <button id="openGifPicker" type="button" class="postPanelButton secondary">Add GIF</button>
-                <div id="selectedGifPreview" class="gifPreview" aria-live="polite"></div>
+                <div id="selectedGifPreview" class="gifPreview" aria-live="polite">No GIF selected</div>
             </div>
-            
+
             <div class="imageUploading">
-                <input type="file" id="imageInput" accept="image/*" style="display: none;" />
+                <input type="file" id="imageInput" accept="image/*" hidden />
                 <button id="uploadBtn" type="button">Upload Image</button>
             </div>
             <div id="uploadResult"></div>
@@ -67,104 +67,196 @@ export function initializeCreatePost(accountNumber) {
     const body = document.body;
     body.insertBefore(createPostDiv, body.firstChild);
 
-    const createPostButton = document.getElementById('createPostButton');
-    if (createPostButton) {
-        createPostButton.addEventListener('click', function (event) {
-            event.preventDefault(); // Prevent navigation
-            createPostDiv.style.display = createPostDiv.style.display === 'none' ? 'block' : 'none';
+    const bodyTextArea = createPostDiv.querySelector('#bodyText');
+    const postPreview = createPostDiv.querySelector('#postPreview');
+    const gifPreviewEl = createPostDiv.querySelector('#selectedGifPreview');
+    const pollSection = createPostDiv.querySelector('#pollSection');
+    const togglePollButton = createPostDiv.querySelector('#togglePoll');
+    const pollOptionsContainer = createPostDiv.querySelector('#pollOptions');
+    const addPollOptionBtn = createPostDiv.querySelector('#addPollOption');
+    const removePollOptionBtn = createPostDiv.querySelector('#removePollOption');
+    const allowMultipleVotesCheckbox = createPostDiv.querySelector('#allowMultipleVotes');
+    const pollDurationSelect = createPostDiv.querySelector('#pollDuration');
+    const uploadButton = createPostDiv.querySelector('#uploadBtn');
+    const imageInput = createPostDiv.querySelector('#imageInput');
+    const uploadResult = createPostDiv.querySelector('#uploadResult');
+    const createPostButton = createPostDiv.querySelector('#createPost');
+    const closeButton = createPostDiv.querySelector('.postPanel-close');
+
+    const focusBodyInput = () => {
+        if (bodyTextArea) {
+            bodyTextArea.focus({ preventScroll: true });
+        }
+    };
+
+    const handleEscape = (event) => {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            closePanel();
+        }
+    };
+
+    const openPanel = () => {
+        if (createPostDiv.classList.contains('open')) {
+            focusBodyInput();
+            return;
+        }
+
+        createPostDiv.style.display = 'flex';
+        requestAnimationFrame(() => {
+            createPostDiv.classList.add('open');
+            focusBodyInput();
         });
-    }
+        createPostDiv.setAttribute('aria-hidden', 'false');
+        body.classList.add('panel-open', 'create-post-open');
+        document.addEventListener('keydown', handleEscape);
+    };
+
+    const closePanel = () => {
+        if (!createPostDiv.classList.contains('open')) {
+            return;
+        }
+
+        createPostDiv.classList.remove('open');
+        createPostDiv.setAttribute('aria-hidden', 'true');
+        body.classList.remove('panel-open', 'create-post-open');
+        document.removeEventListener('keydown', handleEscape);
+
+        const onTransitionEnd = (event) => {
+            if (event.target !== createPostDiv || event.propertyName !== 'opacity') {
+                return;
+            }
+            createPostDiv.style.display = 'none';
+            createPostDiv.removeEventListener('transitionend', onTransitionEnd);
+        };
+
+        createPostDiv.addEventListener('transitionend', onTransitionEnd);
+
+        // Fallback in case transitionend doesn't fire
+        setTimeout(() => {
+            if (!createPostDiv.classList.contains('open')) {
+                createPostDiv.style.display = 'none';
+            }
+        }, 260);
+    };
+
+    const togglePanel = () => {
+        if (createPostDiv.classList.contains('open')) {
+            closePanel();
+        } else {
+            openPanel();
+        }
+    };
+
+    const createPostButtons = [
+        document.getElementById('createPostButton'),
+        document.getElementById('legacyCreatePostButton')
+    ].filter(Boolean);
+
+    createPostButtons.forEach((button) => {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();
+            togglePanel();
+        });
+    });
+
+    closeButton?.addEventListener('click', (event) => {
+        event.preventDefault();
+        closePanel();
+    });
 
     // Poll functionality
     let pollEnabled = false;
-    
-    document.getElementById('togglePoll').addEventListener('click', function() {
-        pollEnabled = !pollEnabled;
-        const pollSection = document.getElementById('pollSection');
-        const toggleButton = document.getElementById('togglePoll');
-        
-        if (pollEnabled) {
-            pollSection.style.display = 'block';
-            toggleButton.textContent = '❌ Remove Poll';
-            toggleButton.style.background = '#dc3545';
-        } else {
-            pollSection.style.display = 'none';
-            toggleButton.textContent = '📊 Add Poll';
-            toggleButton.style.background = '#28a745';
+
+    const syncPollUi = () => {
+        if (!togglePollButton || !pollSection) {
+            return;
         }
+
+        togglePollButton.textContent = pollEnabled ? '❌ Remove Poll' : '📊 Add Poll';
+        togglePollButton.classList.toggle('remove', pollEnabled);
+        togglePollButton.setAttribute('aria-expanded', String(pollEnabled));
+        pollSection.hidden = !pollEnabled;
+    };
+
+    togglePollButton?.addEventListener('click', () => {
+        pollEnabled = !pollEnabled;
+        syncPollUi();
     });
 
-    document.getElementById('addPollOption').addEventListener('click', function() {
-        const pollOptions = document.getElementById('pollOptions');
-        const optionCount = pollOptions.children.length;
-        
+    addPollOptionBtn?.addEventListener('click', () => {
+        if (!pollOptionsContainer) return;
+        const optionCount = pollOptionsContainer.children.length;
+
         if (optionCount < 10) {
             const newOption = document.createElement('input');
             newOption.type = 'text';
             newOption.className = 'poll-option';
             newOption.placeholder = `Option ${optionCount + 1}`;
-            newOption.style.cssText = 'width: 100%; padding: 8px; margin-bottom: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff;';
-            pollOptions.appendChild(newOption);
+            pollOptionsContainer.appendChild(newOption);
         }
     });
 
-    document.getElementById('removePollOption').addEventListener('click', function() {
-        const pollOptions = document.getElementById('pollOptions');
-        const optionCount = pollOptions.children.length;
-        
+    removePollOptionBtn?.addEventListener('click', () => {
+        if (!pollOptionsContainer) return;
+        const optionCount = pollOptionsContainer.children.length;
+
         if (optionCount > 2) {
-            pollOptions.removeChild(pollOptions.lastChild);
+            pollOptionsContainer.removeChild(pollOptionsContainer.lastChild);
         }
     });
 
     // Connect the button to the hidden file input
-    document.getElementById('uploadBtn').addEventListener('click', function(event) {
+    uploadButton?.addEventListener('click', function(event) {
         event.preventDefault();
-        document.getElementById('imageInput').click();
+        imageInput?.click();
     });
 
     // Handle file selection
-    document.getElementById('imageInput').addEventListener('change', async function() {
-        const input = document.getElementById('imageInput');
-        const uploadResult = document.getElementById('uploadResult');
-        if (!input.files.length) {
-            uploadResult.textContent = 'No image selected';
+    imageInput?.addEventListener('change', async function() {
+        if (!imageInput?.files?.length) {
+            if (uploadResult) {
+                uploadResult.textContent = 'No image selected';
+                uploadResult.style.color = 'var(--text-muted)';
+            }
             return;
         }
-        
-        const file = input.files[0];
+
+        const file = imageInput.files[0];
         const formData = new FormData();
         formData.append('image', file);
-        
+
         try {
             // Use apiRequest for file upload
             const data = await apiRequest('/api/uploadPostImage', 'POST', formData, true);
             if (data.success) {
                 window.uploadedImageUrl = data.imageUrl;
-                uploadResult.textContent = 'Image uploaded successfully!';
-                uploadResult.style.color = 'green';
-                
+                if (uploadResult) {
+                    uploadResult.textContent = 'Image uploaded successfully!';
+                    uploadResult.style.color = '#4ade80';
+                }
+
                 // Insert <imageUrl> into the post body textarea
-                const bodyText = document.getElementById('bodyText');
-                if (bodyText) {
-                    // Add a space if needed
-                    if (bodyText.value && !bodyText.value.endsWith('\n')) bodyText.value += '\n';
-                    bodyText.value += `<${data.imageUrl}>\n`;
+                if (bodyTextArea) {
+                    if (bodyTextArea.value && !bodyTextArea.value.endsWith('\n')) bodyTextArea.value += '\n';
+                    bodyTextArea.value += `<${data.imageUrl}>\n`;
                     updatePreview(); // Update preview after inserting image URL
                 }
             } else {
-                uploadResult.textContent = data.message;
-                uploadResult.style.color = 'red';
+                if (uploadResult) {
+                    uploadResult.textContent = data.message;
+                    uploadResult.style.color = '#f87171';
+                }
             }
         } catch (err) {
-            uploadResult.textContent = 'Upload failed.';
-            uploadResult.style.color = 'red';
+            if (uploadResult) {
+                uploadResult.textContent = 'Upload failed.';
+                uploadResult.style.color = '#f87171';
+            }
         }
     });
 
     let selectedGif = null;
-    const gifPreviewEl = document.getElementById('selectedGifPreview');
-    const bodyTextArea = document.getElementById('bodyText');
 
     function renderGifPreview() {
         if (!gifPreviewEl) return;
@@ -193,7 +285,7 @@ export function initializeCreatePost(accountNumber) {
 
     renderGifPreview();
 
-    const gifButton = document.getElementById('openGifPicker');
+    const gifButton = createPostDiv.querySelector('#openGifPicker');
     if (gifButton) {
         gifButton.addEventListener('click', () => {
             openGiphyPicker({
@@ -210,25 +302,25 @@ export function initializeCreatePost(accountNumber) {
         });
     }
 
-    document.getElementById('createPost').addEventListener('click', async function (event) {
+    createPostButton?.addEventListener('click', async function (event) {
         event.preventDefault();
 
         // const title = document.getElementById('titleText').value;
         const title = " ";
-    let content = bodyTextArea.value || '';
+        let content = bodyTextArea?.value || '';
         
         // Prepare poll data if enabled
         let pollData = null;
         if (pollEnabled) {
-            const pollQuestion = document.getElementById('pollQuestion')?.value || '';
-            const pollOptionInputs = document.querySelectorAll('.poll-option');
+            const pollQuestion = createPostDiv.querySelector('#pollQuestion')?.value || '';
+            const pollOptionInputs = pollOptionsContainer?.querySelectorAll('.poll-option') || [];
             const pollOptions = Array.from(pollOptionInputs)
                 .filter(input => input && typeof input.value === 'string') // Ensure input has a valid value property
                 .map(input => ({ text: input.value.trim() }))
                 .filter(option => option.text);
             
-            const allowMultipleVotes = document.getElementById('allowMultipleVotes')?.checked || false;
-            const pollDuration = document.getElementById('pollDuration')?.value;
+            const allowMultipleVotes = allowMultipleVotesCheckbox?.checked || false;
+            const pollDuration = pollDurationSelect?.value;
             
             if (pollOptions.length >= 2) {
                 pollData = {
@@ -273,7 +365,6 @@ export function initializeCreatePost(accountNumber) {
     });
 
     // Live preview for <url> images in post body
-    const postPreview = document.getElementById('postPreview');
     function processContent(content) {
         // Make mentions clickable
         function makeMentionsClickable(content) {
@@ -321,9 +412,13 @@ export function initializeCreatePost(accountNumber) {
         return processedContent;
     }
     function updatePreview() {
+        if (!postPreview || !bodyTextArea) return;
         postPreview.innerHTML = processContent(bodyTextArea.value);
     }
-    bodyTextArea.addEventListener('input', updatePreview);
+    bodyTextArea?.addEventListener('input', updatePreview);
     // Initial preview
     updatePreview();
+
+    // Ensure UI reflects initial poll state
+    syncPollUi();
 }

@@ -10,7 +10,7 @@ export function renderBar() {
 
     const barHTML = `
         <div class="bar">
-            <ul>
+            <div class="bar-inner">
                 <div class="logo-section">
                     <img class="logoImg" src="/src/TNW.png" alt="Logo" />
                     <h1 class="logo" id="checkPost">The New World</h1>
@@ -72,7 +72,7 @@ export function renderBar() {
                     </div>
                     
                     <!-- Menu Button -->
-                    <div class="nav-menu-container" id="navMenuContainer">
+                    <div class="nav-menu-container legacy-nav-menu" id="navMenuContainer">
                         <button class="nav-icon-btn" id="menuToggle">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -81,7 +81,7 @@ export function renderBar() {
                             </svg>
                         </button>
                         
-                        <!-- Expandable Menu Panel -->
+                        <!-- Expandable Menu Panel (Legacy) -->
                         <div class="nav-menu-panel" id="navMenuPanel">
                             <a href="/home" class="nav-menu-item">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -90,7 +90,7 @@ export function renderBar() {
                                 </svg>
                                 <span>Home</span>
                             </a>
-                            <a id="createPostButton" class="nav-menu-item">
+                            <a id="legacyCreatePostButton" class="nav-menu-item">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
                                     <circle cx="12" cy="13" r="3"></circle>
@@ -104,21 +104,21 @@ export function renderBar() {
                                 </svg>
                                 <span>Messages</span>
                             </a>
-                            <a href="" id="profileButton" class="nav-menu-item">
+                            <a href="" id="legacyProfileButton" class="nav-menu-item">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
                                 </svg>
                                 <span>My Profile</span>
                             </a>
-                            <a href="/settings" id="settingsButton" class="nav-menu-item">
+                            <a href="/settings" id="legacySettingsButton" class="nav-menu-item">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="3"></circle>
                                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                                 </svg>
                                 <span>Settings</span>
                             </a>
-                            <a href="/support" id="supportPageButton" class="nav-menu-item">
+                            <a href="/support" id="legacySupportPageButton" class="nav-menu-item">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="9"></circle>
                                     <circle cx="12" cy="12" r="3"></circle>
@@ -129,7 +129,7 @@ export function renderBar() {
                                 </svg>
                                 <span>Support</span>
                             </a>
-                            <a id="logoutButton" href="" class="nav-menu-item logout">
+                            <a id="legacyLogoutButton" href="" class="nav-menu-item logout">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                     <polyline points="16,17 21,12 16,7"></polyline>
@@ -140,17 +140,100 @@ export function renderBar() {
                         </div>
                     </div>
                 </div>
-            </ul>
+            </div>
         </div>
+        <nav class="side-nav" aria-label="Primary">
+            <div class="side-nav-inner">
+                <a href="/home" class="side-nav-link" data-route="/home">
+                    <span class="side-nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                        </svg>
+                    </span>
+                    <span class="side-nav-label">Home</span>
+                </a>
+                <a href="/search" class="side-nav-link" data-route="/search">
+                    <span class="side-nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </span>
+                    <span class="side-nav-label">Search</span>
+                </a>
+                <a href="/messages" class="side-nav-link" data-route="/messages">
+                    <span class="side-nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </span>
+                    <span class="side-nav-label">Messages</span>
+                </a>
+                <a href="#" id="createPostButton" class="side-nav-link side-nav-primary">
+                    <span class="side-nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14"></path>
+                            <path d="M5 12h14"></path>
+                        </svg>
+                    </span>
+                    <span class="side-nav-label">Create</span>
+                </a>
+                <a href="#" id="profileButton" class="side-nav-link" data-route-prefix="/profile">
+                    <span class="side-nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </span>
+                    <span class="side-nav-label">Profile</span>
+                </a>
+                <a href="/settings" id="settingsButton" class="side-nav-link" data-route="/settings">
+                    <span class="side-nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                    </span>
+                    <span class="side-nav-label">Settings</span>
+                </a>
+                <a href="/support" id="supportPageButton" class="side-nav-link" data-route="/support">
+                    <span class="side-nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <line x1="12" y1="3" x2="12" y2="5"></line>
+                            <line x1="12" y1="19" x2="12" y2="21"></line>
+                            <line x1="21" y1="12" x2="19" y2="12"></line>
+                            <line x1="5" y1="12" x2="3" y2="12"></line>
+                        </svg>
+                    </span>
+                    <span class="side-nav-label">Support</span>
+                </a>
+                <a href="#" id="logoutButton" class="side-nav-link side-nav-danger">
+                    <span class="side-nav-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16,17 21,12 16,7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                    </span>
+                    <span class="side-nav-label">Logout</span>
+                </a>
+            </div>
+        </nav>
     `;
 
     const body = document.body;
     const barContainer = document.createElement('div');
     barContainer.innerHTML = barHTML;
     body.insertBefore(barContainer, body.firstChild);
+    body.classList.add('has-side-nav');
     
     // Initialize dynamic navigation functionality
     initializeNavControls();
+    initializeSideNav();
 
     // Add scroll event handling for the navbar
 //     let lastScrollTop = 0;
@@ -334,6 +417,35 @@ function initializeNavControls() {
     }
 }
 
+function initializeSideNav() {
+    const sideNav = document.querySelector('.side-nav');
+    if (!sideNav) return;
+
+    const navLinks = sideNav.querySelectorAll('.side-nav-link');
+    if (!navLinks.length) return;
+
+    const rawPath = window.location.pathname || '/';
+    const normalizedPath = rawPath.length > 1 && rawPath.endsWith('/')
+        ? rawPath.slice(0, -1)
+        : rawPath;
+
+    navLinks.forEach((link) => {
+        const route = link.dataset.route;
+        const routePrefix = link.dataset.routePrefix;
+
+        const matchesRoute = route && (
+            normalizedPath === route ||
+            (route === '/home' && normalizedPath === '/')
+        );
+
+        const matchesPrefix = routePrefix && normalizedPath.startsWith(routePrefix);
+
+        if (matchesRoute || matchesPrefix) {
+            link.classList.add('active');
+        }
+    });
+}
+
 async function performSearch(query, type) {
     const searchResults = document.getElementById('navSearchResults');
     if (!searchResults) return;
@@ -385,8 +497,12 @@ async function performSearch(query, type) {
 
 export function initializeGlobalButtons(accountNumber) {
 
-    const logoutButton = document.getElementById("logoutButton");
-    if (logoutButton) {
+    const logoutButtons = [
+        document.getElementById("logoutButton"),
+        document.getElementById("legacyLogoutButton")
+    ].filter(Boolean);
+
+    logoutButtons.forEach((logoutButton) => {
         logoutButton.addEventListener("click", async function (event) {
             event.preventDefault();
             try {
@@ -398,17 +514,21 @@ export function initializeGlobalButtons(accountNumber) {
                 console.error('Logout error:', error);
             }
         });
-    }
+    });
 
-    const profileButton = document.getElementById("profileButton");
-    if (profileButton) {
+    const profileButtons = [
+        document.getElementById("profileButton"),
+        document.getElementById("legacyProfileButton")
+    ].filter(Boolean);
+
+    profileButtons.forEach((profileButton) => {
         profileButton.addEventListener("click", function (event) {
             event.preventDefault();
             if (accountNumber) {
                 window.location.href = `/profile/${accountNumber}`;
             }
         });
-    }
+    });
 
     // Check admin and support access and show/hide buttons
     apiRequest('/api/verify', 'GET')
