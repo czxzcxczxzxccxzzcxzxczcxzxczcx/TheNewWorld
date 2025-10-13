@@ -70,7 +70,7 @@ function showAlreadyLoggedInPopup() {
     const progressBar = popup.querySelector('#progressBar');
     let progress = 0;
     const interval = setInterval(() => {
-        progress += 2;
+        progress += 20;
         progressBar.style.width = progress + '%';
         
         if (progress >= 100) {
@@ -87,18 +87,38 @@ document.addEventListener("DOMContentLoaded", function () {
     const loginButton = document.getElementById('login');
     const logo = document.getElementById('viewtest');
 
-    logo.style.display='block';
+    if (logo) {
+        logo.style.display = 'block';
+    }
+
+    if (loginPanel) {
+        loginPanel.style.display = 'flex';
+    }
+
+    if (newAccPanel) {
+        newAccPanel.style.display = 'none';
+    }
 
     apiRequest('/api/getUserInfo', 'GET').then(data => {
         if (data.success) {
+            if (loginPanel) {
+                loginPanel.style.display = 'none';
+            }
+            if (newAccPanel) {
+                newAccPanel.style.display = 'none';
+            }
             showAlreadyLoggedInPopup();
         } else {
-            
-            loginPanel.style.display = 'flex'
+            if (loginPanel) {
+                loginPanel.style.display = 'flex';
+            }
         }
     })
     .catch(error => {
         console.error("Error fetching user info:", error);
+        if (loginPanel) {
+            loginPanel.style.display = 'flex';
+        }
     });
 
     document.addEventListener("click", function (event) {

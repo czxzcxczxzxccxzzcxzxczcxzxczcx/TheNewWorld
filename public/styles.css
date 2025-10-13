@@ -886,6 +886,14 @@ body.has-side-nav {
   margin-bottom: 0.15rem;
 }
 
+#loginPanel {
+  display: flex;
+}
+
+#newAccPanel {
+  display: none;
+}
+
 .panel::before,
 .panel::after {
   content: '';
