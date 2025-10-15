@@ -4,6 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/src/TNW.png">
+    <script>
+        // Apply theme immediately to prevent flash
+        (function() {
+            const storedTheme = localStorage.getItem('theme');
+            const theme = storedTheme || 'dark';
+            const html = document.documentElement;
+
+            if (!storedTheme) {
+                localStorage.setItem('theme', theme);
+            }
+
+            html.classList.remove('theme-light', 'theme-dark', 'theme-auto', 'auto-light', 'auto-dark');
+            html.classList.add(`theme-${theme}`);
+
+            if (theme === 'auto') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+                html.classList.add(prefersDark.matches ? 'auto-dark' : 'auto-light');
+            }
+        })();
+    </script>
     <link rel="stylesheet" type="text/css" href="styles.css">
     <script type="module" src="/js/notFound.js" defer></script>
     <title>404 - Page Not Found | The New World</title>

@@ -32,20 +32,24 @@ function showAlreadyLoggedInPopup() {
     `;
 
     // Add animation keyframes
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes popupSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px) scale(0.95);
+    let style = document.getElementById('alreadyLoggedInAnimationStyle');
+    if (!style) {
+        style = document.createElement('style');
+        style.id = 'alreadyLoggedInAnimationStyle';
+        style.textContent = `
+            @keyframes popupSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px) scale(0.95);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
             }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-    `;
-    document.head.appendChild(style);
+        `;
+        document.head.appendChild(style);
+    }
 
     // Create content
     popup.innerHTML = `

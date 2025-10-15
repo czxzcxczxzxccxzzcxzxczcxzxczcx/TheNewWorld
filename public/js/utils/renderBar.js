@@ -6,7 +6,17 @@ export function renderBar() {
 
     // Initialize theme from localStorage or default to auto
     const savedTheme = localStorage.getItem('theme');
-    applyTheme(savedTheme);
+    const effectiveTheme = savedTheme || 'dark';
+
+    if (!savedTheme) {
+        localStorage.setItem('theme', effectiveTheme);
+    }
+    applyTheme(effectiveTheme);
+
+    // Prevent duplicate nav mounting if the bar already exists
+    if (document.body.classList.contains('has-side-nav') || document.querySelector('.bar')) {
+        return;
+    }
 
     const barHTML = `
         <div class="bar">
@@ -282,6 +292,7 @@ function initializeNavControls() {
     
     const searchContainer = document.getElementById('navSearchContainer');
     const searchPanel = document.getElementById('navSearchPanel');
+    const searchToggle = document.getElementById('searchToggle');
     const searchInput = document.getElementById('navSearchInput');
     const searchResults = document.getElementById('navSearchResults');
     const searchTypeBtns = document.querySelectorAll('.search-type-btn');
@@ -298,20 +309,62 @@ function initializeNavControls() {
     let currentSearchType = 'posts';
     
     // Search functionality
-    if (searchContainer && searchPanel) {
-        // Mouse enter search container
-        searchContainer.addEventListener('mouseenter', () => {
+    if (searchContainer && searchPanel && searchToggle && searchInput) {
+        const openSearch = () => {
+            if (searchPanel.classList.contains('active')) {
+                return;
+            }
             searchPanel.classList.add('active');
+            searchContainer.classList.add('active');
+            searchToggle.setAttribute('aria-expanded', 'true');
             searchInput.focus();
-        });
-        
-        // Mouse leave search container
-        searchContainer.addEventListener('mouseleave', () => {
+        };
+
+        const closeSearch = () => {
+            if (!searchPanel.classList.contains('active')) {
+                return;
+            }
             searchPanel.classList.remove('active');
+            searchContainer.classList.remove('active');
+            searchToggle.setAttribute('aria-expanded', 'false');
             searchResults.innerHTML = '';
             searchInput.value = '';
+        };
+
+        searchToggle.setAttribute('aria-haspopup', 'true');
+        searchToggle.setAttribute('aria-expanded', 'false');
+
+        searchToggle.addEventListener('click', (event) => {
+            event.preventDefault();
+            const willOpen = !searchPanel.classList.contains('active');
+            if (willOpen) {
+                openSearch();
+            } else {
+                closeSearch();
+            }
         });
-        
+
+        searchContainer.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        searchPanel.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!searchContainer.contains(event.target)) {
+                closeSearch();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && searchPanel.classList.contains('active')) {
+                closeSearch();
+                searchToggle.focus();
+            }
+        });
+
         // Search type button handling
         searchTypeBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -338,81 +391,108 @@ function initializeNavControls() {
                 searchResults.innerHTML = '';
             }
         });
-        
-        // Prevent search panel from closing when clicking inside it
-        searchPanel.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
     }
     
     // Menu functionality
-    if (menuContainer && menuPanel) {
+    if (menuContainer && menuPanel && menuToggle) {
         const openMenu = () => {
-            menuPanel.classList.add('active');
-            if (menuToggle) {
-                menuToggle.setAttribute('aria-expanded', 'true');
+            if (menuPanel.classList.contains('active')) {
+                return;
             }
+            menuPanel.classList.add('active');
+            menuToggle.setAttribute('aria-expanded', 'true');
         };
 
         const closeMenu = () => {
-            menuPanel.classList.remove('active');
-            if (menuToggle) {
-                menuToggle.setAttribute('aria-expanded', 'false');
+            if (!menuPanel.classList.contains('active')) {
+                return;
             }
+            menuPanel.classList.remove('active');
+            menuToggle.setAttribute('aria-expanded', 'false');
         };
 
-        // Mouse enter menu container
-        menuContainer.addEventListener('mouseenter', openMenu);
-        
-        // Mouse leave menu container
-        menuContainer.addEventListener('mouseleave', closeMenu);
+        menuToggle.setAttribute('aria-haspopup', 'true');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        menuToggle.addEventListener('click', (event) => {
+            event.preventDefault();
+            const willOpen = !menuPanel.classList.contains('active');
+            if (willOpen) {
+                openMenu();
+            } else {
+                closeMenu();
+            }
+        });
 
-        if (menuToggle) {
-            menuToggle.setAttribute('aria-haspopup', 'true');
-            menuToggle.setAttribute('aria-expanded', 'false');
-            menuToggle.addEventListener('click', (event) => {
-                event.preventDefault();
-                const willOpen = !menuPanel.classList.contains('active');
-                menuPanel.classList.toggle('active', willOpen);
-                menuToggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-            });
-        }
-        
-        // Prevent menu panel from closing when clicking inside it
-        menuPanel.addEventListener('click', (e) => {
-            e.stopPropagation();
+        menuContainer.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        menuPanel.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!menuContainer.contains(event.target)) {
+                closeMenu();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && menuPanel.classList.contains('active')) {
+                closeMenu();
+                menuToggle.focus();
+            }
         });
     }
 
-    if (adminContainer && adminPanel) {
+    if (adminContainer && adminPanel && adminToggle) {
         const openAdminMenu = () => {
-            adminPanel.classList.add('active');
-            if (adminToggle) {
-                adminToggle.setAttribute('aria-expanded', 'true');
+            if (adminPanel.classList.contains('active')) {
+                return;
             }
+            adminPanel.classList.add('active');
+            adminToggle.setAttribute('aria-expanded', 'true');
         };
 
         const closeAdminMenu = () => {
-            adminPanel.classList.remove('active');
-            if (adminToggle) {
-                adminToggle.setAttribute('aria-expanded', 'false');
+            if (!adminPanel.classList.contains('active')) {
+                return;
             }
+            adminPanel.classList.remove('active');
+            adminToggle.setAttribute('aria-expanded', 'false');
         };
 
-        adminContainer.addEventListener('mouseenter', openAdminMenu);
-        adminContainer.addEventListener('mouseleave', closeAdminMenu);
+        adminToggle.setAttribute('aria-haspopup', 'true');
+        adminToggle.setAttribute('aria-expanded', 'false');
+        adminToggle.addEventListener('click', (event) => {
+            event.preventDefault();
+            const willOpen = !adminPanel.classList.contains('active');
+            if (willOpen) {
+                openAdminMenu();
+            } else {
+                closeAdminMenu();
+            }
+        });
 
-        if (adminToggle) {
-            adminToggle.addEventListener('click', (event) => {
-                event.preventDefault();
-                const willOpen = !adminPanel.classList.contains('active');
-                adminPanel.classList.toggle('active', willOpen);
-                adminToggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-            });
-        }
+        adminContainer.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
 
-        adminPanel.addEventListener('click', (e) => {
-            e.stopPropagation();
+        adminPanel.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!adminContainer.contains(event.target)) {
+                closeAdminMenu();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && adminPanel.classList.contains('active')) {
+                closeAdminMenu();
+                adminToggle.focus();
+            }
         });
     }
 }
@@ -616,15 +696,20 @@ export function initializeGlobalButtons(accountNumber) {
 // Global Theme Manager
 export function applyTheme(theme) {
     const html = document.documentElement;
-    
+    const resolvedTheme = theme || 'dark';
+
+    if (!theme) {
+        localStorage.setItem('theme', resolvedTheme);
+    }
+
     // Remove existing theme classes
     html.classList.remove('theme-light', 'theme-dark', 'theme-auto', 'auto-light', 'auto-dark');
     
     // Apply new theme
-    html.classList.add(`theme-${theme}`);
+    html.classList.add(`theme-${resolvedTheme}`);
     
     // Handle auto theme
-    if (theme === 'auto') {
+    if (resolvedTheme === 'auto') {
         handleAutoTheme();
     }
     
@@ -657,6 +742,9 @@ function handleAutoTheme() {
 
 // Initialize theme from user data
 export async function initializeTheme(userData) {
-    const userTheme = userData?.theme || 'auto';
+    const storedTheme = localStorage.getItem('theme');
+    const userTheme = userData?.theme || storedTheme || 'dark';
+
+    localStorage.setItem('theme', userTheme);
     applyTheme(userTheme);
 }
