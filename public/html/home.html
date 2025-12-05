@@ -52,14 +52,16 @@
         </div>
 
         <!-- New notifications panel -->
-        <div id="notificationsPanel" class="notificationsPanel">
-            <div class="notificationsPanelHeader">
-                <h3>Notifications</h3>
-                <button id="closeNotifications" class="closeNotificationsBtn">×</button>
+        <div id="notificationsPanel" class="notificationsPanel" aria-hidden="true">
+            <div class="notificationsPanel-sheet" role="dialog" aria-modal="true" aria-labelledby="notificationsPanelTitle">
+                <div class="notificationsPanelHeader">
+                    <h3 id="notificationsPanelTitle">Notifications</h3>
+                    <button id="closeNotifications" class="closeNotificationsBtn" aria-label="Close notifications">×</button>
+                </div>
+                <ul id="notificationsList" class="notificationsList" role="list">
+                    <!-- Notifications will be dynamically added here -->
+                </ul>
             </div>
-            <ul id="notificationsList" class="notificationsList">
-                <!-- Notifications will be dynamically added here -->
-            </ul>
         </div>
 
     </body>

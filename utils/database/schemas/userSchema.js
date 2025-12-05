@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
     adminRole: { type: String, enum: ['user', 'moderator', 'admin', 'headAdmin'], default: 'user' },
     verified: { type: Boolean, default: false },
     verificationVisible: { type: Boolean, default: true },
-    theme: { type: String, enum: ['light', 'dark', 'auto'], default: 'light' },
+    theme: { type: String, enum: ['light', 'dark', 'auto'], default: 'auto' },
     warnings: { type: [warningSchema], default: [] },
     bans: { type: [banSchema], default: [] },
     moderationState: {

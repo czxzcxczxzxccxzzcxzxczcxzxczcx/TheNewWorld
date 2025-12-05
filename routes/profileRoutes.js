@@ -270,6 +270,45 @@ router.post('/updateSettings', async (req, res) => {
     }
 });
 
+// Route to update user's theme preference (light/dark/auto)
+router.post('/theme', async (req, res) => {
+    const sessionId = req.cookies.TNWID;
+
+    try {
+        if (!sessionId) {
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
+        }
+
+        const sessionUser = await sessionStore.get(sessionId);
+        if (!sessionUser) {
+            return res.status(401).json({ success: false, message: 'Invalid or expired session' });
+        }
+
+        const { theme } = req.body || {};
+        const valid = ['light', 'dark', 'auto'];
+        if (!valid.includes(theme)) {
+            return res.status(400).json({ success: false, message: 'Invalid theme' });
+        }
+
+        const accountNumber = sessionUser.accountNumber;
+        const currentUser = await User.findOne({ accountNumber });
+        if (!currentUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Persist theme to user document
+        await User.updateOne({ accountNumber }, { $set: { theme } });
+
+        // Update session store so in-memory/session reads reflect new theme
+        await sessionStore.update(sessionId, { theme });
+
+        return res.json({ success: true, message: 'Theme updated', theme });
+    } catch (error) {
+        console.error('Error updating theme:', error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 // Route to check if a user is followed by the current user
 router.get('/isFollowed/:recipientAccountNumber', async (req, res) => {
     const { recipientAccountNumber } = req.params;

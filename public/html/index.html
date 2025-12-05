@@ -27,6 +27,7 @@
             }
         })();
     </script>
+    <script defer data-domain="thenewworld.app" src="https://plausible.io/js/script.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css">
     <script type="module" src="/js/login.js" defer></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -67,50 +68,81 @@
             </div>
         </div>
     </div>
-    <div class="panel" id="loginPanel">
-        <div class="panel-heading">
-        
-            <h1>Welcome back</h1>
-            <p class="panel-subtitle">Sign in to continue exploring The New World.</p>
-        </div>
-        <form id="loginForm" onsubmit="event.preventDefault();">
-            <input class="inputText" id="loginUsername" type="text" placeholder="Username">
-            <input class="inputText" id="loginPassword" type="password" placeholder="Password">
-            <button type="submit" class="inputSubmit">Login</button>
-        </form>
-        <div class="panel-divider"><span>or continue with</span></div>
-        <div class="google-login-container">
-            <a href="/api/auth/google" class="google-login-btn">
-                <img src="https://imagepng.org/wp-content/uploads/2019/08/google-icon.png" alt="Google icon">
-                <span>Sign in with Google</span>
-            </a>
-        </div>
-        <div class="panel-toggle">
-            <span class="panel-toggle-text">New here?</span>
-            <button id="newAccount" type="button" class="otherInput">Create an account</button>
-        </div>
-    </div>
-    <div class="panel" id="newAccPanel">
-        <div class="panel-heading">
-     
-            <h1>Create your account</h1>
-            <p class="panel-subtitle">Join the community and start sharing your story.</p>
-        </div>
-        <form id="newAccForm" onsubmit="event.preventDefault();">
-            <input class="inputText" id="newAccUsername" type="text" placeholder="Username">
-            <input class="inputText" id="newAccPassword" type="password" placeholder="Password">
-            <button type="submit" class="inputSubmit">Create Account</button>
-        </form>
-        <div class="panel-divider"><span>or sign up with</span></div>
-        <div class="google-login-container">
-            <a href="/api/auth/google" class="google-login-btn">
-                <img src="https://imagepng.org/wp-content/uploads/2019/08/google-icon.png" alt="Google icon">
-                <span>Continue with Google</span>
-            </a>
-        </div>
-        <div class="panel-toggle">
-            <span class="panel-toggle-text">Already part of The New World?</span>
-            <button id="login" type="button" class="otherInput">Log in</button>
+    <div class="auth-layout">
+        <aside class="auth-info" aria-label="About The New World">
+            <div class="auth-info-inner">
+                <p class="auth-kicker">Social storytelling for people building tomorrow.</p>
+                <h2 class="auth-title">Welcome to <span>The New World</span></h2>
+                <p class="auth-description">
+                    Share ideas, react in real time, and grow alongside a community that values thoughtful conversation.
+                    Your feed is curated around people you follow, the topics you care about, and the moments that matter now.
+                </p>
+                <ul class="auth-highlights">
+                    <li>
+                        <strong>Meaningful connections:</strong>
+                        follow creators, collaborators, and friends with zero algorithmic noise.
+                    </li>
+                    <li>
+                        <strong>Rich posts &amp; replies:</strong>
+                        drop images, GIFs, polls, and long-form thoughts without friction.
+                    </li>
+                    <li>
+                        <strong>Focused messaging:</strong>
+                        keep discussions alive in fast, media-friendly DMs and group chats.
+                    </li>
+                </ul>
+                <div class="auth-cta-copy">
+                    <p>
+                        Already exploring? Jump back in. New around here? Create an account in seconds and start shaping the narrative.
+                    </p>
+                </div>
+            </div>
+        </aside>
+        <div class="auth-forms">
+            <div class="panel" id="loginPanel">
+                <div class="panel-heading">
+                    <h1>Welcome back</h1>
+                    <p class="panel-subtitle">Sign in to continue exploring The New World.</p>
+                </div>
+                <form id="loginForm" onsubmit="event.preventDefault();">
+                    <input class="inputText" id="loginUsername" type="text" placeholder="Username">
+                    <input class="inputText" id="loginPassword" type="password" placeholder="Password">
+                    <button type="submit" class="inputSubmit">Login</button>
+                </form>
+                <div class="panel-divider"><span>or continue with</span></div>
+                <div class="google-login-container">
+                    <a href="/api/auth/google" class="google-login-btn">
+                        <img src="https://imagepng.org/wp-content/uploads/2019/08/google-icon.png" alt="Google icon">
+                        <span>Sign in with Google</span>
+                    </a>
+                </div>
+                <div class="panel-toggle">
+                    <span class="panel-toggle-text">New here?</span>
+                    <button id="newAccount" type="button" class="otherInput">Create an account</button>
+                </div>
+            </div>
+            <div class="panel" id="newAccPanel">
+                <div class="panel-heading">
+                    <h1>Create your account</h1>
+                    <p class="panel-subtitle">Join the community and start sharing your story.</p>
+                </div>
+                <form id="newAccForm" onsubmit="event.preventDefault();">
+                    <input class="inputText" id="newAccUsername" type="text" placeholder="Username">
+                    <input class="inputText" id="newAccPassword" type="password" placeholder="Password">
+                    <button type="submit" class="inputSubmit">Create Account</button>
+                </form>
+                <div class="panel-divider"><span>or sign up with</span></div>
+                <div class="google-login-container">
+                    <a href="/api/auth/google" class="google-login-btn">
+                        <img src="https://imagepng.org/wp-content/uploads/2019/08/google-icon.png" alt="Google icon">
+                        <span>Continue with Google</span>
+                    </a>
+                </div>
+                <div class="panel-toggle">
+                    <span class="panel-toggle-text">Already part of The New World?</span>
+                    <button id="login" type="button" class="otherInput">Log in</button>
+                </div>
+            </div>
         </div>
     </div>
 

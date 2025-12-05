@@ -118,7 +118,8 @@ router.post(
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 maxAge: 24 * 60 * 60 * 1000,
-                sameSite: 'Strict',
+                sameSite: 'Lax',
+                path: '/',
             });
             
             res.json({ 
@@ -209,7 +210,7 @@ router.post('/login', async (req, res) => {
                     theme: verifiedUser.theme || 'auto'
                 });
                 
-                res.cookie('TNWID', sessionId, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000,  sameSite: 'Strict', });
+                res.cookie('TNWID', sessionId, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000,  sameSite: 'Lax', path: '/' });
                 res.json({ success: true, message: 'Login successful' });
 
                 console.log(`Server Login:\t\tSuccessful by ${verifiedUser.username} (${verifiedUser.accountNumber})`);
@@ -406,18 +407,22 @@ router.get('/getUserInfo', async (req, res) => {
 });
 
 
-// Logs the user out
-router.post('/logout', async (req, res) => {
+async function handleLogout(req, res) {
     const sessionId = req.cookies.TNWID;
 
-    res.clearCookie('TNWID', {httpOnly: true, secure: process.env.NODE_ENV === 'production',  sameSite: 'Strict',});
+    // Clear cookie using Lax + path to improve cross-origin preview compatibility
+    res.clearCookie('TNWID', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'Lax', path: '/' });
 
     if (sessionId) {
         await sessionStore.delete(sessionId);
     }
 
     res.json({ success: true, message: 'Logged out successfully' });
-});
+}
+
+// Logs the user out (accept both POST and GET for flexibility)
+router.post('/logout', handleLogout);
+router.get('/logout', handleLogout);
 
 // Google OAuth login route
 router.get('/auth/google', (req, res, next) => {
@@ -447,7 +452,8 @@ router.get('/auth/google/callback', (req, res, next) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: 'Strict',
+            sameSite: 'Lax',
+            path: '/',
     });
     res.redirect('/home');
   }

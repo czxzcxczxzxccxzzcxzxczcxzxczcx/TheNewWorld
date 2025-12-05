@@ -150,7 +150,8 @@ export function initializeCreatePost(accountNumber) {
 
     const createPostButtons = [
         document.getElementById('createPostButton'),
-        document.getElementById('legacyCreatePostButton')
+        document.getElementById('legacyCreatePostButton'),
+        document.getElementById('bottomCreatePostButton')
     ].filter(Boolean);
 
     createPostButtons.forEach((button) => {

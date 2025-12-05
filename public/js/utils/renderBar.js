@@ -1,14 +1,130 @@
 import { apiRequest } from './apiRequest.js';
 import { getVerifiedUsernameHTML } from './verifiedBadge.js';
 
+const THEME_SEQUENCE = ['dark', 'light', 'auto'];
+const THEME_LABELS = {
+    dark: 'Dark theme',
+    light: 'Light theme',
+    auto: 'Auto theme',
+};
+const THEME_ICON_MARKUP = {
+    dark: `
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 0 1 11.21 3 7 7 0 1 0 21 12.79z"></path>
+        </svg>
+    `,
+    light: `
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="M4.93 4.93l1.41 1.41"></path>
+            <path d="M17.66 17.66l1.41 1.41"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="M4.93 19.07l1.41-1.41"></path>
+            <path d="M17.66 6.34l1.41-1.41"></path>
+        </svg>
+    `,
+    auto: `
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"></path>
+            <path d="M12 3v18"></path>
+        </svg>
+    `,
+};
+
+const themeChangeListeners = new Set();
+let currentTheme = null;
+
+const isValidTheme = (theme) => THEME_SEQUENCE.includes(theme);
+
+const getNextTheme = (theme) => {
+    const currentIndex = THEME_SEQUENCE.indexOf(theme);
+    return THEME_SEQUENCE[(currentIndex + 1) % THEME_SEQUENCE.length];
+};
+
+const notifyThemeChange = (theme) => {
+    themeChangeListeners.forEach((listener) => {
+        try {
+            listener(theme);
+        } catch (error) {
+            console.error('Theme listener error:', error);
+        }
+    });
+};
+
+const getThemeToggleElements = () => ({
+    button: document.getElementById('themeToggle'),
+    icon: document.getElementById('themeToggleIcon'),
+    status: document.getElementById('themeToggleStatus'),
+});
+
+const updateThemeToggleUI = (theme) => {
+    const normalizedTheme = isValidTheme(theme) ? theme : 'dark';
+    const { button, icon, status } = getThemeToggleElements();
+    const nextTheme = getNextTheme(normalizedTheme);
+
+    if (button) {
+        const nextLabel = THEME_LABELS[nextTheme];
+        button.dataset.theme = normalizedTheme;
+        button.setAttribute('aria-label', `Switch to ${nextLabel}`);
+        button.setAttribute('title', `Switch to ${nextLabel}`);
+    }
+
+    if (icon) {
+        icon.innerHTML = THEME_ICON_MARKUP[normalizedTheme];
+    }
+
+    if (status) {
+        status.textContent = `${THEME_LABELS[normalizedTheme]}`;
+    }
+};
+
+export const onThemeChange = (listener) => {
+    if (typeof listener === 'function') {
+        themeChangeListeners.add(listener);
+        return () => themeChangeListeners.delete(listener);
+    }
+    return () => {};
+};
+
+export const getCurrentTheme = () => {
+    if (isValidTheme(currentTheme)) {
+        return currentTheme;
+    }
+    const storedTheme = localStorage.getItem('theme');
+    return isValidTheme(storedTheme) ? storedTheme : 'dark';
+};
+import { initializeNotificationCenter } from './notificationCenter.js';
+import { initializeOnboarding } from './onboarding.js';
+import { registerServiceWorker } from './serviceWorker.js';
+
+const ANALYTICS_SELECTOR = 'script[data-plausible]';
+
+function ensureAnalyticsScript() {
+    if (document.querySelector(ANALYTICS_SELECTOR)) {
+        return;
+    }
+
+    const script = document.createElement('script');
+    script.defer = true;
+    script.src = 'https://plausible.io/js/script.js';
+    script.dataset.domain = 'thenewworld.app';
+    script.setAttribute('data-plausible', 'true');
+    document.head.appendChild(script);
+}
+
+registerServiceWorker();
+
 export function renderBar() {
     console.log("WARNING WARNING WARNING WARNING WARNING WARNING WARNING\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\nThis is your browser's developer console. If someone told you to paste something here, it could be a scam.\n\nNever share anything from this console unless you understand exactly what it does");
 
-    // Initialize theme from localStorage or default to auto
+    // Initialize theme from localStorage or default to dark
     const savedTheme = localStorage.getItem('theme');
-    const effectiveTheme = savedTheme || 'dark';
+    const effectiveTheme = isValidTheme(savedTheme) ? savedTheme : 'dark';
 
-    if (!savedTheme) {
+    if (!savedTheme || !isValidTheme(savedTheme)) {
         localStorage.setItem('theme', effectiveTheme);
     }
     applyTheme(effectiveTheme);
@@ -18,17 +134,19 @@ export function renderBar() {
         return;
     }
 
+    ensureAnalyticsScript();
+
     const barHTML = `
         <div class="bar">
             <div class="bar-inner">
                 <div class="logo-section">
-                    <img class="logoImg" src="/src/TNW.png" alt="Logo" />
+                    <img class="logoImg" src="/src/TNW.png" alt="Logo" loading="lazy" />
                     <h1 class="logo" id="checkPost">The New World</h1>
                 </div>
                 <div class="nav-controls">
                     <!-- Search Button -->
                     <div class="nav-search-container" id="navSearchContainer">
-                        <button class="nav-icon-btn" id="searchToggle">
+                        <button class="nav-icon-btn" id="searchToggle" aria-label="Toggle search panel" aria-haspopup="true" aria-expanded="false">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
@@ -46,9 +164,25 @@ export function renderBar() {
                         </div>
                     </div>
 
+                    <button
+                        class="nav-icon-btn"
+                        id="notificationsToggle"
+                        data-action="toggle-notifications"
+                        aria-label="Toggle notifications panel"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        type="button"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="nav-icon-badge" data-notification-badge hidden aria-hidden="true"></span>
+                    </button>
+
                     <!-- Admin Button -->
                     <div class="nav-menu-container nav-admin-container" id="navAdminContainer" style="display: none;">
-                        <button class="nav-icon-btn" id="adminToggle" aria-haspopup="true" aria-expanded="false">
+                        <button class="nav-icon-btn" id="adminToggle" aria-haspopup="true" aria-expanded="false" aria-label="Toggle admin menu">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 2 4 5v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V5l-8-3z"></path>
                                 <path d="M12 22s6-3 6-9V6l-6-2-6 2v7c0 6 6 9 6 9z" opacity="0.2"></path>
@@ -83,7 +217,7 @@ export function renderBar() {
                     
                     <!-- Menu Button -->
                     <div class="nav-menu-container legacy-nav-menu" id="navMenuContainer">
-                        <button class="nav-icon-btn" id="menuToggle">
+                        <button class="nav-icon-btn" id="menuToggle" aria-label="Toggle navigation menu" aria-haspopup="true" aria-expanded="false">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
                                 <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -233,17 +367,86 @@ export function renderBar() {
                 </a>
             </div>
         </nav>
+        <nav class="bottom-nav" aria-label="Mobile primary navigation">
+            <a href="/home" class="bottom-nav-link" data-route="/home" aria-label="Home">
+                <span class="bottom-nav-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                    </svg>
+                </span>
+                <span class="bottom-nav-label">Home</span>
+            </a>
+            <a href="/search" class="bottom-nav-link" data-route="/search" aria-label="Search">
+                <span class="bottom-nav-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </span>
+                <span class="bottom-nav-label">Search</span>
+            </a>
+            <button type="button" id="bottomCreatePostButton" class="bottom-nav-link bottom-nav-primary" aria-label="Create post">
+                <span class="bottom-nav-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14"></path>
+                        <path d="M5 12h14"></path>
+                    </svg>
+                </span>
+                <span class="bottom-nav-label">Create</span>
+            </button>
+            <a href="/messages" class="bottom-nav-link" data-route="/messages" aria-label="Direct messages">
+                <span class="bottom-nav-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </span>
+                <span class="bottom-nav-label">DMs</span>
+            </a>
+            <a href="#" id="bottomProfileButton" class="bottom-nav-link" data-route-prefix="/profile" aria-label="Profile">
+                <span class="bottom-nav-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </span>
+                <span class="bottom-nav-label">Profile</span>
+            </a>
+        </nav>
+        <div class="nav-menu-overlay" id="navMenuOverlay" aria-hidden="true"></div>
     `;
 
     const body = document.body;
     const barContainer = document.createElement('div');
     barContainer.innerHTML = barHTML;
     body.insertBefore(barContainer, body.firstChild);
-    body.classList.add('has-side-nav');
+    body.classList.add('has-side-nav', 'has-bottom-nav');
+
+    if (!document.getElementById('notificationsPanel')) {
+        const notificationsPanel = document.createElement('div');
+        notificationsPanel.id = 'notificationsPanel';
+        notificationsPanel.className = 'notificationsPanel';
+        notificationsPanel.setAttribute('aria-hidden', 'true');
+        notificationsPanel.innerHTML = `
+            <div class="notificationsPanel-sheet" role="dialog" aria-modal="true" aria-labelledby="notificationsPanelTitle">
+                <div class="notificationsPanelHeader">
+                    <h3 id="notificationsPanelTitle">Notifications</h3>
+                    <button id="closeNotifications" class="closeNotificationsBtn" aria-label="Close notifications">&times;</button>
+                </div>
+                <ul id="notificationsList" class="notificationsList" role="list"></ul>
+            </div>
+        `;
+        body.appendChild(notificationsPanel);
+    }
     
     // Initialize dynamic navigation functionality
     initializeNavControls();
     initializeSideNav();
+    initializeBottomNav();
+    setupResponsiveNavBehavior();
+    initializeNotificationCenter();
+    initializeOnboarding();
 
     // Add scroll event handling for the navbar
 //     let lastScrollTop = 0;
@@ -290,6 +493,7 @@ function initializeNavControls() {
         logoText.style.cursor = 'pointer';
     }
     
+    const body = document.body;
     const searchContainer = document.getElementById('navSearchContainer');
     const searchPanel = document.getElementById('navSearchPanel');
     const searchToggle = document.getElementById('searchToggle');
@@ -300,13 +504,47 @@ function initializeNavControls() {
     const menuContainer = document.getElementById('navMenuContainer');
     const menuPanel = document.getElementById('navMenuPanel');
     const menuToggle = document.getElementById('menuToggle');
+    const bottomMenuButton = document.getElementById('bottomMenuButton');
+    const navMenuOverlay = document.getElementById('navMenuOverlay');
+    let lastMenuTrigger = null;
 
     const adminContainer = document.getElementById('navAdminContainer');
     const adminPanel = document.getElementById('navAdminPanel');
     const adminToggle = document.getElementById('adminToggle');
+
+    const notificationsPanel = document.getElementById('notificationsPanel');
+    const notificationToggleButtons = Array.from(document.querySelectorAll('[data-action="toggle-notifications"]'));
+    let notificationsObserver;
     
     let searchTimeout;
     let currentSearchType = 'posts';
+
+    const updateNotificationToggleState = () => {
+        if (!notificationsPanel || !notificationToggleButtons.length) {
+            return;
+        }
+        const isOpen = notificationsPanel.classList.contains('open');
+        notificationToggleButtons.forEach((btn) => {
+            btn.classList.toggle('active', isOpen);
+            btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+    };
+
+    if (notificationsPanel && notificationToggleButtons.length) {
+        notificationToggleButtons.forEach((btn) => {
+            btn.setAttribute('aria-controls', 'notificationsPanel');
+            btn.setAttribute('aria-expanded', notificationsPanel.classList.contains('open') ? 'true' : 'false');
+        });
+
+        updateNotificationToggleState();
+
+        notificationsObserver = new MutationObserver(updateNotificationToggleState);
+        notificationsObserver.observe(notificationsPanel, { attributes: true, attributeFilter: ['class'] });
+
+        window.addEventListener('beforeunload', () => {
+            notificationsObserver?.disconnect();
+        }, { once: true });
+    }
     
     // Search functionality
     if (searchContainer && searchPanel && searchToggle && searchInput) {
@@ -395,26 +633,71 @@ function initializeNavControls() {
     
     // Menu functionality
     if (menuContainer && menuPanel && menuToggle) {
+        const setMenuState = (isOpen) => {
+            const usingOverlay = body.classList.contains('show-bottom-nav') && Boolean(navMenuOverlay);
+
+            if (isOpen) {
+                menuPanel.classList.add('active');
+                menuToggle.setAttribute('aria-expanded', 'true');
+                bottomMenuButton?.classList.add('active');
+                bottomMenuButton?.setAttribute('aria-expanded', 'true');
+                if (usingOverlay) {
+                    navMenuOverlay.classList.add('active');
+                    navMenuOverlay.setAttribute('aria-hidden', 'false');
+                    body.classList.add('nav-menu-open');
+                }
+            } else {
+                menuPanel.classList.remove('active');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                bottomMenuButton?.classList.remove('active');
+                bottomMenuButton?.setAttribute('aria-expanded', 'false');
+                if (navMenuOverlay) {
+                    navMenuOverlay.classList.remove('active');
+                    navMenuOverlay.setAttribute('aria-hidden', 'true');
+                }
+                body.classList.remove('nav-menu-open');
+            }
+        };
+
         const openMenu = () => {
             if (menuPanel.classList.contains('active')) {
                 return;
             }
-            menuPanel.classList.add('active');
-            menuToggle.setAttribute('aria-expanded', 'true');
+            setMenuState(true);
         };
 
-        const closeMenu = () => {
+        const closeMenu = (restoreFocus = true) => {
             if (!menuPanel.classList.contains('active')) {
                 return;
             }
-            menuPanel.classList.remove('active');
-            menuToggle.setAttribute('aria-expanded', 'false');
+            setMenuState(false);
+            if (restoreFocus && lastMenuTrigger) {
+                lastMenuTrigger.focus();
+            }
+            if (!menuPanel.classList.contains('active')) {
+                lastMenuTrigger = null;
+            }
         };
 
         menuToggle.setAttribute('aria-haspopup', 'true');
         menuToggle.setAttribute('aria-expanded', 'false');
         menuToggle.addEventListener('click', (event) => {
             event.preventDefault();
+            lastMenuTrigger = menuToggle;
+            const willOpen = !menuPanel.classList.contains('active');
+            if (willOpen) {
+                openMenu();
+            } else {
+                closeMenu();
+            }
+        });
+
+        bottomMenuButton?.setAttribute('aria-haspopup', 'true');
+        bottomMenuButton?.setAttribute('aria-expanded', 'false');
+        bottomMenuButton?.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            lastMenuTrigger = bottomMenuButton;
             const willOpen = !menuPanel.classList.contains('active');
             if (willOpen) {
                 openMenu();
@@ -433,15 +716,20 @@ function initializeNavControls() {
 
         document.addEventListener('click', (event) => {
             if (!menuContainer.contains(event.target)) {
-                closeMenu();
+                closeMenu(false);
             }
         });
 
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape' && menuPanel.classList.contains('active')) {
                 closeMenu();
-                menuToggle.focus();
             }
+        });
+
+        navMenuOverlay?.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            closeMenu(false);
         });
     }
 
@@ -526,6 +814,78 @@ function initializeSideNav() {
     });
 }
 
+function initializeBottomNav() {
+    const bottomNav = document.querySelector('.bottom-nav');
+    if (!bottomNav) return;
+
+    const navLinks = bottomNav.querySelectorAll('.bottom-nav-link[data-route], .bottom-nav-link[data-route-prefix]');
+    if (!navLinks.length) return;
+
+    const rawPath = window.location.pathname || '/';
+    const normalizedPath = rawPath.length > 1 && rawPath.endsWith('/')
+        ? rawPath.slice(0, -1)
+        : rawPath;
+
+    navLinks.forEach((link) => {
+        const route = link.dataset.route;
+        const routePrefix = link.dataset.routePrefix;
+
+        const matchesRoute = route && (
+            normalizedPath === route ||
+            (route === '/home' && normalizedPath === '/')
+        );
+
+        const matchesPrefix = routePrefix && normalizedPath.startsWith(routePrefix);
+
+        if (matchesRoute || matchesPrefix) {
+            link.classList.add('active');
+        }
+    });
+}
+
+function setupResponsiveNavBehavior() {
+    const body = document.body;
+    if (!body.classList.contains('has-bottom-nav')) {
+        return;
+    }
+
+    const query = window.matchMedia('(max-width: 1100px)');
+
+    const updateLayout = () => {
+        const shouldUseMobileNav = query.matches;
+        const wasUsingMobileNav = body.classList.contains('show-bottom-nav');
+
+        if (!shouldUseMobileNav && wasUsingMobileNav) {
+            const navMenuOverlay = document.getElementById('navMenuOverlay');
+            const menuPanel = document.getElementById('navMenuPanel');
+            const menuToggle = document.getElementById('menuToggle');
+            const bottomMenuButton = document.getElementById('bottomMenuButton');
+            navMenuOverlay?.classList.remove('active');
+            navMenuOverlay?.setAttribute('aria-hidden', 'true');
+            body.classList.remove('nav-menu-open');
+            menuPanel?.classList.remove('active');
+            menuToggle?.setAttribute('aria-expanded', 'false');
+            bottomMenuButton?.classList.remove('active');
+            bottomMenuButton?.setAttribute('aria-expanded', 'false');
+        }
+
+        body.classList.toggle('show-bottom-nav', shouldUseMobileNav);
+    };
+
+    updateLayout();
+
+    if (typeof query.addEventListener === 'function') {
+        query.addEventListener('change', updateLayout);
+    } else if (typeof query.addListener === 'function') {
+        query.addListener(updateLayout);
+    }
+
+    window.addEventListener('resize', updateLayout);
+    window.addEventListener('orientationchange', () => {
+        setTimeout(updateLayout, 150);
+    });
+}
+
 async function performSearch(query, type) {
     const searchResults = document.getElementById('navSearchResults');
     if (!searchResults) return;
@@ -598,7 +958,8 @@ export function initializeGlobalButtons(accountNumber) {
 
     const profileButtons = [
         document.getElementById("profileButton"),
-        document.getElementById("legacyProfileButton")
+        document.getElementById("legacyProfileButton"),
+        document.getElementById("bottomProfileButton")
     ].filter(Boolean);
 
     profileButtons.forEach((profileButton) => {

@@ -1,4 +1,7 @@
 import { apiRequest } from './utils/apiRequest.js';
+import { registerServiceWorker } from './utils/serviceWorker.js';
+
+registerServiceWorker();
 
 function showAlreadyLoggedInPopup() {
     // Create popup overlay
